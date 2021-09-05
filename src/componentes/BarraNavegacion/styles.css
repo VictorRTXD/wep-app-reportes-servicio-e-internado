@@ -1,0 +1,29 @@
+.title-bar {
+  font-size: 1.6em;
+  color: white;
+  background-color: greenyellow;
+  text-align: center;
+}
+
+.buttons-container {
+  display: grid;
+  grid-auto-flow: column;
+  margin: 0 auto;
+  width: 90%;
+  overflow: hidden;
+}
+
+.link-redondo {
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: #33ffd1;
+  border-radius: 50%;
+  font-size: 2rem;
+  text-align: center;
+  text-decoration: none;
+  color: white;
+}
+
+.link-texto-largo {
+  font-size: 0.7rem;
+}
