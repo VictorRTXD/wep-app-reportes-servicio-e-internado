@@ -3,6 +3,10 @@
   box-sizing: border-box;
 }
 
+:root {
+  font-size: 75%;
+}
+
 button {
   border-style: unset;
 }
@@ -19,4 +23,41 @@ button {
   height: 2.5rem;
   background-color: greenyellow;
   border-radius: 5%;
+}
+
+.btn-secundario {
+  font-size: 1.4rem;
+  border: 1px solid black;
+  height: 2.5rem;
+  background-color: yellow;
+  border-radius: 5%;
+}
+
+.btn-terciario {
+  font-size: 1.4rem;
+  border: 1px solid black;
+  height: 2.5rem;
+  background-color: grey;
+  border-radius: 5%;
+}
+
+.btn-modificar {
+  display: table-cell;
+  text-decoration: none;
+  color: black;
+  text-align: center;
+  padding-left: 0.4rem;
+  padding-right: 0.4rem;
+  vertical-align: middle;
+}
+
+.ctn-btn-modificar {
+  display: inline-block;
+}
+
+.ctn-btns-descargar-y-modificar {
+  display: flex;
+  z-index: 1;
+  margin-left: 1rem;
+  gap: 1rem;
 }

@@ -1,8 +1,9 @@
 .title-bar {
-  font-size: 1.6em;
+  font-size: 2em;
   color: white;
   background-color: greenyellow;
   text-align: center;
+  position: static;
 }
 
 .buttons-container {
@@ -11,6 +12,7 @@
   margin: 0 auto;
   width: 90%;
   overflow: hidden;
+  position: static;
 }
 
 .link-redondo {
@@ -25,5 +27,15 @@
 }
 
 .link-texto-largo {
+  font-weight: bold;
+  font-size: 0.8rem;
+}
+
+#ctn-barra-navegacion {
+  width: 100%;
+  z-index: 99;
+}
+
+#reporte-final-2 {
   font-size: 0.7rem;
 }

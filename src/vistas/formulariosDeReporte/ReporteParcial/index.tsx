@@ -1,75 +1,136 @@
+/* eslint-disable max-len */
+/* eslint-disable react/no-array-index-key */
 import React, { useState } from 'react';
-import config from '../../appConfig';
-import BarraNavegacion from '../../componentes/BarraNavegacion';
-import '../../global.css';
+import { Redirect, useParams } from 'react-router';
+import appConfig from '../../../appConfig';
+
+import Navegacion from '../../../componentes/BarraNavegacion';
+import '../../../global.css';
+import AtencionesRealizadas from '../../../recursos/interfaces/AtencionesRealizadas';
 import './styles.css';
 
-// import { ReporteParcial } from '../../resources';
+interface ActividadesReporteParcial {
+  id: number,
+  descripcion: string,
+  cantidad: number
+}
 
 export default function ReportesParciales() {
-  const [actividadesUsuario, setActividadesUsuario] = useState([{
-    descripcion: '',
+  const { numero } = useParams<{ numero: string }>();
+  const numeroReporte = parseInt(numero, 10);
+
+  const actividadesReporteAux: ActividadesReporteParcial[] = [];
+  const antencionesRealizadasAux: any[] = [{
+    descripcion: 'Prenatales',
     cantidad: 0,
-  }]);
+  },
+  {
+    descripcion: 'Niños 0 a 12 años',
+    cantidad: 0,
+  },
+  {
+    descripcion: 'Niñas 0 a 12 años',
+    cantidad: 0,
+  },
+  {
+    descripcion: 'Onvres',
+    cantidad: 0,
+  },
+  {
+    descripcion: 'Mujeres',
+    cantidad: 0,
+  },
+  {
+    descripcion: 'Geríatrico hombre',
+    cantidad: 0,
+  },
+  {
+    descripcion: 'Geríatrico Mujer',
+    cantidad: 0,
+  }];
 
-  const [atencionesRealizadas, setAtencionesRealizadas] = useState([
-    {
-      prenatales: '',
-      cantidad: 0,
-    },
-    {
-      ninos: '',
-      cantidad: 0,
-    },
-    {
-      ninas: '',
-      cantidad: 0,
-    },
-    {
-      hombres: '',
-      cantidad: 0,
-    },
-    {
-      mujeres: '',
-      cantidad: 0,
-    },
-    {
-      ancianos: '',
-      cantidad: 0,
-    },
-    {
-      ancianas: '',
-      cantidad: 0,
-    },
-  ]);
+  let redirect;
+  let metodo = 'POST';
+  let incializadorTotalActividades = 0;
+  let incializadorTotalAtenciones = 0;
 
-  const [totalActividades, setTotalActividades] = useState(0);
-  const [totalAtencioens, setTotalAtenciones] = useState(0);
-
-  // Revisar si tiene un servicio creado, si no mandar a formulario
-
-  // function crearReporte() {}
-  // function actualizarReporte() {}
-
-  // eslint-disable-next-line no-unused-vars
-
-  // dummy user()
-  const user = {
-    id: 1,
-    rol: 'prestador',
+  const servicio = {
+    reportesParciales: JSON.parse(sessionStorage.getItem('reportesParciales') || 'null'),
+    actividadesDeUsuario: JSON.parse(sessionStorage.getItem('actividadesDeUsuario') || 'null'),
   };
 
-  // eslint-disable-next-line no-unused-vars
-  function obtenerReporte(numberoReporte: number) {
-    fetch(`${config.apiBaseUrl}/reportes-parciales/${user.id}/${numberoReporte}`) // Puede ser número de reporte o calcular el trimestre
-      .then((response) => response.json())
-      // eslint-disable-next-line no-console
-      .then((data) => console.log(data));
+  if (servicio.reportesParciales.length >= numeroReporte) {
+    if (servicio.reportesParciales[numeroReporte - 1]) {
+      if (servicio.reportesParciales[numeroReporte] > 1) {
+        if (!servicio.reportesParciales[numeroReporte - 2]) {
+          console.log('No has completado el reporte anterior'); // Cambiar x modal
+          redirect = <Redirect to={`/reportes-parciales/${numeroReporte - 2}/formulario`} />;
+        }
+      }
+
+      metodo = 'PUT';
+
+      // Mapear actividades
+      for (let i = 0; i < servicio.reportesParciales[numeroReporte - 1].actividadesRealizadas.length; i += 1) {
+        let indexActividadUsuario: number = -1;
+
+        // Buscar la actividad de usuario correspondiento
+        for (let j = 0; j < servicio.actividadesDeUsuario.length; j += 1) {
+          if (servicio.actividadesDeUsuario[j].id === servicio.reportesParciales[numeroReporte - 1].actividadesRealizadas[i].idActividad) {
+            indexActividadUsuario = j;
+          }
+        }
+
+        incializadorTotalActividades += servicio.reportesParciales[numeroReporte - 1].actividadesRealizadas[i].cantidad;
+
+        actividadesReporteAux.push({
+          id: servicio.actividadesDeUsuario[indexActividadUsuario].id,
+          descripcion: servicio.actividadesDeUsuario[indexActividadUsuario].descripcion,
+          cantidad: servicio.reportesParciales[numeroReporte - 1].actividadesRealizadas[i].cantidad,
+        });
+      }
+
+      // Mapear atenciones
+      for (let i = 0; i < servicio.reportesParciales[numeroReporte - 1].atencionesRealizadas.length; i += 1) {
+        antencionesRealizadasAux[i].cantidad = servicio.reportesParciales[numeroReporte - 1].atencionesRealizadas[i].cantidad;
+        incializadorTotalAtenciones += antencionesRealizadasAux[i].cantidad;
+      }
+    }
   }
 
-  // function generarReporteParcial() {}
-  // function generarReporteFinal() {}
-  // function generarReporteFinal2() {}
+  const [actividadesUsuario, setActividadesUsuario] = useState<ActividadesReporteParcial[]>(actividadesReporteAux);
+  const [atencionesRealizadas, setAtencionesRealizadas] = useState<AtencionesRealizadas[]>(antencionesRealizadasAux);
+
+  const [totalActividades, setTotalActividades] = useState(incializadorTotalActividades);
+  const [totalAtencioens, setTotalAtenciones] = useState(incializadorTotalAtenciones);
+
+  function crearOActualizar() {
+    const reporte = {
+      idUsuario: 1,
+      idServicio: 1,
+      numeroReporte,
+      actividadesUsuario,
+      atencionesRealizadas,
+    };
+
+    fetch(`${appConfig.apiBaseUrl}/public/reportes/${numeroReporte}`, {
+      method: metodo,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(reporte),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        servicio.reportesParciales[numeroReporte - 1] = data;
+        sessionStorage.setItem('reportesParciales', JSON.stringify(servicio.reportesParciales || null));
+        // Obtener actividades de usuario
+      })
+      .catch((error) => {
+        // eslint-disable-next-line no-console
+        console.log(error);
+      });
+  }
 
   function calcularActividades() {
     let total = 0;
@@ -92,7 +153,7 @@ export default function ReportesParciales() {
   }
 
   function agregarActividad() {
-    setActividadesUsuario([...actividadesUsuario, { descripcion: '', cantidad: 0 }]);
+    setActividadesUsuario([...actividadesUsuario, { id: 0, descripcion: '', cantidad: 0 }]);
   }
 
   function eliminarActividad() {
@@ -133,9 +194,13 @@ export default function ReportesParciales() {
     }
   }
 
+  if (redirect) {
+    return redirect;
+  }
+
   return (
     <div>
-      <BarraNavegacion />
+      <Navegacion />
 
       <form>
         <table>
@@ -149,7 +214,7 @@ export default function ReportesParciales() {
           <tbody>
             {
               actividadesUsuario.map((actividad: any, i: number) => (
-                <tr>
+                <tr key={i}>
                   <td>
                     <input
                       type="text"
@@ -185,7 +250,7 @@ export default function ReportesParciales() {
         </table>
         <br />
 
-        <div id="cnt-btn-cantidad">
+        <div id="ctn-btn-cantidad">
           <button type="button" className="btn-redondo btn-cantidad" onClick={agregarActividad}> + </button>
           <button type="button" className="btn-redondo btn-cantidad" onClick={eliminarActividad}> - </button>
         </div>
@@ -310,7 +375,7 @@ export default function ReportesParciales() {
         <br />
         <br />
 
-        <button type="button" id="btn-guardar" className="btn-primario"> Guardar </button>
+        <button type="button" id="btn-guardar" className="btn-primario" onClick={crearOActualizar}> Guardar </button>
         <br />
         <br />
 

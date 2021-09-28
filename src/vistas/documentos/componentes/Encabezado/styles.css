@@ -1,0 +1,30 @@
+h1 {
+  font-size: 1.2em;
+  text-align: left;
+}
+
+.centro-universitario {
+  font-size: 1.1em;
+}
+
+#encabezado {
+  font-size: 70%;
+  overflow: hidden;
+}
+
+#ctn-escudo {
+  display: inline-block;
+  height: 100%;
+  width: 15%;
+  margin-right: 5%;
+}
+
+#ctn-titulos {
+  display: inline-block;
+  position: absolute;
+  width: 80%;
+}
+
+#escudo {
+  height: 100%;
+}

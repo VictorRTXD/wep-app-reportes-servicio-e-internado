@@ -1,0 +1,53 @@
+.celda-datos-generales {
+  font-size: 75%;
+  padding: 1px;
+  padding-left: 5px;
+  border: none;
+  text-align: left;
+}
+
+.celda-campo {
+  width: 15%;
+}
+
+.celda-valor {
+  width: 35%;
+}
+
+.fechas-campo {
+  font-weight: bold;
+  margin-right: 1rem;
+}
+
+.fechas-valor {
+  margin-right: 1rem;
+}
+
+.ctn-firma {
+  font-size: 75%;
+  display: inline-block;
+  width: 33%;
+  padding: 5%;
+  text-align: center;
+}
+
+#tabla-datos-generales {
+  padding-bottom: 5rem;
+}
+
+#encabezado-fechas {
+  font-size: 75%;
+  height: 15mm;
+  display: flex;
+  border: 1px solid black;
+  align-items: center;
+  overflow: hidden;
+}
+
+#firma {
+  width: 100%;
+}
+
+#btn-modificar {
+  height: 2.5rem;
+}

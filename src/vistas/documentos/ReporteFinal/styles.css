@@ -1,0 +1,11 @@
+#tabla-datos-generales {
+  padding-bottom: 5rem;
+}
+
+.celda-campo {
+  width: 15%;
+}
+
+.celda-valor {
+  width: 35%;
+}

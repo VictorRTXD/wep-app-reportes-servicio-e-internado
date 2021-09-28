@@ -1,11 +1,14 @@
-import React, { useRef, useState } from 'react';
-import Encabezado from '../../componentes/BarraNavegacion';
+import React, { useEffect, useRef, useState } from 'react';
+import { Redirect } from 'react-router';
 
+import Navegacion from '../../componentes/BarraNavegacion';
+
+import config from '../../appConfig';
 import '../../global.css';
 import './styles.css';
-// import { ReporteParcial } from '../../resources';
 
 export default function CrearServicio() {
+  let servicio: any;
   const entidadReceptora = useRef<HTMLInputElement>(null);
   const receptor = useRef<HTMLInputElement>(null);
   const programa = useRef<HTMLInputElement>(null);
@@ -15,11 +18,90 @@ export default function CrearServicio() {
     objetivosDelPrograma: '',
   });
 
-  function crearServicio(e: any) {
+  let redirect = null;
+  let servicioExiste: boolean = false;
+
+  useEffect(() => {
+    fetch(`${config.apiBaseUrl}/public/servicio/1`)
+      .then((response) => {
+        if (response.status !== 200 && response.status !== 201) {
+          // eslint-disable-next-line no-console
+          return false;
+        }
+        servicioExiste = true;
+        return response.json();
+      })
+      .then((data) => {
+        servicio = data;
+        try {
+          entidadReceptora.current!.value = servicio.entidadReceptora;
+          receptor.current!.value = servicio.receptor;
+          programa.current!.value = servicio.programa;
+
+          setFormulario({
+            horaInicio: parseInt(servicio.horarioHoraInicio.split(':').pop(), 10),
+            horaFin: parseInt(servicio.horarioHoraFin.split(':').pop(), 10),
+            objetivosDelPrograma: servicio.objetivosDelPrograma,
+          });
+        } catch (error) {
+          // eslint-disable-next-line no-console
+          console.log(error);
+        }
+      })
+      .catch((error) => {
+        // eslint-disable-next-line no-console
+        console.log(error);
+      });
+  }, [config.apiBaseUrl,
+    formulario.horaFin,
+    formulario.horaInicio,
+    formulario.objetivosDelPrograma]);
+
+  function fechaACadena(fecha: Date): string {
+    let cadenaFecha = '';
+
+    cadenaFecha += fecha.getFullYear();
+    cadenaFecha += `-${fecha.getMonth() + 1}`;
+    cadenaFecha += `-${fecha.getDate()}`;
+    return cadenaFecha;
+  }
+
+  function crearOActualizarServicio(e: any) {
     e.preventDefault();
-    // console.log(entidadReceptora.current?.value);
-    // Crear Servicio Request
-    // Redirigir a la página princpal
+
+    servicio = {
+      idUsuario: 1,
+      entidadReceptora: entidadReceptora.current?.value,
+      receptor: receptor.current?.value,
+      programa: programa.current?.value,
+      objetivosDelPrograma: formulario.objetivosDelPrograma,
+      fechaInicio: fechaACadena(new Date()),
+      fechaFin: fechaACadena(new Date()),
+      totalDeHoras: 0,
+      horarioHoraInicio: formulario.horaInicio,
+      horarioHoraFin: formulario.horaFin,
+    };
+
+    const method = servicioExiste ? 'PUT' : 'POST';
+
+    fetch(`${config.apiBaseUrl}/public/servicio`, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(servicio),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        servicio = data;
+        redirect = <Redirect to="/" />;
+        // eslint-disable-next-line no-console
+        console.log(servicio);
+      })
+      .catch((error) => {
+        // eslint-disable-next-line no-console
+        console.log(error);
+      });
   }
 
   function inputOnChange(e: any) {
@@ -40,18 +122,23 @@ export default function CrearServicio() {
     }
   }
 
+  if (redirect) {
+    return redirect;
+  }
+
   return (
     <div>
-      <Encabezado />
+      <Navegacion />
       <br />
-      <h1>Bienvenido!</h1>
+
+      <h2>Bienvenido!</h2>
       <h2>
         Parece que no has ingresado algunos datos acerca del tu servicio o internado,
         ¡Comencemos!
       </h2>
       <br />
 
-      <form onSubmit={crearServicio}>
+      <form onSubmit={crearOActualizarServicio}>
         <label htmlFor="entidadReceptora">
           Entidad Receptora:
           <input type="text" name="entidadReceptora" ref={entidadReceptora} />
@@ -61,6 +148,12 @@ export default function CrearServicio() {
         <label htmlFor="receptor">
           Receptor:
           <input type="text" name="receptor" ref={receptor} />
+        </label>
+        <br />
+
+        <label htmlFor="programa">
+          Programa:
+          <input type="text" name="programa" ref={programa} />
         </label>
         <br />
 
@@ -89,12 +182,6 @@ export default function CrearServicio() {
             max="23"
             onChange={numberInputOnChange}
           />
-        </label>
-        <br />
-
-        <label htmlFor="programa">
-          Programa:
-          <input type="text" name="programa" ref={programa} />
         </label>
         <br />
 
