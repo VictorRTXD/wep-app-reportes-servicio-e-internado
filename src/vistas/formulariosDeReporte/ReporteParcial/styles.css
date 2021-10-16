@@ -45,6 +45,19 @@ th, td {
   width: 10%;
 }
 
+#labelHorasRealizadas {
+  font-weight: bold;
+}
+
+#labelHorasRealizadas {
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+#inputHorasRealizadas {
+  font-size: 1.5rem;
+}
+
 #btn-guardar {
   float: right;
 }

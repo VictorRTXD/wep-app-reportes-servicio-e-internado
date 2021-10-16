@@ -2,7 +2,7 @@ import React from 'react';
 import './global.css';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import PaginaPrincipal from './vistas/PaginaPrincipal/index';
-import CrearServicio from './vistas/CrearServicio';
+import formularioServicio from './vistas/formularioServicio';
 import ReportesParciales from './vistas/formulariosDeReporte/ReporteParcial';
 import ReporteFinal from './vistas/formulariosDeReporte/ReporteFinal';
 import ReporteFinal2 from './vistas/formulariosDeReporte/ReporteFinal2';
@@ -16,7 +16,7 @@ function App() {
   return (
     <Router>
       <Route exact path="/" component={PaginaPrincipal} />
-      <Route exact path="/servicio/crear" component={CrearServicio} />
+      <Route exact path="/servicio/formulario" component={formularioServicio} />
 
       {/* Reportes */}
       <Route exact path="/reportes-parciales/:numero" component={DocumentoReporteParcial} />

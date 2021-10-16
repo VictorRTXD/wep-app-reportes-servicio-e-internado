@@ -1,26 +1,45 @@
 /* eslint-disable max-len */
 /* eslint-disable react/no-array-index-key */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Redirect, useParams } from 'react-router';
 import appConfig from '../../../appConfig';
 
 import Navegacion from '../../../componentes/BarraNavegacion';
+import Modal, { DatosModal } from '../../../componentes/Modal';
 import '../../../global.css';
-import AtencionesRealizadas from '../../../recursos/interfaces/AtencionesRealizadas';
 import './styles.css';
 
 interface ActividadesReporteParcial {
   id: number,
   descripcion: string,
+  cantidad: number,
+  type: 'input' | 'select'
+}
+
+interface AtencionesRealizadas {
+  descripcion: string
   cantidad: number
 }
 
+interface OpcionesActividades {
+  id: number
+  descripcion: string
+}
+
 export default function ReportesParciales() {
+  // Obtener datos
+  const reportesParciales = JSON.parse(sessionStorage.getItem('reportesParciales')!);
+  const actividadesDeUsuario = JSON.parse(sessionStorage.getItem('actividadesDeUsuario')!);
+
   const { numero } = useParams<{ numero: string }>();
+
   const numeroReporte = parseInt(numero, 10);
 
+  const opcionesActividades: OpcionesActividades [] = [{ id: -1, descripcion: '' }, { id: 0, descripcion: '+ NUEVA ACTIVIDAD' }];
+
   const actividadesReporteAux: ActividadesReporteParcial[] = [];
-  const antencionesRealizadasAux: any[] = [{
+
+  const antencionesRealizadasAux: AtencionesRealizadas[] = [{
     descripcion: 'Prenatales',
     cantidad: 0,
   },
@@ -33,7 +52,7 @@ export default function ReportesParciales() {
     cantidad: 0,
   },
   {
-    descripcion: 'Onvres',
+    descripcion: 'Hombres',
     cantidad: 0,
   },
   {
@@ -49,87 +68,169 @@ export default function ReportesParciales() {
     cantidad: 0,
   }];
 
-  let redirect;
+  const [datosModal, setDatosModal] = useState<DatosModal>({
+    tipo: null,
+    texto: '',
+    visibilidad: false,
+    callback: () => {},
+  });
+
+  const [retornar, setRetornar] = useState(false);
+  const [redireccionamiento, setRedireccionamiento] = useState('');
+
   let metodo = 'POST';
+
   let incializadorTotalActividades = 0;
   let incializadorTotalAtenciones = 0;
 
-  const servicio = {
-    reportesParciales: JSON.parse(sessionStorage.getItem('reportesParciales') || 'null'),
-    actividadesDeUsuario: JSON.parse(sessionStorage.getItem('actividadesDeUsuario') || 'null'),
-  };
-
-  if (servicio.reportesParciales.length >= numeroReporte) {
-    if (servicio.reportesParciales[numeroReporte - 1]) {
-      if (servicio.reportesParciales[numeroReporte] > 1) {
-        if (!servicio.reportesParciales[numeroReporte - 2]) {
-          console.log('No has completado el reporte anterior'); // Cambiar x modal
-          redirect = <Redirect to={`/reportes-parciales/${numeroReporte - 2}/formulario`} />;
-        }
+  useEffect(() => {
+    if (numeroReporte === 1 || reportesParciales.length >= numeroReporte) {
+      if (reportesParciales.length >= numeroReporte) {
+        metodo = 'PUT';
       }
 
-      metodo = 'PUT';
-
       // Mapear actividades
-      for (let i = 0; i < servicio.reportesParciales[numeroReporte - 1].actividadesRealizadas.length; i += 1) {
+      for (let i = 0; i < reportesParciales[numeroReporte - 1].actividadesRealizadas.length; i += 1) {
         let indexActividadUsuario: number = -1;
 
         // Buscar la actividad de usuario correspondiento
-        for (let j = 0; j < servicio.actividadesDeUsuario.length; j += 1) {
-          if (servicio.actividadesDeUsuario[j].id === servicio.reportesParciales[numeroReporte - 1].actividadesRealizadas[i].idActividad) {
+        for (let j = 0; j < actividadesDeUsuario.length; j += 1) {
+          if (actividadesDeUsuario[j].id === reportesParciales[numeroReporte - 1].actividadesRealizadas[i].idActividad) {
             indexActividadUsuario = j;
           }
         }
 
-        incializadorTotalActividades += servicio.reportesParciales[numeroReporte - 1].actividadesRealizadas[i].cantidad;
+        incializadorTotalActividades += reportesParciales[numeroReporte - 1].actividadesRealizadas[i].cantidad;
 
         actividadesReporteAux.push({
-          id: servicio.actividadesDeUsuario[indexActividadUsuario].id,
-          descripcion: servicio.actividadesDeUsuario[indexActividadUsuario].descripcion,
-          cantidad: servicio.reportesParciales[numeroReporte - 1].actividadesRealizadas[i].cantidad,
+          id: actividadesDeUsuario[indexActividadUsuario].id,
+          descripcion: actividadesDeUsuario[indexActividadUsuario].descripcion,
+          cantidad: reportesParciales[numeroReporte - 1].actividadesRealizadas[i].cantidad,
+          type: 'select',
         });
       }
 
       // Mapear atenciones
-      for (let i = 0; i < servicio.reportesParciales[numeroReporte - 1].atencionesRealizadas.length; i += 1) {
-        antencionesRealizadasAux[i].cantidad = servicio.reportesParciales[numeroReporte - 1].atencionesRealizadas[i].cantidad;
+      for (let i = 0; i < reportesParciales[numeroReporte - 1].atencionesRealizadas.length; i += 1) {
+        antencionesRealizadasAux[i].cantidad = reportesParciales[numeroReporte - 1].atencionesRealizadas[i].cantidad;
         incializadorTotalAtenciones += antencionesRealizadasAux[i].cantidad;
       }
+    } else if (!reportesParciales[numeroReporte - 2]) { // -2 xq es un arreglo y xq es el anterior
+      setDatosModal({
+        tipo: 'error',
+        texto: 'No has completado el reporte anterior',
+        visibilidad: true,
+        callback: () => {},
+      });
+      setRedireccionamiento(`/reportes-parciales/${numeroReporte - 2}/formulario`);
     }
-  }
+
+    for (let i = 0; i < actividadesDeUsuario.length; i += 1) {
+      if (actividadesDeUsuario[i].descripcion) {
+        opcionesActividades.push({
+          id: actividadesDeUsuario[i].id,
+          descripcion: actividadesDeUsuario[i].descripcion,
+        });
+      }
+    }
+  }, ['Esto solo se ejecuta una vez']);
 
   const [actividadesUsuario, setActividadesUsuario] = useState<ActividadesReporteParcial[]>(actividadesReporteAux);
   const [atencionesRealizadas, setAtencionesRealizadas] = useState<AtencionesRealizadas[]>(antencionesRealizadasAux);
+  const [horasRealizadas, setHorasRealizadas] = useState<number>(0);
 
   const [totalActividades, setTotalActividades] = useState(incializadorTotalActividades);
   const [totalAtencioens, setTotalAtenciones] = useState(incializadorTotalAtenciones);
 
   function crearOActualizar() {
-    const reporte = {
-      idUsuario: 1,
-      idServicio: 1,
-      numeroReporte,
-      actividadesUsuario,
-      atencionesRealizadas,
-    };
+    // Validar Campos
+    let faltanDatos = !(actividadesUsuario.length > 0);
 
-    fetch(`${appConfig.apiBaseUrl}/public/reportes/${numeroReporte}`, {
-      method: metodo,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(reporte),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        servicio.reportesParciales[numeroReporte - 1] = data;
-        sessionStorage.setItem('reportesParciales', JSON.stringify(servicio.reportesParciales || null));
-        // Obtener actividades de usuario
-      })
-      .catch((error) => {
-        // eslint-disable-next-line no-console
-        console.log(error);
+    if (horasRealizadas <= 0) {
+      faltanDatos = true;
+    }
+
+    actividadesUsuario.forEach((actividad: ActividadesReporteParcial) => {
+      if (actividad.descripcion === '' || actividad.cantidad <= 0) {
+        faltanDatos = true;
+      }
+    });
+
+    if (faltanDatos) {
+      setDatosModal({
+        tipo: 'error',
+        texto: 'Uno o más de los datos enviados no son válidos',
+        visibilidad: true,
+        callback: () => {},
       });
+    } else {
+      // Si todos los campos estan bien, mandar solicitud
+      const reporte = {
+        idUsuario: 1, // Hardcode
+        idServicio: 1, // Hardcode
+        numeroReporte,
+        horasRealizadas,
+        actividades: actividadesUsuario,
+        realizadas: atencionesRealizadas,
+      };
+
+      let url;
+      if (metodo === 'PUT') {
+        url = `${appConfig.apiBaseUrl}/public/reporte-parcial/${numeroReporte}`;
+      } else {
+        url = `${appConfig.apiBaseUrl}/public/reporte-parcial`;
+      }
+
+      fetch(url, {
+        method: metodo,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(reporte),
+      })
+        .then((response) => {
+          if (response.ok) {
+            return response.json();
+          }
+
+          return null;
+        })
+        .then((data) => {
+          if (data) {
+            reportesParciales[numeroReporte - 1] = data;
+            sessionStorage.setItem('reportesParciales', JSON.stringify(reportesParciales || null));
+
+            setDatosModal({
+              tipo: 'confirmacion',
+              texto: 'Guardado',
+              visibilidad: true,
+              callback: () => {},
+            });
+
+            setRedireccionamiento(`/reportes-parciales/${numeroReporte}`);
+          } else {
+            setDatosModal({
+              tipo: 'error',
+              texto: 'Ocurrió un error',
+              visibilidad: true,
+              callback: () => {},
+            });
+          }
+        })
+        .catch((error) => {
+          // eslint-disable-next-line no-console
+          console.log(error);
+
+          setDatosModal({
+            tipo: 'error',
+            texto: 'Ocurrió un error',
+            visibilidad: true,
+            callback: () => {},
+          });
+        });
+    }
+
+    faltanDatos = false;
   }
 
   function calcularActividades() {
@@ -153,7 +254,12 @@ export default function ReportesParciales() {
   }
 
   function agregarActividad() {
-    setActividadesUsuario([...actividadesUsuario, { id: 0, descripcion: '', cantidad: 0 }]);
+    setActividadesUsuario([...actividadesUsuario, {
+      id: 0,
+      descripcion: '',
+      cantidad: 0,
+      type: 'select',
+    }]);
   }
 
   function eliminarActividad() {
@@ -169,6 +275,7 @@ export default function ReportesParciales() {
   }
 
   function manejarCambiosActividades(e: any, i: number) {
+    // Si es númerico, o sea, el campo de cantidad
     if (e.target.type === 'number') {
       const regex = /^[0-9\b]+$/;
       if (e.target.value.match(regex)) {
@@ -177,9 +284,25 @@ export default function ReportesParciales() {
         setActividadesUsuario(nuevasActividades);
         calcularActividades();
       }
+    // Si ex texto
     } else {
       const nuevasActividades: any[] = [...actividadesUsuario];
-      nuevasActividades[i][e.target.name] = e.target.value;
+      // Si el input es de tipo select
+      if (nuevasActividades[i].type === 'select') {
+        const valor = JSON.parse(e.target.value);
+        // Si va ser una nueva actividad
+        if (valor.descripcion === '+ NUEVA ACTIVIDAD') {
+          nuevasActividades[i].type = 'input';
+        // Si ya existe
+        } else {
+          nuevasActividades[i].id = valor.id;
+          nuevasActividades[i].descripcion = valor.descripcion;
+        }
+      // Si es entrada teclado
+      } else {
+        nuevasActividades[i][e.target.name] = e.target.value;
+      }
+
       setActividadesUsuario(nuevasActividades);
     }
   }
@@ -194,12 +317,36 @@ export default function ReportesParciales() {
     }
   }
 
-  if (redirect) {
-    return redirect;
+  function manejarCambiosHorasRelizadas(e: any) {
+    const regex = /^[0-9\b]+$/;
+    if (e.target.value.match(regex)) {
+      setHorasRealizadas(e.target.value);
+    }
+  }
+
+  function cerrarModal() {
+    setDatosModal({
+      tipo: null,
+      texto: '',
+      visibilidad: false,
+      callback: () => {},
+    });
+    setRetornar(true);
+  }
+
+  if (retornar && redireccionamiento) {
+    return <Redirect to={redireccionamiento} />;
   }
 
   return (
     <div>
+      <Modal
+        tipo={datosModal.tipo}
+        texto={datosModal.texto}
+        visibilidad={datosModal.visibilidad}
+        callback={cerrarModal}
+      />
+
       <Navegacion />
 
       <form>
@@ -216,14 +363,29 @@ export default function ReportesParciales() {
               actividadesUsuario.map((actividad: any, i: number) => (
                 <tr key={i}>
                   <td>
-                    <input
-                      type="text"
-                      name="descripcion"
-                      key="dummy"
-                      value={actividad.descripcion}
-                      onChange={(e) => manejarCambiosActividades(e, i)}
-                      className="input"
-                    />
+                    {
+                      actividad.type === 'input'
+                        ? (
+                          <input
+                            type="text"
+                            name="descripcion"
+                            key={i}
+                            value={actividad.descripcion}
+                            onChange={(e) => manejarCambiosActividades(e, i)}
+                            className="input"
+                          />
+                        )
+                        : (
+                          <select
+                            name="descripcion"
+                            key={i}
+                            onChange={(e) => manejarCambiosActividades(e, i)}
+                            value={`{"id": ${actividad.id}, "descripcion": "${actividad.descripcion}"}`}
+                          >
+                            {opcionesActividades.map((opcion: OpcionesActividades) => <option key={opcion.id} value={`{"id": ${opcion.id}, "descripcion": "${opcion.descripcion}"}`}>{opcion.descripcion}</option>)}
+                          </select>
+                        )
+                    }
                   </td>
 
                   <td>
@@ -372,6 +534,19 @@ export default function ReportesParciales() {
             </tr>
           </tfoot>
         </table>
+        <br />
+
+        <label id="labelHorasRealizadas" htmlFor="horasRealizadas" className="input">
+          Horas Realizadas:
+          <input
+            type="number"
+            name="horasRealizadas"
+            min="0"
+            value={horasRealizadas}
+            onChange={(e) => manejarCambiosHorasRelizadas(e)}
+            id="inputHorasRealizadas"
+          />
+        </label>
         <br />
         <br />
 

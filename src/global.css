@@ -22,7 +22,7 @@ button {
   border: 1px solid black;
   height: 2.5rem;
   background-color: greenyellow;
-  border-radius: 5%;
+  border-radius: 10%;
 }
 
 .btn-secundario {
@@ -30,15 +30,15 @@ button {
   border: 1px solid black;
   height: 2.5rem;
   background-color: yellow;
-  border-radius: 5%;
+  border-radius: 10%;
 }
 
 .btn-terciario {
   font-size: 1.4rem;
   border: 1px solid black;
   height: 2.5rem;
-  background-color: grey;
-  border-radius: 5%;
+  background-color: red;
+  border-radius: 10%;
 }
 
 .btn-modificar {
@@ -60,4 +60,12 @@ button {
   z-index: 1;
   margin-left: 1rem;
   gap: 1rem;
+}
+
+#pagina-principal-titulo {
+  display: block;
+  width: 100%;
+  margin-top: 30vh;
+  text-align: center;
+  font-size: 300%;
 }

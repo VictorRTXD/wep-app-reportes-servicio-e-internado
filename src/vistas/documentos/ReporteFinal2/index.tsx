@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import React, { useEffect, useState } from 'react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -7,26 +8,119 @@ import Encabezado from '../componentes/Encabezado';
 import firma from '../../../recursos/firma.png';
 
 import '../../../global.css';
+import './styles.css';
 import PiePagina from '../componentes/PiePagina';
 import Navegacion from '../../../componentes/BarraNavegacion';
+import appConfig from '../../../appConfig';
+import Modal, { DatosModal } from '../../../componentes/Modal';
 
 export default function DocumentoReporteFinal2() {
   const [documentStyles, setDocumentStyles] = useState({});
-  const [wantToDownloadDocument, setWantToDownloadDocument] = useState(false);
-  const loremIpsum = 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Modi quas esse eligendi magnam consequatur culpa soluta aspernatur, obcaecati sit corporis doloremque, commodi pariatur. Saepe inventore quaerat a consequatur dolores voluptatum.';
+  const [deseaDescargarDocumento, setDeseaDescargarDocumento] = useState(false);
 
-  const servicio = {
-    datosGenerales: JSON.parse(sessionStorage.getItem('servicioDatosGenerales') || 'null'),
-    reportesParciales: JSON.parse(sessionStorage.getItem('reportesParciales') || 'null'),
-    reporteFinal2: JSON.parse(sessionStorage.getItem('reporteFinalDos') || 'null'),
-  };
+  const atencionesRealizadas: any[] = [
+    {
+      descripcion: 'Prenatales',
+      cantidad: 0,
+    },
+    {
+      descripcion: 'Niños 0 a 12 años',
+      cantidad: 0,
+    },
+    {
+      descripcion: 'Niñas 0 a 12 años',
+      cantidad: 0,
+    },
+    {
+      descripcion: 'Hombres',
+      cantidad: 0,
+    },
+    {
+      descripcion: 'Mujeres',
+      cantidad: 0,
+    },
+    {
+      descripcion: 'Geríatrico hombre',
+      cantidad: 0,
+    },
+    {
+      descripcion: 'Geríatrico Mujer',
+      cantidad: 0,
+    },
+  ];
 
-  if (!servicio.datosGenerales) {
-    return <Redirect to="/" />;
-  }
+  // Obtener datos
+  const reportesParciales = JSON.parse(sessionStorage.getItem('reportesParciales')!);
+  const reporteFinalDos = JSON.parse(sessionStorage.getItem('reporteFinalDos')!);
+
+  let totalActividadesRealizadas: number = 0;
+  let totalDeAtenciones: number = 0;
+
+  const [datosModal, setDatosModal] = useState<DatosModal>({
+    tipo: null,
+    texto: '',
+    visibilidad: false,
+    callback: () => {},
+  });
+  const [retornar, setRetornar] = useState(false);
+  const [redireccionamiento, setRedireccionamiento] = useState('');
 
   useEffect(() => {
-    if (wantToDownloadDocument) {
+    if (reporteFinalDos) {
+      if (Object.entries(reporteFinalDos).length <= 0) {
+        setRedireccionamiento('/reporte-final-2/formulario');
+
+        setDatosModal({
+          tipo: 'error',
+          texto: 'No has completado este reporte',
+          visibilidad: true,
+          callback: () => {},
+        });
+      }
+    } else {
+      setRedireccionamiento('/reporte-final-2/formulario');
+
+      setDatosModal({
+        tipo: 'error',
+        texto: 'No has completado este reporte',
+        visibilidad: true,
+        callback: () => {},
+      });
+    }
+
+    if (reportesParciales.length === 4) {
+      try {
+        for (let i = 0; i < reportesParciales.length; i += 1) {
+          // Sumar actividades
+          for (let j = 0; j < reportesParciales[i].actividadesRealizadas.length; j += 1) {
+            totalActividadesRealizadas += reportesParciales[i].actividadesRealizadas[j].cantidad;
+          }
+
+          // Sumar atenciones
+          for (let j = 0; j < reportesParciales[i].atencionesRealizadas.length; j += 1) {
+            atencionesRealizadas[j].cantidad = reportesParciales[i].atencionesRealizadas[j].cantidad;
+            totalDeAtenciones += reportesParciales[i].atencionesRealizadas[j].cantidad;
+          }
+        }
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.log('Error al mapear actividades');
+      }
+    } else {
+      // eslint-disable-next-line no-lonely-if
+      setRedireccionamiento(`/reportes-parciales/${reportesParciales.length + 1}/formulario`);
+
+      setDatosModal({
+        tipo: 'error',
+        texto: 'No has completado todos los reportes',
+        visibilidad: true,
+        callback: () => {},
+      });
+    }
+  }, ['Esto solo se ejecuta una vez']);
+
+  useEffect(() => {
+    if (deseaDescargarDocumento) {
       const imagenADocumento: any = document.getElementById('capturaReporteFinal2');
 
       html2canvas(imagenADocumento).then((canvas: any) => {
@@ -40,14 +134,14 @@ export default function DocumentoReporteFinal2() {
         pdf.addImage(divImage, 0, 0, width, height);
         pdf.save('Reporte Final');
       });
-      setWantToDownloadDocument(false);
+      setDeseaDescargarDocumento(false);
     } else {
       setDocumentStyles({});
     }
-  }, [wantToDownloadDocument]);
+  }, [deseaDescargarDocumento]);
 
-  const downloadDocument = () => {
-    setWantToDownloadDocument(true);
+  const descargarDocumento = () => {
+    setDeseaDescargarDocumento(true);
     setDocumentStyles({
       height: '280mm',
       width: '220mm',
@@ -55,13 +149,34 @@ export default function DocumentoReporteFinal2() {
     });
   };
 
+  function cerrarModal() {
+    setDatosModal({
+      tipo: null,
+      texto: '',
+      visibilidad: false,
+      callback: () => {},
+    });
+    setRetornar(true);
+  }
+
+  if (retornar && redireccionamiento) {
+    return <Redirect to={redireccionamiento} />;
+  }
+
   return (
     <>
+      <Modal
+        tipo={datosModal.tipo}
+        texto={datosModal.texto}
+        visibilidad={datosModal.visibilidad}
+        callback={cerrarModal}
+      />
+
       <Navegacion />
       <br />
 
       <div className="ctn-btns-descargar-y-modificar">
-        <button type="button" onClick={downloadDocument} className="btn-primario">Descargar</button>
+        <button type="button" onClick={descargarDocumento} className="btn-primario">Descargar</button>
         <div className="ctn-btn-modificar">
           <Link to="/reporte-final-2/formulario" id="btn-modificar" type="button" className="btn-secundario btn-modificar"> Modificar </Link>
         </div>
@@ -74,42 +189,80 @@ export default function DocumentoReporteFinal2() {
         <br />
 
         <table>
-          <tr>
-            <td>Total de Actividades Realizadas:</td>
-            <th>283</th>
-          </tr>
+          <tbody>
+            <tr>
+              <td>Total de Actividades Realizadas:</td>
+              <th>{totalActividadesRealizadas}</th>
+            </tr>
+          </tbody>
         </table>
         <br />
 
         <table>
-          <tr><th>Metas Alcanzadas:</th></tr>
-          <tr><td>{loremIpsum}</td></tr>
+          <tbody>
+            <tr><th>Metas Alcanzadas:</th></tr>
+            <tr><td>{reporteFinalDos.metasAlcanzadas}</td></tr>
+          </tbody>
         </table>
         <br />
 
         <table>
-          <tr><th>Metodología Utilizada:</th></tr>
-          <tr><td>{loremIpsum}</td></tr>
+          <tbody>
+            <tr><th>Metodología Utilizada:</th></tr>
+            <tr><td>{reporteFinalDos.metodologiaUtilizada}</td></tr>
+          </tbody>
         </table>
         <br />
 
         <table>
-          <tr><th>Innovación Aportada:</th></tr>
-          <tr><td>{loremIpsum}</td></tr>
+          <tbody>
+            <tr><th>Innovación Aportada:</th></tr>
+            <tr><td>{reporteFinalDos.innovacionAportada}</td></tr>
+          </tbody>
         </table>
         <br />
 
         <table>
-          <tr><th>Conclusiones:</th></tr>
-          <tr><td>{loremIpsum}</td></tr>
+          <tbody>
+            <tr><th>Conclusiones:</th></tr>
+            <tr><td>{reporteFinalDos.conclusiones}</td></tr>
+          </tbody>
         </table>
         <br />
 
         <table>
-          <tr><th>Propuestas</th></tr>
-          <tr><td>{loremIpsum}</td></tr>
+          <tbody>
+            <tr><th>Propuestas</th></tr>
+            <tr><td>{reporteFinalDos.propuestas}</td></tr>
+          </tbody>
         </table>
         <br />
+        <br />
+
+        <table id="reporte-final-2-tabla-atenciones-realizadas">
+          <tbody>
+            <tr>
+              <th className="border-unset">Mujeres:</th>
+              <td className="border-unset">{atencionesRealizadas[4].cantidad}</td>
+              <th className="border-unset">Niños:</th>
+              <td className="border-unset">{atencionesRealizadas[1].cantidad + atencionesRealizadas[2].cantidad}</td>
+            </tr>
+
+            <tr>
+              <th className="border-unset">Hombres:</th>
+              <td className="border-unset">{atencionesRealizadas[3].cantidad}</td>
+              <th className="border-unset">Prenatales:</th>
+              <td className="border-unset">{atencionesRealizadas[0].cantidad + atencionesRealizadas[2].cantidad}</td>
+            </tr>
+
+            <tr>
+              <th className="border-unset">Geríatricos:</th>
+              <td className="border-unset">{atencionesRealizadas[5].cantidad + atencionesRealizadas[6].cantidad}</td>
+              <th className="border-unset">Total de Atenciones:</th>
+              <td className="border-unset">{totalDeAtenciones}</td>
+            </tr>
+          </tbody>
+        </table>
 
         <div>
           <div className="ctn-firma">
@@ -118,14 +271,16 @@ export default function DocumentoReporteFinal2() {
           </div>
 
           <div className="ctn-firma">
+            <img id="firma" src={firma} alt="firma" />
             <hr />
-            <span>SELLO DE LA INSTITUCIÓN</span>
+            <span>{appConfig.responsableServicio}</span>
+            <span>Jefe de la Unidad de Servicio Social</span>
           </div>
 
           <div className="ctn-firma">
-            <img id="firma" src={firma} alt="firma" />
             <hr />
-            <span>JEFE DE ENSEÑANZA O RECEPTOR</span>
+            <span>Nombre sell y firma</span>
+            <span>Jefe de Enseñanza o Receptor</span>
           </div>
         </div>
 

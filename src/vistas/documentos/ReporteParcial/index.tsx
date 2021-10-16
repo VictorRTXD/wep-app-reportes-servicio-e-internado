@@ -13,16 +13,29 @@ import firma from '../../../recursos/firma.png';
 import '../../../global.css';
 import './styles.css';
 import Navegacion from '../../../componentes/BarraNavegacion';
-import { ActividadesReporteParcial, AtencionesRealizadas } from '../../../recursos/interfaces';
+import Modal, { DatosModal } from '../../../componentes/Modal';
+
+interface ActividadesReporteParcial {
+  id: number,
+  descripcion: string,
+  cantidad: number[]
+}
+
+interface AtencionesRealizadas {
+  descripcion: string,
+  cantidad: number[]
+}
 
 export default function DocumentoReporteParcial() {
+  // Obtener datos
+  const datosGenerales = JSON.parse(sessionStorage.getItem('servicioDatosGenerales')!);
+  const reportesParciales = JSON.parse(sessionStorage.getItem('reportesParciales')!);
+  const actividadesDeUsuario = JSON.parse(sessionStorage.getItem('actividadesDeUsuario')!);
+
   const { numero } = useParams<{ numero: string }>();
   const numeroReporte = parseInt(numero, 10);
   const [documentStyles, setDocumentStyles] = useState({});
-  const [wantToDownloadDocument, setWantToDownloadDocument] = useState(false);
-
-  let redirect;
-
+  const [deseaDescargarDocumento, setDeseaDescargarDocumento] = useState(false);
   const actividadesReporte: ActividadesReporteParcial[] = [];
   const atencionesRealizadas: AtencionesRealizadas[] = [
     {
@@ -38,7 +51,7 @@ export default function DocumentoReporteParcial() {
       cantidad: [],
     },
     {
-      descripcion: 'Onvres',
+      descripcion: 'Hombres',
       cantidad: [],
     },
     {
@@ -55,78 +68,92 @@ export default function DocumentoReporteParcial() {
     },
   ];
 
-  const servicio = {
-    datosGenerales: JSON.parse(sessionStorage.getItem('servicioDatosGenerales') || 'null'),
-    reportesParciales: JSON.parse(sessionStorage.getItem('reportesParciales') || 'null'),
-    actividadesDeUsuario: JSON.parse(sessionStorage.getItem('actividadesDeUsuario') || 'null'),
-  };
+  const fechaInicio = new Date(datosGenerales.fechaInicio);
+  const fechaFin = new Date(datosGenerales.fechaFin);
 
-  if (servicio.reportesParciales) {
-    if (servicio.reportesParciales[numeroReporte - 1]) {
-      try {
-        for (let i = 0; i < servicio.reportesParciales.length; i += 1) {
-          // Mapear actividades
-          for (let j = 0; j < servicio.reportesParciales[i].actividadesRealizadas.length; j += 1) {
-            let indexActividadReporte: number = -1;
+  const [datosModal, setDatosModal] = useState<DatosModal>({
+    tipo: null,
+    texto: '',
+    visibilidad: false,
+    callback: () => {},
+  });
+  const [retornar, setRetornar] = useState(false);
+  const [redireccionamiento, setRedireccionamiento] = useState('');
 
-            // Buscar si ya esta lista
-            for (let k = 0; k < actividadesReporte.length; k += 1) {
-              if (actividadesReporte[k].id === servicio.reportesParciales[i].actividadesRealizadas[j].idActividad) {
-                indexActividadReporte = k;
-              }
-            }
+  useEffect(() => {
+    if (numeroReporte === 1 || reportesParciales.length >= numeroReporte) {
+      for (let i = 0; i < reportesParciales.length; i += 1) {
+        // Mapear actividades
+        for (let j = 0; j < reportesParciales[i].actividadesRealizadas.length; j += 1) {
+          let indexActividadReporte: number = -1;
 
-            if (indexActividadReporte >= 0) {
-              actividadesReporte[indexActividadReporte].cantidad.push(servicio.reportesParciales[i].actividadesRealizadas[j].cantidad);
-            } else {
-              let indexActividadUsuario: number = -1;
-
-              // Buscar la actividad de usuario correspondiento
-              for (let k = 0; k < servicio.actividadesDeUsuario.length; k += 1) {
-                if (servicio.actividadesDeUsuario[k].id === servicio.reportesParciales[i].actividadesRealizadas[j].idActividad) {
-                  indexActividadUsuario = k;
-                }
-              }
-
-              actividadesReporte.push({
-                id: servicio.actividadesDeUsuario[indexActividadUsuario].id,
-                descripcion: servicio.actividadesDeUsuario[indexActividadUsuario].descripcion,
-                cantidad: [servicio.reportesParciales[i].actividadesRealizadas[j].cantidad],
-              });
+          // Buscar si ya esta lista
+          for (let k = 0; k < actividadesReporte.length; k += 1) {
+            if (actividadesReporte[k].id === reportesParciales[i].actividadesRealizadas[j].idActividad) {
+              indexActividadReporte = k;
             }
           }
 
-          // Mapear atenciones
-          for (let j = 0; j < servicio.reportesParciales[i].atencionesRealizadas.length; j += 1) {
-            atencionesRealizadas[j].cantidad.push(servicio.reportesParciales[i].atencionesRealizadas[j].cantidad);
+          if (indexActividadReporte >= 0) {
+            actividadesReporte[indexActividadReporte].cantidad.push(reportesParciales[i].actividadesRealizadas[j].cantidad);
+          } else {
+            let indexActividadUsuario: number = -1;
+
+            // Buscar la actividad de usuario correspondiento
+            for (let k = 0; k < actividadesDeUsuario.length; k += 1) {
+              if (actividadesDeUsuario[k].id === reportesParciales[i].actividadesRealizadas[j].idActividad) {
+                indexActividadUsuario = k;
+              }
+            }
+
+            actividadesReporte.push({
+              id: actividadesDeUsuario[indexActividadUsuario].id,
+              descripcion: actividadesDeUsuario[indexActividadUsuario].descripcion,
+              cantidad: [reportesParciales[i].actividadesRealizadas[j].cantidad],
+            });
           }
         }
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.log('Error al mapear actividades');
+
+        // Mapear atenciones
+        for (let j = 0; j < reportesParciales[i].atencionesRealizadas.length; j += 1) {
+          atencionesRealizadas[j].cantidad.push(reportesParciales[i].atencionesRealizadas[j].cantidad);
+        }
       }
     } else {
       // eslint-disable-next-line no-lonely-if
       if (numeroReporte === 1) {
-        redirect = <Redirect to={`/reportes-parciales/${numeroReporte}/formulario`} />;
-      } else if (!servicio.reportesParciales[numeroReporte - 2]) {
-        console.log('No has completado el reporte anterior'); // Cambiar x modal
-        redirect = <Redirect to={`/reportes-parciales/${numeroReporte - 2}/formulario`} />;
+        setRedireccionamiento(`/reportes-parciales/${numeroReporte}/formulario`);
+
+        setDatosModal({
+          tipo: 'error',
+          texto: 'No has completado este reporte',
+          visibilidad: true,
+          callback: () => {},
+        });
+      } else if (!reportesParciales[numeroReporte - 2]) {
+        setRedireccionamiento(`/reportes-parciales/${numeroReporte - 1}/formulario`);
+
+        setDatosModal({
+          tipo: 'error',
+          texto: 'No has completado el reporte anterior',
+          visibilidad: true,
+          callback: () => {},
+        });
       } else {
-        redirect = <Redirect to={`/reportes-parciales/${numeroReporte}/formulario`} />;
+        setRedireccionamiento(`/reportes-parciales/${numeroReporte}/formulario`);
+
+        setDatosModal({
+          tipo: 'error',
+          texto: 'No has completado este reporte',
+          visibilidad: true,
+          callback: () => {},
+        });
       }
     }
-  }
-
-  if (!servicio) {
-    redirect = <Redirect to="/" />;
-  }
-
-  const fechaInicio = new Date(servicio.datosGenerales.fechaInicio);
-  const fechaFin = new Date(servicio.datosGenerales.fechaFin);
+  }, ['Esto solo se ejecuta una vez']);
 
   useEffect(() => {
-    if (wantToDownloadDocument) {
+    if (deseaDescargarDocumento) {
       const imagenADocumento: any = document.getElementById('capturaReporteParcial');
 
       html2canvas(imagenADocumento).then((canvas: any) => {
@@ -140,14 +167,14 @@ export default function DocumentoReporteParcial() {
         pdf.addImage(divImage, 0, 0, width, height);
         pdf.save(`Reporte Parcial #${numeroReporte}`);
       });
-      setWantToDownloadDocument(false);
+      setDeseaDescargarDocumento(false);
     } else {
       setDocumentStyles({});
     }
-  }, [wantToDownloadDocument]);
+  }, [deseaDescargarDocumento]);
 
-  const downloadDocument = () => {
-    setWantToDownloadDocument(true);
+  const descargarDocumento = () => {
+    setDeseaDescargarDocumento(true);
     setDocumentStyles({
       height: '280mm',
       width: '220mm',
@@ -174,17 +201,34 @@ export default function DocumentoReporteParcial() {
     return total;
   }
 
-  if (redirect) {
-    return redirect;
+  function cerrarModal() {
+    setDatosModal({
+      tipo: null,
+      texto: '',
+      visibilidad: false,
+      callback: () => {},
+    });
+    setRetornar(true);
+  }
+
+  if (retornar && redireccionamiento) {
+    return <Redirect to={redireccionamiento} />;
   }
 
   return (
     <>
+      <Modal
+        tipo={datosModal.tipo}
+        texto={datosModal.texto}
+        visibilidad={datosModal.visibilidad}
+        callback={cerrarModal}
+      />
+
       <Navegacion />
       <br />
 
       <div className="ctn-btns-descargar-y-modificar">
-        <button type="button" onClick={downloadDocument} className="btn-primario">Descargar</button>
+        <button type="button" onClick={descargarDocumento} className="btn-primario">Descargar</button>
         <div className="ctn-btn-modificar">
           <Link to={`/reportes-parciales/${numeroReporte}/formulario`} id="btn-modificar" type="button" className="btn-secundario btn-modificar"> Modificar </Link>
         </div>
@@ -196,7 +240,7 @@ export default function DocumentoReporteParcial() {
         <br />
 
         <div>
-          <table id="tabla-datos-generales">
+          <table>
             <tbody>
               <tr>
                 <th colSpan={4} className="celda-datos-generales">
@@ -216,26 +260,26 @@ export default function DocumentoReporteParcial() {
                 <th className="celda-datos-generales celda-campo">Carrera:</th>
                 <td className="celda-datos-generales celda-valor">INCO</td>
                 <th className="celda-datos-generales celda-campo">Horario:</th>
-                <td className="celda-datos-generales celda-valor">{`${servicio.datosGenerales.horarioHoraInicio} - ${servicio.datosGenerales.horarioHoraFin}`}</td>
+                <td className="celda-datos-generales celda-valor">{`${datosGenerales.horarioHoraInicio} - ${datosGenerales.horarioHoraFin}`}</td>
               </tr>
 
               <tr>
                 <th className="celda-datos-generales celda-campo">Entidad Receptora:</th>
-                <td className="celda-datos-generales celda-valor">{servicio.datosGenerales.entidadReceptora}</td>
+                <td className="celda-datos-generales celda-valor">{datosGenerales.entidadReceptora}</td>
                 <th className="celda-datos-generales celda-campo">Horas Realizadas:</th>
                 <td className="celda-datos-generales celda-valor">250 Hardcode, preguntar</td>
               </tr>
 
               <tr>
                 <th className="celda-datos-generales celda-campo">Receptor:</th>
-                <td className="celda-datos-generales celda-valor">{servicio.datosGenerales.receptor}</td>
+                <td className="celda-datos-generales celda-valor">{datosGenerales.receptor}</td>
                 <th className="celda-datos-generales celda-campo">Número de Reporte:</th>
                 <td className="celda-datos-generales celda-valor">{numeroReporte}</td>
               </tr>
 
               <tr>
                 <th className="celda-datos-generales celda-campo">Programa:</th>
-                <td className="celda-datos-generales celda-valor">{servicio.datosGenerales.programa}</td>
+                <td className="celda-datos-generales celda-valor">{datosGenerales.programa}</td>
               </tr>
             </tbody>
           </table>
@@ -357,12 +401,12 @@ export default function DocumentoReporteParcial() {
           </div>
 
           <div className="ctn-firma">
+            <img id="firma" src={firma} alt="firma" />
             <hr />
             <span>SELLO DE LA INSTITUCIÓN</span>
           </div>
 
           <div className="ctn-firma">
-            <img id="firma" src={firma} alt="firma" />
             <hr />
             <span>JEFE DE ENSEÑANZA O RECEPTOR</span>
           </div>

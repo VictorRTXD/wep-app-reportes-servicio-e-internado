@@ -20,3 +20,7 @@ input {
 textarea {
   height: 5rem;
 }
+
+#crear-servicio {
+  padding: 1em;
+}
