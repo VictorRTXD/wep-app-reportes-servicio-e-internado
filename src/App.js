@@ -4,8 +4,9 @@ import { BrowserRouter as Router, Route } from 'react-router-dom';
 import PaginaPrincipal from './vistas/PaginaPrincipal/index';
 import formularioServicio from './vistas/formularioServicio';
 import ReportesParciales from './vistas/formulariosDeReporte/ReporteParcial';
-import ReporteFinal from './vistas/formulariosDeReporte/ReporteFinal';
 import ReporteFinal2 from './vistas/formulariosDeReporte/ReporteFinal2';
+import Sesion from './vistas/Usuario/IniciarSesion';
+import InfoUsuario from './vistas/Usuario/InfoUsuario';
 
 // Documentos
 import DocumentoReporteParcial from './vistas/documentos/ReporteParcial';
@@ -17,6 +18,9 @@ function App() {
     <Router>
       <Route exact path="/" component={PaginaPrincipal} />
       <Route exact path="/servicio/formulario" component={formularioServicio} />
+      <Route exact path="/usuario/iniciar-sesion" component={Sesion} />
+      <Route exact path="/usuario/info" component={InfoUsuario} />
+      <Route exact path="/usuario/info/:actualizar" component={InfoUsuario} />
 
       {/* Reportes */}
       <Route exact path="/reportes-parciales/:numero" component={DocumentoReporteParcial} />
@@ -25,7 +29,6 @@ function App() {
 
       {/* Formularios */}
       <Route exact path="/reportes-parciales/:numero/formulario" component={ReportesParciales} />
-      <Route exact path="/reporte-final/formulario" component={ReporteFinal} />
       <Route exact path="/reporte-final-2/formulario" component={ReporteFinal2} />
     </Router>
   );

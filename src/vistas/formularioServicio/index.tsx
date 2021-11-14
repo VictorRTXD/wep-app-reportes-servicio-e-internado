@@ -12,6 +12,8 @@ export default function CrearServicio() {
   const entidadReceptora = useRef<HTMLInputElement>(null);
   const receptor = useRef<HTMLInputElement>(null);
   const programa = useRef<HTMLInputElement>(null);
+  const fechaInicio = useRef<HTMLInputElement>(null);
+  const fechaFin = useRef<HTMLInputElement>(null);
   const horaInicio = useRef<HTMLInputElement>(null);
   const horaFin = useRef<HTMLInputElement>(null);
   const [objetivosDelPrograma, setObjetivosDelPrograma] = useState('');
@@ -27,7 +29,9 @@ export default function CrearServicio() {
   const [redireccionamiento, setRedireccionamiento] = useState<string | null>(null);
 
   const datosGenerales = JSON.parse(sessionStorage.getItem('servicioDatosGenerales')!);
+  const token = sessionStorage.getItem('token');
 
+  let ok: boolean;
   let metodo = 'POST';
 
   if (datosGenerales) {
@@ -42,6 +46,8 @@ export default function CrearServicio() {
         entidadReceptora.current!.value = datosGenerales.entidadReceptora;
         receptor.current!.value = datosGenerales.receptor;
         programa.current!.value = datosGenerales.programa;
+        fechaInicio.current!.value = datosGenerales.fechaInicio;
+        fechaFin.current!.value = datosGenerales.fechaFin;
         horaInicio.current!.value = datosGenerales.horarioHoraInicio;
         horaFin.current!.value = datosGenerales.horarioHoraFin;
 
@@ -49,16 +55,16 @@ export default function CrearServicio() {
         metodo = 'PUT';
       }
     }
-  }, ['Esto solo se renderiza una vez']);
+  }, []);
 
-  function fechaACadena(fecha: Date): string {
-    let cadenaFecha = '';
+  // function fechaACadena(fecha: Date): string {
+  //   let cadenaFecha = '';
 
-    cadenaFecha += fecha.getFullYear();
-    cadenaFecha += `-${fecha.getMonth() + 1}`;
-    cadenaFecha += `-${fecha.getDate()}`;
-    return cadenaFecha;
-  }
+  //   cadenaFecha += fecha.getFullYear();
+  //   cadenaFecha += `-${fecha.getMonth() + 1}`;
+  //   cadenaFecha += `-${fecha.getDate()}`;
+  //   return cadenaFecha;
+  // }
 
   function crearOActualizarServicio(e: any) {
     e.preventDefault();
@@ -68,6 +74,8 @@ export default function CrearServicio() {
       entidadReceptora.current?.value === ''
       || receptor.current?.value === ''
       || programa.current?.value === ''
+      || fechaInicio.current?.value === ''
+      || fechaFin.current?.value === ''
       || horaInicio.current?.value === ''
       || horaFin.current?.value === ''
       || objetivosDelPrograma === ''
@@ -80,42 +88,32 @@ export default function CrearServicio() {
       });
     } else {
       // Si todos los campos estan bien, mandar solicitud
-      let endpoint;
-
-      if (metodo === 'POST') {
-        endpoint = `${config.apiBaseUrl}/public/servicio`;
-      } else {
-        endpoint = `${config.apiBaseUrl}/public/servicio/1`; // Hardcode, id usuario. Cambiar a id servicio?
-      }
 
       const servicio = {
-        id: 1, // Hardcode
-        idUsuario: 1, // Hardcode
         entidadReceptora: entidadReceptora.current?.value,
         receptor: receptor.current?.value,
         programa: programa.current?.value,
         objetivosDelPrograma,
-        fechaInicio: fechaACadena(new Date()), // Hardcode
-        fechaFin: fechaACadena(new Date()), // Hardcoe
+        fechaInicio: fechaInicio.current?.value,
+        fechaFin: fechaFin.current?.value,
         horarioHoraInicio: horaInicio.current?.value,
         horarioHoraFin: horaFin.current?.value,
       };
 
-      fetch(endpoint, {
+      fetch(`${config.apiBaseUrl}/public/servicio`, {
         method: metodo,
         headers: {
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(servicio),
       })
         .then((response) => {
-          if (response.ok) {
-            return response.json();
-          }
-          return null;
+          ok = response.ok;
+          return response.json();
         })
         .then((data) => {
-          if (data) {
+          if (ok) {
             const servicioDatosGenerales: any = {
               id: data.id,
               idUsuario: data.idUsuario,
@@ -130,13 +128,21 @@ export default function CrearServicio() {
               horarioHoraFin: data.horarioHoraFin || '',
             };
             sessionStorage.setItem('servicioDatosGenerales', JSON.stringify(servicioDatosGenerales));
+            setRedireccionamiento('/');
+
             setDatosModal({
               tipo: 'confirmacion',
               texto: 'Datos Guardados',
               visibilidad: true,
               callback: () => {},
             });
-            setRedireccionamiento('/');
+          } else if (data.code) {
+            setDatosModal({
+              tipo: 'error',
+              texto: data.code,
+              visibilidad: true,
+              callback: () => {},
+            });
           } else {
             setDatosModal({
               tipo: 'error',
@@ -171,7 +177,10 @@ export default function CrearServicio() {
       visibilidad: false,
       callback: () => {},
     });
-    setRetornar(true);
+
+    if (redireccionamiento) {
+      setRetornar(true);
+    }
   }
 
   if (retornar && redireccionamiento) {
@@ -216,6 +225,18 @@ export default function CrearServicio() {
         </label>
         <br />
 
+        <label htmlFor="fechaInicio">
+          Fecha Inicio:
+          <input type="date" name="fechaInicio" ref={fechaInicio} />
+        </label>
+        <br />
+
+        <label htmlFor="fechaFin">
+          Fecha Fin:
+          <input type="date" name="fechaFin" ref={fechaFin} />
+        </label>
+        <br />
+
         <label htmlFor="horaInicio">
           Hora de Inicio de la Jornada:
           <input type="time" name="horaInicio" ref={horaInicio} />
@@ -229,7 +250,7 @@ export default function CrearServicio() {
         <br />
 
         <label htmlFor="objetivosDelPrograma">
-          Objeivos del Programa:
+          Objetivos del Programa:
           <textarea
             name="objetivosDelPrograma"
             value={objetivosDelPrograma}

@@ -41,7 +41,7 @@ button {
   border-radius: 10%;
 }
 
-.btn-modificar {
+.btn-link {
   display: table-cell;
   text-decoration: none;
   color: black;
@@ -51,7 +51,7 @@ button {
   vertical-align: middle;
 }
 
-.ctn-btn-modificar {
+.ctn-btn-link {
   display: inline-block;
 }
 
@@ -60,6 +60,14 @@ button {
   z-index: 1;
   margin-left: 1rem;
   gap: 1rem;
+}
+
+.ctn-con-padding {
+  padding: 3%;
+}
+
+.texto-encabezado {
+  font-size: 2em;
 }
 
 #pagina-principal-titulo {

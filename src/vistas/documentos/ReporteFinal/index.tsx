@@ -24,6 +24,7 @@ export default function DocumentoReporteFinal() {
   const datosGenerales = JSON.parse(sessionStorage.getItem('servicioDatosGenerales')!);
   const reportesParciales = JSON.parse(sessionStorage.getItem('reportesParciales')!);
   const actividadesDeUsuario = JSON.parse(sessionStorage.getItem('actividadesDeUsuario')!);
+  const usuario = JSON.parse(sessionStorage.getItem('usuario')!);
 
   const [documentStyles, setDocumentStyles] = useState({});
   const [deseaDescargarDocumento, setDeseaDescargarDocumento] = useState(false);
@@ -39,7 +40,9 @@ export default function DocumentoReporteFinal() {
   const [retornar, setRetornar] = useState(false);
   const [redireccionamiento, setRedireccionamiento] = useState('');
 
-  if (reportesParciales === 4) {
+  let totalHoras = 0;
+
+  if (reportesParciales.length === 4) {
     for (let i = 0; i < reportesParciales.length; i += 1) {
       // Mapear actividades
       for (let j = 0; j < reportesParciales[i].actividadesRealizadas.length; j += 1) {
@@ -53,7 +56,7 @@ export default function DocumentoReporteFinal() {
         }
 
         if (indexActividadReporte >= 0) {
-          actividadesReporte[indexActividadReporte].cantidad += reportesParciales[i].actividadesRealizadas[j].cantidad;
+          actividadesReporte[indexActividadReporte].cantidad += Number(reportesParciales[i].actividadesRealizadas[j].cantidad);
         } else {
           let indexActividadUsuario: number = -1;
 
@@ -67,14 +70,15 @@ export default function DocumentoReporteFinal() {
           actividadesReporte.push({
             id: actividadesDeUsuario[indexActividadUsuario].id,
             descripcion: actividadesDeUsuario[indexActividadUsuario].descripcion,
-            cantidad: reportesParciales[i].actividadesRealizadas[j].cantidad,
+            cantidad: Number(reportesParciales[i].actividadesRealizadas[j].cantidad),
           });
         }
       }
+
+      totalHoras += reportesParciales[i].horasRealizadas;
     }
-  } else {
-    // eslint-disable-next-line no-lonely-if
-    setRedireccionamiento('/reportes-parciales/4/formulario');
+  } else if (redireccionamiento === '') {
+    setRedireccionamiento(`/reportes-parciales/${reportesParciales.length + 1}/formulario`);
 
     setDatosModal({
       tipo: 'error',
@@ -124,7 +128,10 @@ export default function DocumentoReporteFinal() {
       visibilidad: false,
       callback: () => {},
     });
-    setRetornar(true);
+
+    if (redireccionamiento) {
+      setRetornar(true);
+    }
   }
 
   if (retornar && redireccionamiento) {
@@ -143,10 +150,13 @@ export default function DocumentoReporteFinal() {
       <Navegacion />
       <br />
 
+      <h2 className="texto-encabezado">Documento Reporte Final</h2>
+      <br />
+
       <div className="ctn-btns-descargar-y-modificar">
         <button type="button" onClick={descargarDocumento} className="btn-primario">Descargar</button>
-        <div className="ctn-btn-modificar">
-          <Link to="/reporte-final/formulario" id="btn-modificar" type="button" className="btn-secundario btn-modificar"> Modificar </Link>
+        <div className="ctn-btn-link">
+          <Link to="/reporte-final/formulario" type="button" className="btn-secundario btn-link"> Modificar </Link>
         </div>
       </div>
       <br />
@@ -167,14 +177,14 @@ export default function DocumentoReporteFinal() {
               </tr>
               <tr>
                 <th className="celda-datos-generales celda-campo">Alumno:</th>
-                <td className="celda-datos-generales celda-valor">El Kevin</td>
+                <td className="celda-datos-generales celda-valor">{usuario.nombre}</td>
                 <th className="celda-datos-generales celda-campo">Código:</th>
-                <td className="celda-datos-generales celda-valor">126788891</td>
+                <td className="celda-datos-generales celda-valor">{usuario.codigo}</td>
               </tr>
 
               <tr>
                 <th className="celda-datos-generales celda-campo">Carrera:</th>
-                <td className="celda-datos-generales celda-valor">Inco</td>
+                <td className="celda-datos-generales celda-valor">{usuario.carrera}</td>
                 <th className="celda-datos-generales celda-campo">Horario:</th>
                 <td className="celda-datos-generales celda-valor">{`${datosGenerales.horarioHoraInicio} - ${datosGenerales.horarioHoraFin}`}</td>
               </tr>
@@ -183,7 +193,7 @@ export default function DocumentoReporteFinal() {
                 <th className="celda-datos-generales celda-campo">Entidad Receptora:</th>
                 <td className="celda-datos-generales celda-valor">{datosGenerales.entidadReceptora}</td>
                 <th className="celda-datos-generales celda-campo">Total de Horas:</th>
-                <td className="celda-datos-generales celda-valor">{datosGenerales.totalDeHoras}</td>
+                <td className="celda-datos-generales celda-valor">{totalHoras}</td>
               </tr>
 
               <tr>

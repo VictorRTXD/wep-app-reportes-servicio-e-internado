@@ -1,5 +1,5 @@
 /* eslint-disable react/no-array-index-key */
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Redirect } from 'react-router';
 
 import Navegacion from '../../../componentes/BarraNavegacion';
@@ -10,14 +10,6 @@ import './styles.css';
 import Modal, { DatosModal } from '../../../componentes/Modal';
 
 export default function ReporteFinal2() {
-  const [formulario, setFormulario] = useState({
-    metasAlcanzadas: '',
-    metodologiaUtilizada: '',
-    innovacionAportada: '',
-    conclusiones: '',
-    propuestas: '',
-  });
-
   const [datosModal, setDatosModal] = useState<DatosModal>({
     tipo: null,
     texto: '',
@@ -29,33 +21,52 @@ export default function ReporteFinal2() {
 
   const reporteFinalDos = JSON.parse(sessionStorage.getItem('reporteFinalDos')!);
 
+  const token = sessionStorage.getItem('token');
+
   let metodo = 'POST';
+  let ok: boolean;
 
-  useEffect(() => {
-    if (Object.entries(reporteFinalDos).length > 0) {
-      metodo = 'PUT';
+  let formularioAux = {
+    metasAlcanzadas: '',
+    metodologiaUtilizada: '',
+    innovacionAportada: '',
+    conclusiones: '',
+    propuestas: '',
+  };
 
-      setFormulario({
-        metasAlcanzadas: reporteFinalDos.metasAlcanzadas,
-        metodologiaUtilizada: reporteFinalDos.metodologiaUtilizada,
-        innovacionAportada: reporteFinalDos.innovacionAportada,
-        conclusiones: reporteFinalDos.conclusiones,
-        propuestas: reporteFinalDos.propuestas,
-      });
-    }
-  }, ['Esto solo se ejecuta una vez']);
+  if (Object.entries(reporteFinalDos).length > 0) {
+    metodo = 'PUT';
+
+    formularioAux = {
+      metasAlcanzadas: reporteFinalDos.metasAlcanzadas,
+      metodologiaUtilizada: reporteFinalDos.metodologiaUtilizada,
+      innovacionAportada: reporteFinalDos.innovacionAportada,
+      conclusiones: reporteFinalDos.conclusiones,
+      propuestas: reporteFinalDos.propuestas,
+    };
+  }
+
+  const [formulario, setFormulario] = useState(formularioAux);
 
   function crearOActualizarReporte() {
     // Validar datos
-    if (formulario.metasAlcanzadas !== ''
-    && formulario.metodologiaUtilizada !== ''
-    && formulario.innovacionAportada !== ''
-    && formulario.conclusiones !== ''
-    && formulario.propuestas !== ''
+    if (formulario.metasAlcanzadas === ''
+    || formulario.metodologiaUtilizada === ''
+    || formulario.innovacionAportada === ''
+    || formulario.conclusiones === ''
+    || formulario.propuestas === ''
     ) {
+      setDatosModal({
+        tipo: 'error',
+        texto: 'Uno o mas datos son vacios',
+        visibilidad: true,
+        callback: () => {},
+      });
+    } else {
       // Hardcode
       // Ni si quiera hay un usuario
-      let reporte = {
+      const reporte = {
+        id: metodo === 'PUT' ? reporteFinalDos.id : 0,
         metasAlcanzadas: formulario.metasAlcanzadas,
         metodologiaUtilizada: formulario.metodologiaUtilizada,
         innovacionAportada: formulario.innovacionAportada,
@@ -66,41 +77,36 @@ export default function ReporteFinal2() {
       fetch(`${config.apiBaseUrl}/public/reporte-final-2`, {
         method: metodo,
         headers: {
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(reporte),
       })
         .then((response) => {
-          if (response.ok) {
-            return response.json();
-          }
-
-          return null;
+          ok = response.ok;
+          return response.json();
         })
         .then((data) => {
           // eslint-disable-next-line no-console
 
-          if (data.reporteFinalDos) {
-            sessionStorage.setItem('reporteFinalDos', JSON.stringify(data.reporteFinalDos));
+          if (ok) {
+            sessionStorage.setItem('reporteFinalDos', JSON.stringify(data));
 
-            reporte = data;
-
-            setFormulario({
-              metasAlcanzadas: reporte.metasAlcanzadas,
-              metodologiaUtilizada: reporte.metodologiaUtilizada,
-              innovacionAportada: reporte.innovacionAportada,
-              conclusiones: reporte.conclusiones,
-              propuestas: reporte.propuestas,
-            });
+            setRedireccionamiento('/reporte-final-2');
 
             setDatosModal({
               tipo: 'confirmacion',
-              texto: 'Guardador',
+              texto: 'Guardado',
               visibilidad: true,
               callback: () => {},
             });
-
-            setRedireccionamiento('/reportes-final-2');
+          } else if (data.code) {
+            setDatosModal({
+              tipo: 'error',
+              texto: data.code,
+              visibilidad: true,
+              callback: () => {},
+            });
           } else {
             setDatosModal({
               tipo: 'error',
@@ -121,13 +127,6 @@ export default function ReporteFinal2() {
             callback: () => {},
           });
         });
-    } else {
-      setDatosModal({
-        tipo: 'error',
-        texto: 'Uno o mas datos son vacios',
-        visibilidad: true,
-        callback: () => {},
-      });
     }
   }
 
@@ -145,7 +144,10 @@ export default function ReporteFinal2() {
       visibilidad: false,
       callback: () => {},
     });
-    setRetornar(true);
+
+    if (redireccionamiento) {
+      setRetornar(true);
+    }
   }
 
   if (retornar && redireccionamiento) {
@@ -162,6 +164,10 @@ export default function ReporteFinal2() {
       />
 
       <Navegacion />
+      <br />
+
+      <h2 className="texto-encabezado">Formulario Reporte Final 2</h2>
+      <br />
 
       <form>
         <label htmlFor="metasAlcanzadas">

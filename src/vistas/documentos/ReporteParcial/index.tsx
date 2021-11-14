@@ -31,6 +31,8 @@ export default function DocumentoReporteParcial() {
   const datosGenerales = JSON.parse(sessionStorage.getItem('servicioDatosGenerales')!);
   const reportesParciales = JSON.parse(sessionStorage.getItem('reportesParciales')!);
   const actividadesDeUsuario = JSON.parse(sessionStorage.getItem('actividadesDeUsuario')!);
+  const trimestres = JSON.parse(sessionStorage.getItem('trimestres')!);
+  const usuario = JSON.parse(sessionStorage.getItem('usuario')!);
 
   const { numero } = useParams<{ numero: string }>();
   const numeroReporte = parseInt(numero, 10);
@@ -68,8 +70,13 @@ export default function DocumentoReporteParcial() {
     },
   ];
 
-  const fechaInicio = new Date(datosGenerales.fechaInicio);
-  const fechaFin = new Date(datosGenerales.fechaFin);
+  let fechaInicio = new Date(0);
+  let fechaFin = new Date(0);
+
+  if (trimestres[numeroReporte - 1]) {
+    fechaInicio = new Date(trimestres[numeroReporte - 1].fechaInicio);
+    fechaFin = new Date(trimestres[numeroReporte - 1].fechaFin);
+  }
 
   const [datosModal, setDatosModal] = useState<DatosModal>({
     tipo: null,
@@ -80,77 +87,53 @@ export default function DocumentoReporteParcial() {
   const [retornar, setRetornar] = useState(false);
   const [redireccionamiento, setRedireccionamiento] = useState('');
 
-  useEffect(() => {
-    if (numeroReporte === 1 || reportesParciales.length >= numeroReporte) {
-      for (let i = 0; i < reportesParciales.length; i += 1) {
-        // Mapear actividades
-        for (let j = 0; j < reportesParciales[i].actividadesRealizadas.length; j += 1) {
-          let indexActividadReporte: number = -1;
+  if (reportesParciales.length >= numeroReporte) {
+    // Mapear actividades
+    for (let i = 0; i < actividadesDeUsuario.length; i += 1) {
+      const cantidades = [];
+      let tienePorLoMenosUnaActividad: boolean = false;
 
-          // Buscar si ya esta lista
-          for (let k = 0; k < actividadesReporte.length; k += 1) {
-            if (actividadesReporte[k].id === reportesParciales[i].actividadesRealizadas[j].idActividad) {
-              indexActividadReporte = k;
-            }
-          }
+      for (let j = 0; j < numeroReporte; j += 1) {
+        let reporteTieneActividad: boolean = false;
 
-          if (indexActividadReporte >= 0) {
-            actividadesReporte[indexActividadReporte].cantidad.push(reportesParciales[i].actividadesRealizadas[j].cantidad);
-          } else {
-            let indexActividadUsuario: number = -1;
-
-            // Buscar la actividad de usuario correspondiento
-            for (let k = 0; k < actividadesDeUsuario.length; k += 1) {
-              if (actividadesDeUsuario[k].id === reportesParciales[i].actividadesRealizadas[j].idActividad) {
-                indexActividadUsuario = k;
-              }
-            }
-
-            actividadesReporte.push({
-              id: actividadesDeUsuario[indexActividadUsuario].id,
-              descripcion: actividadesDeUsuario[indexActividadUsuario].descripcion,
-              cantidad: [reportesParciales[i].actividadesRealizadas[j].cantidad],
-            });
+        for (let k = 0; k < reportesParciales[j].actividadesRealizadas.length; k += 1) {
+          if (actividadesDeUsuario[i].id === reportesParciales[j].actividadesRealizadas[k].idActividad) {
+            cantidades.push(reportesParciales[j].actividadesRealizadas[k].cantidad);
+            reporteTieneActividad = true;
+            tienePorLoMenosUnaActividad = true;
           }
         }
 
-        // Mapear atenciones
-        for (let j = 0; j < reportesParciales[i].atencionesRealizadas.length; j += 1) {
-          atencionesRealizadas[j].cantidad.push(reportesParciales[i].atencionesRealizadas[j].cantidad);
+        if (!reporteTieneActividad) {
+          cantidades.push(0);
         }
       }
-    } else {
-      // eslint-disable-next-line no-lonely-if
-      if (numeroReporte === 1) {
-        setRedireccionamiento(`/reportes-parciales/${numeroReporte}/formulario`);
 
-        setDatosModal({
-          tipo: 'error',
-          texto: 'No has completado este reporte',
-          visibilidad: true,
-          callback: () => {},
-        });
-      } else if (!reportesParciales[numeroReporte - 2]) {
-        setRedireccionamiento(`/reportes-parciales/${numeroReporte - 1}/formulario`);
-
-        setDatosModal({
-          tipo: 'error',
-          texto: 'No has completado el reporte anterior',
-          visibilidad: true,
-          callback: () => {},
-        });
-      } else {
-        setRedireccionamiento(`/reportes-parciales/${numeroReporte}/formulario`);
-
-        setDatosModal({
-          tipo: 'error',
-          texto: 'No has completado este reporte',
-          visibilidad: true,
-          callback: () => {},
+      if (tienePorLoMenosUnaActividad) {
+        actividadesReporte.push({
+          id: actividadesDeUsuario[i].id,
+          descripcion: actividadesDeUsuario[i].descripcion,
+          cantidad: cantidades,
         });
       }
     }
-  }, ['Esto solo se ejecuta una vez']);
+
+    // Mapear atenciones
+    for (let i = 0; i < numeroReporte; i += 1) {
+      for (let j = 0; j < reportesParciales[i].atencionesRealizadas.length; j += 1) {
+        atencionesRealizadas[j].cantidad.push(reportesParciales[i].atencionesRealizadas[j].cantidad);
+      }
+    }
+  } else if (redireccionamiento === '') {
+    setRedireccionamiento(`/reportes-parciales/${reportesParciales.length + 1}/formulario`);
+
+    setDatosModal({
+      tipo: 'error',
+      texto: 'No has completado este reporte',
+      visibilidad: true,
+      callback: () => {},
+    });
+  }
 
   useEffect(() => {
     if (deseaDescargarDocumento) {
@@ -174,12 +157,12 @@ export default function DocumentoReporteParcial() {
   }, [deseaDescargarDocumento]);
 
   const descargarDocumento = () => {
-    setDeseaDescargarDocumento(true);
     setDocumentStyles({
       height: '280mm',
       width: '220mm',
       padding: '15mm',
     });
+    setDeseaDescargarDocumento(true);
   };
 
   function calcularTotalPorTrimestre(actividadesOatenciones: any[], trimestre: number) {
@@ -187,7 +170,7 @@ export default function DocumentoReporteParcial() {
 
     try {
       for (let i = 0; i < actividadesOatenciones.length; i += 1) {
-        total += actividadesOatenciones[i].cantidad[trimestre];
+        total += parseInt(actividadesOatenciones[i].cantidad[trimestre], 10);
       }
     } catch (error) {
       // eslint-disable-next-line no-console
@@ -208,7 +191,10 @@ export default function DocumentoReporteParcial() {
       visibilidad: false,
       callback: () => {},
     });
-    setRetornar(true);
+
+    if (redireccionamiento) {
+      setRetornar(true);
+    }
   }
 
   if (retornar && redireccionamiento) {
@@ -227,10 +213,13 @@ export default function DocumentoReporteParcial() {
       <Navegacion />
       <br />
 
+      <h2 className="texto-encabezado">{`Documento Reporte Parcial #${numeroReporte}`}</h2>
+      <br />
+
       <div className="ctn-btns-descargar-y-modificar">
         <button type="button" onClick={descargarDocumento} className="btn-primario">Descargar</button>
-        <div className="ctn-btn-modificar">
-          <Link to={`/reportes-parciales/${numeroReporte}/formulario`} id="btn-modificar" type="button" className="btn-secundario btn-modificar"> Modificar </Link>
+        <div className="ctn-btn-link">
+          <Link to={`/reportes-parciales/${numeroReporte}/formulario`} id="btn-link" type="button" className="btn-secundario btn-link"> Modificar </Link>
         </div>
       </div>
       <br />
@@ -251,14 +240,14 @@ export default function DocumentoReporteParcial() {
 
               <tr>
                 <th className="celda-datos-generales celda-campo">Alumno:</th>
-                <td className="celda-datos-generales celda-valor">El Kevin</td>
+                <td className="celda-datos-generales celda-valor">{usuario.nombre}</td>
                 <th className="celda-datos-generales celda-campo">Código:</th>
-                <td className="celda-datos-generales celda-valor">216788891</td>
+                <td className="celda-datos-generales celda-valor">{usuario.codigo}</td>
               </tr>
 
               <tr>
                 <th className="celda-datos-generales celda-campo">Carrera:</th>
-                <td className="celda-datos-generales celda-valor">INCO</td>
+                <td className="celda-datos-generales celda-valor">{usuario.carrera}</td>
                 <th className="celda-datos-generales celda-campo">Horario:</th>
                 <td className="celda-datos-generales celda-valor">{`${datosGenerales.horarioHoraInicio} - ${datosGenerales.horarioHoraFin}`}</td>
               </tr>
@@ -267,7 +256,7 @@ export default function DocumentoReporteParcial() {
                 <th className="celda-datos-generales celda-campo">Entidad Receptora:</th>
                 <td className="celda-datos-generales celda-valor">{datosGenerales.entidadReceptora}</td>
                 <th className="celda-datos-generales celda-campo">Horas Realizadas:</th>
-                <td className="celda-datos-generales celda-valor">250 Hardcode, preguntar</td>
+                <td className="celda-datos-generales celda-valor">{reportesParciales[numeroReporte - 1]?.horasRealizadas || ''}</td>
               </tr>
 
               <tr>
@@ -289,9 +278,9 @@ export default function DocumentoReporteParcial() {
         <div>
           <div id="encabezado-fechas">
             <span className="fechas-campo">Fecha de Inicio:</span>
-            <p className="fechas-valor">{`${fechaInicio.getDate()}/${fechaInicio.getMonth() + 1}/${fechaInicio.getUTCFullYear()}`}</p>
-            <span className="fechas-campo">Fecha de Termianción:</span>
-            <p className="fechas-valor">{`${fechaFin.getDate()}/${fechaFin.getMonth() + 1}/${fechaFin.getUTCFullYear()}`}</p>
+            <p className="fechas-valor">{`${fechaInicio.getDate() + 1}/${fechaInicio.getMonth() + 1}/${fechaInicio.getUTCFullYear()}`}</p>
+            <span className="fechas-campo">Fecha de Fin:</span>
+            <p className="fechas-valor">{`${fechaFin.getDate() + 1}/${fechaFin.getMonth() + 1}/${fechaFin.getUTCFullYear()}`}</p>
             <br />
             <br />
           </div>
@@ -313,15 +302,15 @@ export default function DocumentoReporteParcial() {
                 actividadesReporte.map((actividad: any) => (
                   <tr key={actividad.id}>
                     <td>{actividad.descripcion}</td>
-                    <td>{actividad.cantidad[0]}</td>
-                    <td>{actividad.cantidad[1]}</td>
-                    <td>{actividad.cantidad[2]}</td>
-                    <td>{actividad.cantidad[3]}</td>
+                    <td>{actividad.cantidad[0] !== 0 ? actividad.cantidad[0] : ''}</td>
+                    <td>{actividad.cantidad[1] !== 0 ? actividad.cantidad[1] : ''}</td>
+                    <td>{actividad.cantidad[2] !== 0 ? actividad.cantidad[2] : ''}</td>
+                    <td>{actividad.cantidad[3] !== 0 ? actividad.cantidad[3] : ''}</td>
                     <td>
-                      {actividad.cantidad[0] || 0
-                      + actividad.cantidad[1] || 0
-                      + actividad.cantidad[2] || 0
-                      + actividad.cantidad[3] || 0}
+                      {Number(actividad.cantidad[0])
+                      + Number(actividad.cantidad[1] || 0)
+                      + Number(actividad.cantidad[2] || 0)
+                      + Number(actividad.cantidad[3] || 0)}
                     </td>
                   </tr>
                 ))
@@ -368,10 +357,10 @@ export default function DocumentoReporteParcial() {
                   <td>{atencion.cantidad[2]}</td>
                   <td>{atencion.cantidad[3]}</td>
                   <td>
-                    {atencion.cantidad[0] || 0
-                    + atencion.cantidad[1] || 0
-                    + atencion.cantidad[2] || 0
-                    + atencion.cantidad[3] || 0}
+                    {Number(atencion.cantidad[0] || 0)
+                    + Number(atencion.cantidad[1] || 0)
+                    + Number(atencion.cantidad[2] || 0)
+                    + Number(atencion.cantidad[3] || 0)}
                   </td>
                 </tr>
               ))

@@ -65,19 +65,8 @@ export default function DocumentoReporteFinal2() {
   const [retornar, setRetornar] = useState(false);
   const [redireccionamiento, setRedireccionamiento] = useState('');
 
-  useEffect(() => {
-    if (reporteFinalDos) {
-      if (Object.entries(reporteFinalDos).length <= 0) {
-        setRedireccionamiento('/reporte-final-2/formulario');
-
-        setDatosModal({
-          tipo: 'error',
-          texto: 'No has completado este reporte',
-          visibilidad: true,
-          callback: () => {},
-        });
-      }
-    } else {
+  if (Object.entries(reporteFinalDos).length <= 0) {
+    if (redireccionamiento === '') {
       setRedireccionamiento('/reporte-final-2/formulario');
 
       setDatosModal({
@@ -87,27 +76,28 @@ export default function DocumentoReporteFinal2() {
         callback: () => {},
       });
     }
+  }
 
-    if (reportesParciales.length === 4) {
-      try {
-        for (let i = 0; i < reportesParciales.length; i += 1) {
-          // Sumar actividades
-          for (let j = 0; j < reportesParciales[i].actividadesRealizadas.length; j += 1) {
-            totalActividadesRealizadas += reportesParciales[i].actividadesRealizadas[j].cantidad;
-          }
-
-          // Sumar atenciones
-          for (let j = 0; j < reportesParciales[i].atencionesRealizadas.length; j += 1) {
-            atencionesRealizadas[j].cantidad = reportesParciales[i].atencionesRealizadas[j].cantidad;
-            totalDeAtenciones += reportesParciales[i].atencionesRealizadas[j].cantidad;
-          }
+  if (reportesParciales.length === 4) {
+    try {
+      for (let i = 0; i < reportesParciales.length; i += 1) {
+        // Sumar actividades
+        for (let j = 0; j < reportesParciales[i].actividadesRealizadas.length; j += 1) {
+          totalActividadesRealizadas += reportesParciales[i].actividadesRealizadas[j].cantidad;
         }
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.log('Error al mapear actividades');
+
+        // Sumar atenciones
+        for (let j = 0; j < reportesParciales[i].atencionesRealizadas.length; j += 1) {
+          atencionesRealizadas[j].cantidad += reportesParciales[i].atencionesRealizadas[j].cantidad;
+          totalDeAtenciones += reportesParciales[i].atencionesRealizadas[j].cantidad;
+        }
       }
-    } else {
-      // eslint-disable-next-line no-lonely-if
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.log('Error al mapear actividades');
+    }
+  } else if (redireccionamiento === '') {
+    if (redireccionamiento === '') {
       setRedireccionamiento(`/reportes-parciales/${reportesParciales.length + 1}/formulario`);
 
       setDatosModal({
@@ -117,7 +107,7 @@ export default function DocumentoReporteFinal2() {
         callback: () => {},
       });
     }
-  }, ['Esto solo se ejecuta una vez']);
+  }
 
   useEffect(() => {
     if (deseaDescargarDocumento) {
@@ -175,10 +165,13 @@ export default function DocumentoReporteFinal2() {
       <Navegacion />
       <br />
 
+      <h2 className="texto-encabezado">Documento Reporte Final 2</h2>
+      <br />
+
       <div className="ctn-btns-descargar-y-modificar">
         <button type="button" onClick={descargarDocumento} className="btn-primario">Descargar</button>
-        <div className="ctn-btn-modificar">
-          <Link to="/reporte-final-2/formulario" id="btn-modificar" type="button" className="btn-secundario btn-modificar"> Modificar </Link>
+        <div className="ctn-btn-link">
+          <Link to="/reporte-final-2/formulario" id="btn-link" type="button" className="btn-secundario btn-link"> Modificar </Link>
         </div>
       </div>
       <br />
