@@ -100,22 +100,22 @@ export default function DocumentoReporteFinal() {
       const width = pdf.internal.pageSize.getWidth();
       const height = pdf.internal.pageSize.getHeight();
 
-      const imagenADocumento: any = document.getElementById('primeraPagina');
-      html2canvas(imagenADocumento).then(async (canvas: any) => {
-        const divImage = canvas.toDataURL('image/png');
-
-        pdf.addImage(divImage, 0, 0, width, height);
-
+      (async () => {
         for (let i = 0; i < paginas.length; i += 1) {
-          const paginaAImagen: any = document.getElementById(`Pagina_${i}`);
+          const htmlElement: any = document.getElementById(`Pagina_${i}`);
           // eslint-disable-next-line no-await-in-loop
-          const imagenPagina = await html2canvas(paginaAImagen);
-          pdf.addPage().addImage(imagenPagina, 0, 0, width, height);
+          const canvas = await html2canvas(htmlElement);
+          const divImage = canvas.toDataURL('image/png');
+          if (i === 0) {
+            pdf.addImage(divImage, 0, 0, width, height);
+          } else {
+            pdf.addPage().addImage(divImage, 0, 0, width, height);
+          }
         }
 
         pdf.save(`Reporte Final ${usuario.nombre}`);
         setDeseaDescargarDocumento(false);
-      });
+      })();
     } else {
       setDocumentStyles({});
     }
@@ -143,31 +143,30 @@ export default function DocumentoReporteFinal() {
     }
   }
 
-  // Dividir activiadades en paginas
-  let i = 0;
-
-  // Primera hoja que es diferente, le caben 18, todo esta maquetado en cm
-
-  const primeraPagina: any[] = [];
-
-  while (i < actividadesReporte.length && i < 18) {
-    primeraPagina.push({
-      id: actividadesReporte[i].id,
-      descripcion: actividadesReporte[i].descripcion,
-      cantidad: actividadesReporte[i].cantidad,
-    });
-    i += 1;
-  }
-
-  i = 18;
-  const pagingasAux: any[] = [];
-
   useEffect(() => {
+    // Dividir activiadades en paginas
+    let i = 0;
+
+    // Primera hoja que es diferente, le caben 18, todo esta maquetado en cm
+    const primeraPagina: any[] = [];
+
+    while (i < actividadesReporte.length && i < 18) {
+      primeraPagina.push({
+        id: actividadesReporte[i].id,
+        descripcion: actividadesReporte[i].descripcion,
+        cantidad: actividadesReporte[i].cantidad,
+      });
+      i += 1;
+    }
+
+    i = 18;
+    const pagingasAux: any[] = [primeraPagina];
+
     while (i < actividadesReporte.length) {
       let j = i;
       const activiades: any[] = [];
 
-      while (j < i + 24 && j < actividadesReporte.length) {
+      while (j < i + 30 && j < actividadesReporte.length) {
         activiades.push({
           id: actividadesReporte[j].id,
           descripcion: actividadesReporte[j].descripcion,
@@ -211,217 +210,137 @@ export default function DocumentoReporteFinal() {
       </div>
       <div className="br" />
 
-      <div id="primeraPagina" style={documentStyles}>
-        <Encabezado />
-        <div className="br" />
-
-        <div>
-          <table id="tabla-datos-generales">
-            <tbody>
-              <tr>
-                <th colSpan={4} className="celda-datos-generales">
-                  <h2>REPORTE TRIMESTRAL DE ACTIVIDADES</h2>
-                  <div className="br" />
-                </th>
-              </tr>
-              <tr>
-                <th className="celda-datos-generales celda-campo">Alumno:</th>
-                <td className="celda-datos-generales celda-valor">{usuario.nombre}</td>
-                <th className="celda-datos-generales celda-campo">Código:</th>
-                <td className="celda-datos-generales celda-valor">{usuario.codigo}</td>
-              </tr>
-
-              <tr>
-                <th className="celda-datos-generales celda-campo">Carrera:</th>
-                <td className="celda-datos-generales celda-valor">{usuario.carrera}</td>
-                <th className="celda-datos-generales celda-campo">Horario:</th>
-                <td className="celda-datos-generales celda-valor">{`${datosGenerales.horarioHoraInicio} - ${datosGenerales.horarioHoraFin}`}</td>
-              </tr>
-
-              <tr>
-                <th className="celda-datos-generales celda-campo">Entidad Receptora:</th>
-                <td className="celda-datos-generales celda-valor">{datosGenerales.entidadReceptora}</td>
-                <th className="celda-datos-generales celda-campo">Total de Horas:</th>
-                <td className="celda-datos-generales celda-valor">{totalHoras}</td>
-              </tr>
-
-              <tr>
-                <th className="celda-datos-generales celda-campo">Fecha Inicio:</th>
-                <td className="celda-datos-generales celda-valor">{`${fechaInicio.getDate()}/${fechaInicio.getMonth() + 1}/${fechaInicio.getUTCFullYear()}`}</td>
-                <th className="celda-datos-generales celda-campo">Fecha Fin:</th>
-                <td className="celda-datos-generales celda-valor">{`${fechaFin.getDate()}/${fechaFin.getMonth() + 1}/${fechaFin.getUTCFullYear()}`}</td>
-              </tr>
-
-              <tr>
-                <th className="celda-datos-generales celda-campo">Receptor:</th>
-                <td className="celda-datos-generales celda-valor">{datosGenerales.receptor}</td>
-              </tr>
-            </tbody>
-          </table>
-          <div className="br" />
-        </div>
-
-        <table id="tabla-objetivos">
-          <tbody>
-            <tr><th id="titulo-objetivos">Objetivos del Programa</th></tr>
-            <tr><td id="objetivos-del-programa-contenido">{datosGenerales.objetivosDelPrograma}</td></tr>
-          </tbody>
-        </table>
-        <div className="br" />
-
-        <table>
-          <thead>
-            <tr className="fila-actividad">
-              <th>Actividades (Servicios) Realizadas</th>
-              <th>Cantidad</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {
-              primeraPagina.map((actividad: any) => (
-                <tr key={actividad.id} className="fila-actividad">
-                  <td>{actividad.descripcion}</td>
-                  <td>{actividad.cantidad}</td>
-                </tr>
-              ))
-            }
-          </tbody>
-        </table>
-
-        <div id="ctn-firmas">
-          <div className="ctn-firma">
-            <hr />
-            <span>NOMBRE Y FIRMA DEL PSS</span>
-          </div>
-
-          <div className="ctn-firma">
-            <hr />
-            <span>SELLO DE LA INSTITUCIÓN</span>
-          </div>
-
-          <div className="ctn-firma">
-            <img id="firma" src={firma} alt="firma" />
-            <hr />
-            <span>JEFE DE ENSEÑANZA O RECEPTOR</span>
-          </div>
-        </div>
-
-        <div id="numero-de-pagina">
-          <p>
-            {`Página 1 de ${paginas.length + 1}`}
-          </p>
-        </div>
-
-        <PiePagina />
-      </div>
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <hr />
-      <br />
-
-      {/* DEMAS PAGINAS */}
       {
-        paginas.map((pagina, index: number) => (
-          <div id={`Pagina_${index}`} style={documentStyles} key={`Pagina_${index}`}>
-            <Encabezado />
-            <div className="br" />
+        paginas.map((pagina, index) => (
+          <div key={`Pagina_${index}`}>
+            <br />
+            <br />
 
-            <div>
-              <table id="tabla-datos-generales">
+            <div id={`Pagina_${index}`} style={documentStyles}>
+              <Encabezado />
+              <div className="br" />
+
+              {
+                index === 0
+                && (
+                  <div>
+                    <table id="tabla-datos-generales">
+                      <tbody>
+                        <tr>
+                          <th colSpan={4} className="celda-datos-generales">
+                            <h2>INFORME GLOBAL</h2>
+                            <div className="br" />
+                          </th>
+                        </tr>
+                        <tr>
+                          <th className="celda-datos-generales celda-campo">Alumno:</th>
+                          <td className="celda-datos-generales celda-valor">{usuario.nombre}</td>
+                          <th className="celda-datos-generales celda-campo">Código:</th>
+                          <td className="celda-datos-generales celda-valor">{usuario.codigo}</td>
+                        </tr>
+
+                        <tr>
+                          <th className="celda-datos-generales celda-campo">Carrera:</th>
+                          <td className="celda-datos-generales celda-valor">{usuario.carrera}</td>
+                          <th className="celda-datos-generales celda-campo">Horario:</th>
+                          <td className="celda-datos-generales celda-valor">{`${datosGenerales.horarioHoraInicio} - ${datosGenerales.horarioHoraFin}`}</td>
+                        </tr>
+
+                        <tr>
+                          <th className="celda-datos-generales celda-campo">Entidad Receptora:</th>
+                          <td className="celda-datos-generales celda-valor">{datosGenerales.entidadReceptora}</td>
+                          <th className="celda-datos-generales celda-campo">Total de Horas:</th>
+                          <td className="celda-datos-generales celda-valor">{totalHoras}</td>
+                        </tr>
+
+                        <tr>
+                          <th className="celda-datos-generales celda-campo">Fecha Inicio:</th>
+                          <td className="celda-datos-generales celda-valor">{`${fechaInicio.getDate()}/${fechaInicio.getMonth() + 1}/${fechaInicio.getUTCFullYear()}`}</td>
+                          <th className="celda-datos-generales celda-campo">Fecha Fin:</th>
+                          <td className="celda-datos-generales celda-valor">{`${fechaFin.getDate()}/${fechaFin.getMonth() + 1}/${fechaFin.getUTCFullYear()}`}</td>
+                        </tr>
+
+                        <tr>
+                          <th className="celda-datos-generales celda-campo">Receptor:</th>
+                          <td className="celda-datos-generales celda-valor">{datosGenerales.receptor}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <div className="br" />
+                  </div>
+                )
+              }
+
+              {
+                index === 0
+                && (
+                  <>
+                    <table id="tabla-objetivos">
+                      <tbody>
+                        <tr><th id="titulo-objetivos">Objetivos del Programa</th></tr>
+                        <tr><td id="objetivos-del-programa-contenido">{datosGenerales.objetivosDelPrograma}</td></tr>
+                      </tbody>
+                    </table>
+                    <div className="br" />
+                  </>
+                )
+              }
+
+              <table>
+                <thead>
+                  <tr className="fila-actividad">
+                    <th>Actividades (Servicios) Realizadas</th>
+                    <th>Cantidad</th>
+                  </tr>
+                </thead>
+
                 <tbody>
-                  <tr>
-                    <th colSpan={4} className="celda-datos-generales">
-                      <h2>REPORTE TRIMESTRAL DE ACTIVIDADES</h2>
-                      <div className="br" />
-                    </th>
-                  </tr>
-                  <tr>
-                    <th className="celda-datos-generales celda-campo">Alumno:</th>
-                    <td className="celda-datos-generales celda-valor">{usuario.nombre}</td>
-                    <th className="celda-datos-generales celda-campo">Código:</th>
-                    <td className="celda-datos-generales celda-valor">{usuario.codigo}</td>
-                  </tr>
-
-                  <tr>
-                    <th className="celda-datos-generales celda-campo">Carrera:</th>
-                    <td className="celda-datos-generales celda-valor">{usuario.carrera}</td>
-                    <th className="celda-datos-generales celda-campo">Horario:</th>
-                    <td className="celda-datos-generales celda-valor">{`${datosGenerales.horarioHoraInicio} - ${datosGenerales.horarioHoraFin}`}</td>
-                  </tr>
-
-                  <tr>
-                    <th className="celda-datos-generales celda-campo">Entidad Receptora:</th>
-                    <td className="celda-datos-generales celda-valor">{datosGenerales.entidadReceptora}</td>
-                    <th className="celda-datos-generales celda-campo">Total de Horas:</th>
-                    <td className="celda-datos-generales celda-valor">{totalHoras}</td>
-                  </tr>
-
-                  <tr>
-                    <th className="celda-datos-generales celda-campo">Fecha Inicio:</th>
-                    <td className="celda-datos-generales celda-valor">{`${fechaInicio.getDate()}/${fechaInicio.getMonth() + 1}/${fechaInicio.getUTCFullYear()}`}</td>
-                    <th className="celda-datos-generales celda-campo">Fecha Fin:</th>
-                    <td className="celda-datos-generales celda-valor">{`${fechaFin.getDate()}/${fechaFin.getMonth() + 1}/${fechaFin.getUTCFullYear()}`}</td>
-                  </tr>
-
-                  <tr>
-                    <th className="celda-datos-generales celda-campo">Receptor:</th>
-                    <td className="celda-datos-generales celda-valor">{datosGenerales.receptor}</td>
-                  </tr>
+                  {
+                    pagina.map((actividad: any) => (
+                      <tr key={actividad.id} className="fila-actividad">
+                        <td>{actividad.descripcion}</td>
+                        <td>{actividad.cantidad}</td>
+                      </tr>
+                    ))
+                  }
                 </tbody>
               </table>
-              <div className="br" />
-            </div>
 
-            <table>
-              <thead>
-                <tr className="fila-actividad">
-                  <th>Actividades (Servicios) Realizadas</th>
-                  <th>Cantidad</th>
-                </tr>
-              </thead>
+              <div className="ctn-firmas">
+                <div className="ctn-firma">
+                  <hr />
+                  <span>NOMBRE Y FIRMA DEL PSS</span>
+                </div>
 
-              <tbody>
-                {
-                  pagina.map((actividad: any) => (
-                    <tr key={actividad.id} className="fila-actividad">
-                      <td>{actividad.descripcion}</td>
-                      <td>{actividad.cantidad}</td>
-                    </tr>
-                  ))
-                }
-              </tbody>
-            </table>
+                <div className="ctn-firma">
+                  <hr />
+                  <span>SELLO DE LA INSTITUCIÓN</span>
+                </div>
 
-            <div id="ctn-firmas">
-              <div className="ctn-firma">
-                <hr />
-                <span>NOMBRE Y FIRMA DEL PSS</span>
+                <div className="ctn-firma">
+                  <img id="firma" src={firma} alt="firma" />
+                  <hr />
+                  <span>JEFE DE ENSEÑANZA O RECEPTOR</span>
+                </div>
               </div>
 
-              <div className="ctn-firma">
-                <hr />
-                <span>SELLO DE LA INSTITUCIÓN</span>
+              <div className="numero-de-pagina">
+                <p>
+                  {`Página ${index + 1} de ${paginas.length}`}
+                </p>
               </div>
 
-              <div className="ctn-firma">
-                <img id="firma" src={firma} alt="firma" />
-                <hr />
-                <span>JEFE DE ENSEÑANZA O RECEPTOR</span>
-              </div>
+              <PiePagina />
             </div>
 
-            <div id="numero-de-pagina">
-              <p>
-                {`Página ${index + 1} de ${paginas.length}`}
-              </p>
-            </div>
+            {/* Esto no sale en el documento */}
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
 
-            <PiePagina />
+            <hr className="salto-pagina" />
           </div>
         ))
       }

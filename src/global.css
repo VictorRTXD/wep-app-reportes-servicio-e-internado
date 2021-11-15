@@ -66,16 +66,29 @@ button {
   gap: 1rem;
 }
 
+.ctn-firmas {
+  height: 45mm;
+}
+
 .ctn-con-padding {
   padding: 3%;
 }
 
-.texto-encabezado {
-  font-size: 2em;
-}
-
 .fila-actividad {
   height: 5mm;
+}
+
+.numero-de-pagina {
+  height: 5mm;
+  text-align: right;
+}
+
+.salto-pagina {
+  border-top: 1px dashed blue;
+}
+
+.texto-encabezado {
+  font-size: 2em;
 }
 
 #pagina-principal-titulo {
@@ -85,3 +98,5 @@ button {
   text-align: center;
   font-size: 300%;
 }
+
+

@@ -1,7 +1,4 @@
-#tabla-datos-generales {
-  height: 30mm;
-  padding-bottom: 5rem;
-}
+
 
 .celda-campo {
   width: 15%;
@@ -11,8 +8,9 @@
   width: 35%;
 }
 
-#ctn-firmas {
-  height: 45mm;
+#tabla-datos-generales {
+  height: 30mm;
+  padding-bottom: 5rem;
 }
 
 #titulo-objetivos{
@@ -21,9 +19,4 @@
 
 #objetivos-del-programa-contenido {
   height: 25mm;
-}
-
-#numero-de-pagina {
-  height: 5mm;
-  text-align: right;
 }

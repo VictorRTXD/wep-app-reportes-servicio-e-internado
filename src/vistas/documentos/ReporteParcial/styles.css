@@ -31,6 +31,14 @@
   text-align: center;
 }
 
+#btn-link {
+  height: 2.5rem;
+}
+
+#tabla-reporte-trimestral {
+  height: 35mm;
+}
+
 #encabezado-fechas {
   font-size: 75%;
   height: 15mm;
@@ -44,6 +52,4 @@
   width: 100%;
 }
 
-#btn-link {
-  height: 2.5rem;
-}
+
