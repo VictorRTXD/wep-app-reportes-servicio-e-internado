@@ -7,7 +7,7 @@ import escudo from '../../../../recursos/escudo.png';
 
 export default function EncabezadoDocumentos() {
   return (
-    <div id="encabezado" style={{ height: Math.round(window.innerHeight * 0.10) }}>
+    <div id="encabezado">
       <div id="ctn-escudo">
         <img id="escudo" src={escudo} alt="escudo-udg" />
       </div>

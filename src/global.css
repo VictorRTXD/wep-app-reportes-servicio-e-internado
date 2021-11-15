@@ -51,6 +51,10 @@ button {
   vertical-align: middle;
 }
 
+.br {
+  height: 5mm;
+}
+
 .ctn-btn-link {
   display: inline-block;
 }
@@ -68,6 +72,10 @@ button {
 
 .texto-encabezado {
   font-size: 2em;
+}
+
+.fila-actividad {
+  height: 5mm;
 }
 
 #pagina-principal-titulo {

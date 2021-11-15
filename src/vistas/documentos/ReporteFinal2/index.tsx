@@ -52,6 +52,7 @@ export default function DocumentoReporteFinal2() {
   // Obtener datos
   const reportesParciales = JSON.parse(sessionStorage.getItem('reportesParciales')!);
   const reporteFinalDos = JSON.parse(sessionStorage.getItem('reporteFinalDos')!);
+  const usuario = JSON.parse(sessionStorage.getItem('usuario')!);
 
   let totalActividadesRealizadas: number = 0;
   let totalDeAtenciones: number = 0;
@@ -122,7 +123,7 @@ export default function DocumentoReporteFinal2() {
         const height = pdf.internal.pageSize.getHeight();
 
         pdf.addImage(divImage, 0, 0, width, height);
-        pdf.save('Reporte Final');
+        pdf.save(`Reporte Final 2 ${usuario.nombre}`);
       });
       setDeseaDescargarDocumento(false);
     } else {

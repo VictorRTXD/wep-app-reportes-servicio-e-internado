@@ -148,7 +148,7 @@ export default function DocumentoReporteParcial() {
         const height = pdf.internal.pageSize.getHeight();
 
         pdf.addImage(divImage, 0, 0, width, height);
-        pdf.save(`Reporte Parcial #${numeroReporte}`);
+        pdf.save(`Reporte Parcial #${numeroReporte} ${usuario.nombre}`);
       });
       setDeseaDescargarDocumento(false);
     } else {

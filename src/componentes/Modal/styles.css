@@ -31,7 +31,7 @@
   z-index: 998;
   height: 100%;
   width: 100%;
-  position: absolute;
+  position: fixed;
   background-color: grey;
   opacity: 0.5;
 }

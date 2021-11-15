@@ -8,6 +8,7 @@ h1 {
 }
 
 #encabezado {
+  height: 20mm;
   font-size: 70%;
   overflow: hidden;
 }
