@@ -63,8 +63,6 @@ export default function ReporteFinal2() {
         callback: () => {},
       });
     } else {
-      // Hardcode
-      // Ni si quiera hay un usuario
       const reporte = {
         id: metodo === 'PUT' ? reporteFinalDos.id : 0,
         metasAlcanzadas: formulario.metasAlcanzadas,

@@ -128,11 +128,11 @@ export default function CrearServicio() {
               horarioHoraFin: data.horarioHoraFin || '',
             };
             sessionStorage.setItem('servicioDatosGenerales', JSON.stringify(servicioDatosGenerales));
-            setRedireccionamiento('/');
+            setRedireccionamiento('/usuario/iniciar-sesion');
 
             setDatosModal({
               tipo: 'confirmacion',
-              texto: 'Datos Guardados',
+              texto: 'Datos Guardados. Deberas iniciar sesión de nuevo',
               visibilidad: true,
               callback: () => {},
             });
