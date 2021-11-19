@@ -1,14 +1,13 @@
 import React, { useRef, useState } from 'react';
-import { Link, Redirect } from 'react-router-dom';
-import Modal, { DatosModal } from '../../../componentes/Modal';
-import config from '../../../appConfig';
+import { Redirect } from 'react-router-dom';
+import Modal, { DatosModal } from '../../componentes/Modal';
+import config from '../../appConfig';
 
-import '../../../global.css';
-import './styles.css';
+import '../../global.css';
 
 export default function InicioSesion() {
-  const nombreUsuario = useRef<HTMLInputElement>(null);
-  const contrasena = useRef<HTMLInputElement>(null);
+  const codigo = useRef<HTMLInputElement>(null);
+  const nip = useRef<HTMLInputElement>(null);
 
   const [datosModal, setDatosModal] = useState<DatosModal>({
     tipo: null,
@@ -16,22 +15,23 @@ export default function InicioSesion() {
     visibilidad: false,
     callback: () => {},
   });
+
   const [retornar, setRetornar] = useState(false);
   const [redireccionamiento, setRedireccionamiento] = useState('');
 
   let ok: boolean;
 
   function inciarSesion() {
-    if (nombreUsuario.current?.value !== ''
-    && contrasena.current?.value !== '') {
+    if (codigo.current?.value !== ''
+    && nip.current?.value !== '') {
       fetch(`${config.apiBaseUrl}/public/usuarios/iniciar-sesion`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          nombreUsuario: nombreUsuario.current?.value,
-          contrasena: contrasena.current?.value,
+          codigo: codigo.current?.value,
+          nip: nip.current?.value,
         }),
       })
         .then((response) => {
@@ -104,27 +104,19 @@ export default function InicioSesion() {
       <h2 className="texto-encabezado">Iniciar Sesión</h2>
 
       <div className="ctn-con-padding">
-        <label id="nombreUsuario" htmlFor="nombreUsuario">
-          Nombre de Usuario:
-          <input type="text" name="nombreUsuario" ref={nombreUsuario} />
+        <label id="codigo" htmlFor="codigo">
+          Código:
+          <input type="text" name="codigo" ref={codigo} />
         </label>
         <br />
 
-        <label id="contrasena" htmlFor="contrasena">
-          Contraseña:
-          <input type="text" name="contrasena" ref={contrasena} />
+        <label id="nip" htmlFor="nip">
+          NIP:
+          <input type="text" name="nip" ref={nip} />
         </label>
         <br />
 
         <button type="button" className="btn-primario" onClick={inciarSesion}> Iniciar Sesión </button>
-        <div id="ctn-btn-registro" className="ctn-btn-link">
-          <Link to="/usuario/info" type="button" className="btn-secundario btn-link"> Registo </Link>
-        </div>
-        <br />
-        <br />
-
-        <Link id="link-olvidaste-contrasena" to="/usuario/info/actualizar" type="button"> ¿Olvidaste tu contraseña? </Link>
-
         <br />
       </div>
     </>

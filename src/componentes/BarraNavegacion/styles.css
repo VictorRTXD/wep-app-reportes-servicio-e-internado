@@ -1,7 +1,8 @@
 .title-bar {
+  height: 2em;
   font-size: 2em;
   color: white;
-  background-color: greenyellow;
+  background-color: #CD5700;
   text-align: center;
 }
 
@@ -16,7 +17,7 @@
 .link-redondo {
   width: 3rem;
   height: 3rem;
-  background-color: #33ffd1;
+  background-color: #fc7466;
   border-radius: 50%;
   font-size: 2.5rem;
   text-align: center;

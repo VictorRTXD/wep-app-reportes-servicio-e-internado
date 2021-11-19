@@ -5,8 +5,7 @@ import PaginaPrincipal from './vistas/PaginaPrincipal/index';
 import formularioServicio from './vistas/formularioServicio';
 import ReportesParciales from './vistas/formulariosDeReporte/ReporteParcial';
 import ReporteFinal2 from './vistas/formulariosDeReporte/ReporteFinal2';
-import Sesion from './vistas/Usuario/IniciarSesion';
-import InfoUsuario from './vistas/Usuario/InfoUsuario';
+import Sesion from './vistas/IniciarSesion';
 
 // Documentos
 import DocumentoReporteParcial from './vistas/documentos/ReporteParcial';
@@ -19,8 +18,6 @@ function App() {
       <Route exact path="/" component={PaginaPrincipal} />
       <Route exact path="/servicio/formulario" component={formularioServicio} />
       <Route exact path="/usuario/iniciar-sesion" component={Sesion} />
-      <Route exact path="/usuario/info" component={InfoUsuario} />
-      <Route exact path="/usuario/info/:actualizar" component={InfoUsuario} />
 
       {/* Reportes */}
       <Route exact path="/reportes-parciales/:numero" component={DocumentoReporteParcial} />

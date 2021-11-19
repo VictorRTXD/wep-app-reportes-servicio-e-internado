@@ -30,6 +30,7 @@ export default function ReportesParciales() {
   // Obtener datos
   const reportesParciales = JSON.parse(sessionStorage.getItem('reportesParciales')!);
   const actividadesDeUsuario = JSON.parse(sessionStorage.getItem('actividadesDeUsuario')!);
+  const trimestres = JSON.parse(sessionStorage.getItem('trimestres')!);
 
   const { numero } = useParams<{ numero: string }>();
 
@@ -86,6 +87,54 @@ export default function ReportesParciales() {
   let incializadorTotalActividades = 0;
   let incializadorTotalAtenciones = 0;
   let inicializadorHorasRealizdas = 0;
+
+  let aunNoSePuedeRealizarReporte: boolean = false;
+
+  switch (numeroReporte) {
+    case 1:
+      if (new Date().getTime() < new Date(trimestres[1].fechaInicio).getTime()) {
+        if (redireccionamiento === '') {
+          setRedireccionamiento('/');
+        }
+        aunNoSePuedeRealizarReporte = true;
+      }
+      break;
+    case 2:
+      if (new Date().getTime() < new Date(trimestres[2].fechaInicio).getTime()) {
+        if (redireccionamiento === '') {
+          setRedireccionamiento('/reportes-parciales/1');
+        }
+        aunNoSePuedeRealizarReporte = true;
+      }
+      break;
+    case 3:
+      if (new Date().getTime() < new Date(trimestres[3].fechaInicio).getTime()) {
+        if (redireccionamiento === '') {
+          setRedireccionamiento('/reportes-parciales/2');
+        }
+        aunNoSePuedeRealizarReporte = true;
+      }
+      break;
+    case 4:
+      if (new Date().getTime() < new Date(trimestres[3].fechaFin).getTime()) {
+        if (redireccionamiento === '') {
+          setRedireccionamiento('/reportes-parciales/3');
+        }
+        aunNoSePuedeRealizarReporte = true;
+      }
+      break;
+    default:
+      break;
+  }
+
+  if (aunNoSePuedeRealizarReporte && redireccionamiento === '') {
+    setDatosModal({
+      tipo: 'error',
+      texto: 'Aun no puedes realizar este reporte',
+      visibilidad: true,
+      callback: () => {},
+    });
+  }
 
   if (reportesParciales.length >= numeroReporte) {
     metodo = 'PUT';
@@ -169,11 +218,19 @@ export default function ReportesParciales() {
       faltanDatos = true;
     }
 
-    actividadesUsuario.forEach((actividad: ActividadesReporteParcial) => {
-      if (actividad.descripcion === '' || actividad.cantidad <= 0) {
+    let actividadRepetida = false;
+
+    for (let i = 0; i < actividadesUsuario.length; i += 1) {
+      if (actividadesUsuario[i].descripcion === '' || actividadesUsuario[i].cantidad <= 0) {
         faltanDatos = true;
       }
-    });
+
+      for (let j = i + 1; j < actividadesUsuario.length; j += 1) {
+        if (actividadesUsuario[i].id === actividadesUsuario[j].id) {
+          actividadRepetida = true;
+        }
+      }
+    }
 
     for (let i = 0; i < atencionesRealizadas.length; i += 1) {
       atencionesRealizadas[i].cantidad = Number(atencionesRealizadas[i].cantidad);
@@ -183,6 +240,13 @@ export default function ReportesParciales() {
       setDatosModal({
         tipo: 'error',
         texto: 'Uno o más de los datos enviados no son válidos',
+        visibilidad: true,
+        callback: () => {},
+      });
+    } else if (actividadRepetida) {
+      setDatosModal({
+        tipo: 'error',
+        texto: 'Una actividad esta repetida, esto puede generar erroes de calculo',
         visibilidad: true,
         callback: () => {},
       });

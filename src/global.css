@@ -5,6 +5,7 @@
 
 :root {
   font-size: 75%;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif
 }
 
 button {
@@ -21,7 +22,7 @@ button {
   font-size: 1.4rem;
   border: 1px solid black;
   height: 2.5rem;
-  background-color: greenyellow;
+  background-color: #6be83c;
   border-radius: 10%;
 }
 
@@ -29,7 +30,7 @@ button {
   font-size: 1.4rem;
   border: 1px solid black;
   height: 2.5rem;
-  background-color: yellow;
+  background-color: #f9f03e;
   border-radius: 10%;
 }
 
@@ -37,7 +38,7 @@ button {
   font-size: 1.4rem;
   border: 1px solid black;
   height: 2.5rem;
-  background-color: red;
+  background-color: #ff2020;
   border-radius: 10%;
 }
 
@@ -89,6 +90,7 @@ button {
 
 .texto-encabezado {
   font-size: 2em;
+  color: #153547;
 }
 
 #pagina-principal-titulo {
@@ -97,6 +99,7 @@ button {
   margin-top: 30vh;
   text-align: center;
   font-size: 300%;
+  color: #153547;
 }
 
 

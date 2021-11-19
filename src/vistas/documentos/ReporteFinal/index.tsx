@@ -29,8 +29,6 @@ export default function DocumentoReporteFinal() {
   const [documentStyles, setDocumentStyles] = useState({});
   const [deseaDescargarDocumento, setDeseaDescargarDocumento] = useState(false);
 
-  const actividadesReporte: ActividadesReporteParcial[] = [];
-
   const [datosModal, setDatosModal] = useState<DatosModal>({
     tipo: null,
     texto: '',
@@ -44,54 +42,96 @@ export default function DocumentoReporteFinal() {
 
   let totalHoras = 0;
 
-  if (reportesParciales.length === 4) {
-    for (let i = 0; i < reportesParciales.length; i += 1) {
-      // Mapear actividades
-      for (let j = 0; j < reportesParciales[i].actividadesRealizadas.length; j += 1) {
-        let indexActividadReporte: number = -1;
+  const fechaInicio = new Date(datosGenerales.fechaInicio);
+  const fechaFin = new Date(datosGenerales.fechaFin);
 
-        // Buscar si ya esta lista
-        for (let k = 0; k < actividadesReporte.length; k += 1) {
-          if (actividadesReporte[k].id === reportesParciales[i].actividadesRealizadas[j].idActividad) {
-            indexActividadReporte = k;
-          }
-        }
+  useEffect(() => {
+    const actividadesReporte: ActividadesReporteParcial[] = [];
 
-        if (indexActividadReporte >= 0) {
-          actividadesReporte[indexActividadReporte].cantidad += Number(reportesParciales[i].actividadesRealizadas[j].cantidad);
-        } else {
-          let indexActividadUsuario: number = -1;
+    if (reportesParciales.length === 4) {
+      for (let i = 0; i < reportesParciales.length; i += 1) {
+        // Mapear actividades
+        for (let j = 0; j < reportesParciales[i].actividadesRealizadas.length; j += 1) {
+          let indexActividadReporte: number = -1;
 
-          // Buscar la actividad de usuario correspondiento
-          for (let k = 0; k < actividadesDeUsuario.length; k += 1) {
-            if (actividadesDeUsuario[k].id === reportesParciales[i].actividadesRealizadas[j].idActividad) {
-              indexActividadUsuario = k;
+          // Buscar si ya esta lista
+          for (let k = 0; k < actividadesReporte.length; k += 1) {
+            if (actividadesReporte[k].id === reportesParciales[i].actividadesRealizadas[j].idActividad) {
+              indexActividadReporte = k;
             }
           }
 
-          actividadesReporte.push({
-            id: actividadesDeUsuario[indexActividadUsuario].id,
-            descripcion: actividadesDeUsuario[indexActividadUsuario].descripcion,
-            cantidad: Number(reportesParciales[i].actividadesRealizadas[j].cantidad),
-          });
+          if (indexActividadReporte >= 0) {
+            actividadesReporte[indexActividadReporte].cantidad += Number(reportesParciales[i].actividadesRealizadas[j].cantidad);
+          } else {
+            let indexActividadUsuario: number = -1;
+
+            // Buscar la actividad de usuario correspondiento
+            for (let k = 0; k < actividadesDeUsuario.length; k += 1) {
+              if (actividadesDeUsuario[k].id === reportesParciales[i].actividadesRealizadas[j].idActividad) {
+                indexActividadUsuario = k;
+              }
+            }
+
+            actividadesReporte.push({
+              id: actividadesDeUsuario[indexActividadUsuario].id,
+              descripcion: actividadesDeUsuario[indexActividadUsuario].descripcion,
+              cantidad: Number(reportesParciales[i].actividadesRealizadas[j].cantidad),
+            });
+          }
         }
+
+        totalHoras += reportesParciales[i].horasRealizadas;
+      }
+    } else if (redireccionamiento === '') {
+      setRedireccionamiento(`/reportes-parciales/${reportesParciales.length + 1}/formulario`);
+
+      setDatosModal({
+        tipo: 'error',
+        texto: 'No has completado todos los reportes',
+        visibilidad: true,
+        callback: () => { },
+      });
+    }
+
+    // Dividir activiadades en paginas
+    let i = 0;
+
+    // Primera hoja que es diferente, le caben 18, todo esta maquetado en cm
+    const primeraPagina: any[] = [];
+
+    while (i < actividadesReporte.length && i < 18) {
+      primeraPagina.push({
+        id: actividadesReporte[i].id,
+        descripcion: actividadesReporte[i].descripcion,
+        cantidad: actividadesReporte[i].cantidad,
+      });
+      i += 1;
+    }
+
+    i = 18;
+    const pagingasAux: any[] = [primeraPagina];
+
+    while (i < actividadesReporte.length) {
+      let j = i;
+      const activiades: any[] = [];
+
+      while (j < i + 30 && j < actividadesReporte.length) {
+        activiades.push({
+          id: actividadesReporte[j].id,
+          descripcion: actividadesReporte[j].descripcion,
+          cantidad: actividadesReporte[j].cantidad,
+        });
+
+        j += 1;
       }
 
-      totalHoras += reportesParciales[i].horasRealizadas;
+      pagingasAux.push(activiades);
+      i += j;
     }
-  } else if (redireccionamiento === '') {
-    setRedireccionamiento(`/reportes-parciales/${reportesParciales.length + 1}/formulario`);
 
-    setDatosModal({
-      tipo: 'error',
-      texto: 'No has completado todos los reportes',
-      visibilidad: true,
-      callback: () => { },
-    });
-  }
-
-  const fechaInicio = new Date(datosGenerales.fechaInicio);
-  const fechaFin = new Date(datosGenerales.fechaFin);
+    setPaginas(pagingasAux);
+  }, []);
 
   useEffect(() => {
     if (deseaDescargarDocumento) {
@@ -142,46 +182,6 @@ export default function DocumentoReporteFinal() {
       setRetornar(true);
     }
   }
-
-  useEffect(() => {
-    // Dividir activiadades en paginas
-    let i = 0;
-
-    // Primera hoja que es diferente, le caben 18, todo esta maquetado en cm
-    const primeraPagina: any[] = [];
-
-    while (i < actividadesReporte.length && i < 18) {
-      primeraPagina.push({
-        id: actividadesReporte[i].id,
-        descripcion: actividadesReporte[i].descripcion,
-        cantidad: actividadesReporte[i].cantidad,
-      });
-      i += 1;
-    }
-
-    i = 18;
-    const pagingasAux: any[] = [primeraPagina];
-
-    while (i < actividadesReporte.length) {
-      let j = i;
-      const activiades: any[] = [];
-
-      while (j < i + 30 && j < actividadesReporte.length) {
-        activiades.push({
-          id: actividadesReporte[j].id,
-          descripcion: actividadesReporte[j].descripcion,
-          cantidad: actividadesReporte[j].cantidad,
-        });
-
-        j += 1;
-      }
-
-      pagingasAux.push(activiades);
-      i += j;
-    }
-
-    setPaginas(pagingasAux);
-  }, []);
 
   if (retornar && redireccionamiento) {
     return <Redirect to={redireccionamiento} />;

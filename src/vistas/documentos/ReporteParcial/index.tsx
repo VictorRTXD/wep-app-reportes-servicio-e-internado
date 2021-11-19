@@ -38,37 +38,6 @@ export default function DocumentoReporteParcial() {
   const numeroReporte = parseInt(numero, 10);
   const [documentStyles, setDocumentStyles] = useState({});
   const [deseaDescargarDocumento, setDeseaDescargarDocumento] = useState(false);
-  const actividadesReporte: ActividadesReporteParcial[] = [];
-  const atencionesRealizadas: AtencionesRealizadas[] = [
-    {
-      descripcion: 'Prenatales',
-      cantidad: [],
-    },
-    {
-      descripcion: 'Niños 0 a 12 años',
-      cantidad: [],
-    },
-    {
-      descripcion: 'Niñas 0 a 12 años',
-      cantidad: [],
-    },
-    {
-      descripcion: 'Hombres',
-      cantidad: [],
-    },
-    {
-      descripcion: 'Mujeres',
-      cantidad: [],
-    },
-    {
-      descripcion: 'Geríatrico hombre',
-      cantidad: [],
-    },
-    {
-      descripcion: 'Geríatrico Mujer',
-      cantidad: [],
-    },
-  ];
 
   let fechaInicio = new Date(0);
   let fechaFin = new Date(0);
@@ -77,6 +46,9 @@ export default function DocumentoReporteParcial() {
     fechaInicio = new Date(trimestres[numeroReporte - 1].fechaInicio);
     fechaFin = new Date(trimestres[numeroReporte - 1].fechaFin);
   }
+
+  const [actividadesReporte, setActividadesReporte] = useState<ActividadesReporteParcial[]>([]);
+  const [atencionesRealizadas, setAtencionesRealizadas] = useState<AtencionesRealizadas[]>([]);
 
   const [datosModal, setDatosModal] = useState<DatosModal>({
     tipo: null,
@@ -88,55 +60,134 @@ export default function DocumentoReporteParcial() {
   const [redireccionamiento, setRedireccionamiento] = useState('');
 
   const [paginas, setPaginas] = useState<any[][]>([]);
-  const [atencionesVanEnUnaNuevaPagina, setatencionesVanEnUnaNuevaPagina] = useState<boolean>(false);
+  const [atencionesVanEnUnaNuevaPagina, setAtencionesVanEnUnaNuevaPagina] = useState<boolean>(false);
 
-  if (reportesParciales.length >= numeroReporte) {
-    // Mapear actividades
-    for (let i = 0; i < actividadesDeUsuario.length; i += 1) {
-      const cantidades = [];
-      let tienePorLoMenosUnaActividad: boolean = false;
+  useEffect(() => {
+    const actividadesReporteAux: ActividadesReporteParcial[] = [];
+    const atencionesRealizadasAux: AtencionesRealizadas[] = [
+      {
+        descripcion: 'Prenatales',
+        cantidad: [],
+      },
+      {
+        descripcion: 'Niños 0 a 12 años',
+        cantidad: [],
+      },
+      {
+        descripcion: 'Niñas 0 a 12 años',
+        cantidad: [],
+      },
+      {
+        descripcion: 'Hombres',
+        cantidad: [],
+      },
+      {
+        descripcion: 'Mujeres',
+        cantidad: [],
+      },
+      {
+        descripcion: 'Geríatrico hombre',
+        cantidad: [],
+      },
+      {
+        descripcion: 'Geríatrico Mujer',
+        cantidad: [],
+      },
+    ];
 
-      for (let j = 0; j < numeroReporte; j += 1) {
-        let reporteTieneActividad: boolean = false;
+    if (reportesParciales.length >= numeroReporte) {
+      // Mapear actividades
+      for (let i = 0; i < actividadesDeUsuario.length; i += 1) {
+        const cantidades = [];
+        let tienePorLoMenosUnaActividad: boolean = false;
 
-        for (let k = 0; k < reportesParciales[j].actividadesRealizadas.length; k += 1) {
-          if (actividadesDeUsuario[i].id === reportesParciales[j].actividadesRealizadas[k].idActividad) {
-            cantidades.push(reportesParciales[j].actividadesRealizadas[k].cantidad);
-            reporteTieneActividad = true;
-            tienePorLoMenosUnaActividad = true;
+        for (let j = 0; j < numeroReporte; j += 1) {
+          let reporteTieneActividad: boolean = false;
+
+          for (let k = 0; k < reportesParciales[j].actividadesRealizadas.length; k += 1) {
+            if (actividadesDeUsuario[i].id === reportesParciales[j].actividadesRealizadas[k].idActividad) {
+              cantidades.push(reportesParciales[j].actividadesRealizadas[k].cantidad);
+              reporteTieneActividad = true;
+              tienePorLoMenosUnaActividad = true;
+            }
+          }
+
+          if (!reporteTieneActividad) {
+            cantidades.push(0);
           }
         }
 
-        if (!reporteTieneActividad) {
-          cantidades.push(0);
+        if (tienePorLoMenosUnaActividad) {
+          actividadesReporteAux.push({
+            id: actividadesDeUsuario[i].id,
+            descripcion: actividadesDeUsuario[i].descripcion,
+            cantidad: cantidades,
+          });
         }
       }
 
-      if (tienePorLoMenosUnaActividad) {
-        actividadesReporte.push({
-          id: actividadesDeUsuario[i].id,
-          descripcion: actividadesDeUsuario[i].descripcion,
-          cantidad: cantidades,
+      // Mapear atenciones
+      for (let i = 0; i < numeroReporte; i += 1) {
+        for (let j = 0; j < reportesParciales[i].atencionesRealizadas.length; j += 1) {
+          atencionesRealizadasAux[j].cantidad.push(reportesParciales[i].atencionesRealizadas[j].cantidad);
+        }
+      }
+
+      setActividadesReporte(actividadesReporteAux);
+      setAtencionesRealizadas(atencionesRealizadasAux);
+    } else if (redireccionamiento === '') {
+      setRedireccionamiento(`/reportes-parciales/${reportesParciales.length + 1}/formulario`);
+
+      setDatosModal({
+        tipo: 'error',
+        texto: 'No has completado este reporte',
+        visibilidad: true,
+        callback: () => {},
+      });
+    }
+
+    // Dividir activiadades en paginas
+    let i = 0;
+
+    // Primera hoja que es diferente, le caben 18, todo esta maquetado en cm
+    const primeraPagina: any[] = [];
+
+    while (i < actividadesReporteAux.length && i < 18) {
+      primeraPagina.push({
+        id: actividadesReporteAux[i].id,
+        descripcion: actividadesReporteAux[i].descripcion,
+        cantidad: actividadesReporteAux[i].cantidad,
+      });
+      i += 1;
+    }
+
+    i = 18;
+    const pagingasAux: any[] = [primeraPagina];
+
+    while (i < actividadesReporteAux.length) {
+      let j = i;
+      const activiades: any[] = [];
+
+      while (j < i + 24 && j < actividadesReporteAux.length) {
+        activiades.push({
+          id: actividadesReporteAux[j].id,
+          descripcion: actividadesReporteAux[j].descripcion,
+          cantidad: actividadesReporteAux[j].cantidad,
         });
+
+        j += 1;
       }
+
+      pagingasAux.push(activiades);
+      i += j;
     }
 
-    // Mapear atenciones
-    for (let i = 0; i < numeroReporte; i += 1) {
-      for (let j = 0; j < reportesParciales[i].atencionesRealizadas.length; j += 1) {
-        atencionesRealizadas[j].cantidad.push(reportesParciales[i].atencionesRealizadas[j].cantidad);
-      }
+    if (pagingasAux[pagingasAux.length - 1].length > 16) {
+      setAtencionesVanEnUnaNuevaPagina(true);
     }
-  } else if (redireccionamiento === '') {
-    setRedireccionamiento(`/reportes-parciales/${reportesParciales.length + 1}/formulario`);
 
-    setDatosModal({
-      tipo: 'error',
-      texto: 'No has completado este reporte',
-      visibilidad: true,
-      callback: () => {},
-    });
-  }
+    setPaginas(pagingasAux);
+  }, [numeroReporte]);
 
   useEffect(() => {
     if (deseaDescargarDocumento) {
@@ -213,50 +264,6 @@ export default function DocumentoReporteParcial() {
       setRetornar(true);
     }
   }
-
-  useEffect(() => {
-    // Dividir activiadades en paginas
-    let i = 0;
-
-    // Primera hoja que es diferente, le caben 18, todo esta maquetado en cm
-    const primeraPagina: any[] = [];
-
-    while (i < actividadesReporte.length && i < 18) {
-      primeraPagina.push({
-        id: actividadesReporte[i].id,
-        descripcion: actividadesReporte[i].descripcion,
-        cantidad: actividadesReporte[i].cantidad,
-      });
-      i += 1;
-    }
-
-    i = 18;
-    const pagingasAux: any[] = [primeraPagina];
-
-    while (i < actividadesReporte.length) {
-      let j = i;
-      const activiades: any[] = [];
-
-      while (j < i + 24 && j < actividadesReporte.length) {
-        activiades.push({
-          id: actividadesReporte[j].id,
-          descripcion: actividadesReporte[j].descripcion,
-          cantidad: actividadesReporte[j].cantidad,
-        });
-
-        j += 1;
-      }
-
-      pagingasAux.push(activiades);
-      i += j;
-    }
-
-    if (pagingasAux[pagingasAux.length - 1].length > 16) {
-      setatencionesVanEnUnaNuevaPagina(true);
-    }
-
-    setPaginas(pagingasAux);
-  }, []);
 
   if (retornar && redireccionamiento) {
     return <Redirect to={redireccionamiento} />;
@@ -347,9 +354,9 @@ export default function DocumentoReporteParcial() {
             <div>
               <div id="encabezado-fechas">
                 <span className="fechas-campo">Fecha de Inicio:</span>
-                <p className="fechas-valor">{`${fechaInicio.getDate() + 1}/${fechaInicio.getMonth() + 1}/${fechaInicio.getUTCFullYear()}`}</p>
+                <p className="fechas-valor">{`${fechaInicio.getDate()}/${fechaInicio.getMonth() + 1}/${fechaInicio.getUTCFullYear()}`}</p>
                 <span className="fechas-campo">Fecha de Fin:</span>
-                <p className="fechas-valor">{`${fechaFin.getDate() + 1}/${fechaFin.getMonth() + 1}/${fechaFin.getUTCFullYear()}`}</p>
+                <p className="fechas-valor">{`${fechaFin.getDate()}/${fechaFin.getMonth() + 1}/${fechaFin.getUTCFullYear()}`}</p>
                 <div className="br" />
                 <div className="br" />
               </div>

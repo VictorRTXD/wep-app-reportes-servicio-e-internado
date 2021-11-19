@@ -84,13 +84,13 @@ export default function DocumentoReporteFinal2() {
       for (let i = 0; i < reportesParciales.length; i += 1) {
         // Sumar actividades
         for (let j = 0; j < reportesParciales[i].actividadesRealizadas.length; j += 1) {
-          totalActividadesRealizadas += reportesParciales[i].actividadesRealizadas[j].cantidad;
+          totalActividadesRealizadas += Number(reportesParciales[i].actividadesRealizadas[j].cantidad);
         }
 
         // Sumar atenciones
         for (let j = 0; j < reportesParciales[i].atencionesRealizadas.length; j += 1) {
           atencionesRealizadas[j].cantidad += reportesParciales[i].atencionesRealizadas[j].cantidad;
-          totalDeAtenciones += reportesParciales[i].atencionesRealizadas[j].cantidad;
+          totalDeAtenciones += Number(reportesParciales[i].atencionesRealizadas[j].cantidad);
         }
       }
     } catch (error) {
