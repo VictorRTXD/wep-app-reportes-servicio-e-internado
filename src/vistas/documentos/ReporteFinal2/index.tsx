@@ -5,7 +5,6 @@ import jsPDF from 'jspdf';
 import { Link, Redirect } from 'react-router-dom';
 
 import Encabezado from '../componentes/Encabezado';
-import firma from '../../../recursos/firma.png';
 
 import '../../../global.css';
 import './styles.css';
@@ -265,7 +264,6 @@ export default function DocumentoReporteFinal2() {
           </div>
 
           <div className="ctn-firma">
-            <img id="firma" src={firma} alt="firma" />
             <hr />
             <span>{appConfig.responsableServicio}</span>
             <span>Jefe de la Unidad de Servicio Social</span>

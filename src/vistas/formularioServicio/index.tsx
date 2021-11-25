@@ -260,8 +260,10 @@ export default function CrearServicio() {
         <br />
 
         <button type="button" id="btn-guardar" className="btn-primario" onClick={crearOActualizarServicio}> Guardar </button>
-      </div>
+        <br />
+        <br />
 
+      </div>
     </div>
   );
 }

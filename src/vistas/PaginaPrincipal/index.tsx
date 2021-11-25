@@ -142,23 +142,6 @@ export default function PaginaPrincipal() {
           // eslint-disable-next-line no-console
           console.log('No se pudo obtener los trimestres');
         });
-
-      fetch(`${config.apiBaseUrl}/public/usuarios`, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-        .then((response) => response.json())
-        .then((dataUsuario) => {
-          // eslint-disable-next-line no-console
-          console.log(dataUsuario);
-          sessionStorage.setItem('usuario', JSON.stringify(dataUsuario || []));
-        })
-        .catch((error) => {
-          // eslint-disable-next-line no-console
-          console.log('No se pudo obtener el usuario');
-        });
     } else {
       setRedireccionamiento('/usuario/iniciar-sesion');
       setRetornar(true);

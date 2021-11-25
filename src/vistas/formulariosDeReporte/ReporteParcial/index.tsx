@@ -226,7 +226,7 @@ export default function ReportesParciales() {
       }
 
       for (let j = i + 1; j < actividadesUsuario.length; j += 1) {
-        if (actividadesUsuario[i].id === actividadesUsuario[j].id) {
+        if (actividadesUsuario[i].id === actividadesUsuario[j].id && actividadesUsuario[i].id !== 0) {
           actividadRepetida = true;
         }
       }

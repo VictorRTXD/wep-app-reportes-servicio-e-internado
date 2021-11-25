@@ -8,7 +8,7 @@ import { Link, Redirect } from 'react-router-dom';
 import Navegacion from '../../../componentes/BarraNavegacion';
 import Encabezado from '../componentes/Encabezado';
 import PiePagina from '../componentes/PiePagina';
-import firma from '../../../recursos/firma.png';
+
 import '../../../global.css';
 import './styles.css';
 import Modal, { DatosModal } from '../../../componentes/Modal';
@@ -236,7 +236,7 @@ export default function DocumentoReporteFinal() {
                           <th className="celda-datos-generales celda-campo">Alumno:</th>
                           <td className="celda-datos-generales celda-valor">{usuario.nombre}</td>
                           <th className="celda-datos-generales celda-campo">Código:</th>
-                          <td className="celda-datos-generales celda-valor">{usuario.codigo}</td>
+                          <td className="celda-datos-generales celda-valor">{usuario.id}</td>
                         </tr>
 
                         <tr>
@@ -318,7 +318,6 @@ export default function DocumentoReporteFinal() {
                 </div>
 
                 <div className="ctn-firma">
-                  <img id="firma" src={firma} alt="firma" />
                   <hr />
                   <span>JEFE DE ENSEÑANZA O RECEPTOR</span>
                 </div>

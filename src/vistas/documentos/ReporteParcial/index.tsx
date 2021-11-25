@@ -8,7 +8,6 @@ import jsPDF from 'jspdf';
 
 import Encabezado from '../componentes/Encabezado';
 import PiePagina from '../componentes/PiePagina';
-import firma from '../../../recursos/firma.png';
 
 import '../../../global.css';
 import './styles.css';
@@ -317,7 +316,7 @@ export default function DocumentoReporteParcial() {
                     <th className="celda-datos-generales celda-campo">Alumno:</th>
                     <td className="celda-datos-generales celda-valor">{usuario.nombre}</td>
                     <th className="celda-datos-generales celda-campo">Código:</th>
-                    <td className="celda-datos-generales celda-valor">{usuario.codigo}</td>
+                    <td className="celda-datos-generales celda-valor">{usuario.id}</td>
                   </tr>
 
                   <tr>
@@ -471,7 +470,6 @@ export default function DocumentoReporteParcial() {
               </div>
 
               <div className="ctn-firma">
-                <img id="firma" src={firma} alt="firma" />
                 <hr />
                 <span>SELLO DE LA INSTITUCIÓN</span>
               </div>
@@ -566,7 +564,6 @@ export default function DocumentoReporteParcial() {
                 </div>
 
                 <div className="ctn-firma">
-                  <img id="firma" src={firma} alt="firma" />
                   <hr />
                   <span>SELLO DE LA INSTITUCIÓN</span>
                 </div>

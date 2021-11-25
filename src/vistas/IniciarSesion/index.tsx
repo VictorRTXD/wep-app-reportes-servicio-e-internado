@@ -43,6 +43,21 @@ export default function InicioSesion() {
             if (data.token) {
               sessionStorage.setItem('token', data.token);
             }
+
+            fetch(`${config.apiBaseUrl}/public/usuarios?codigo=${codigo.current?.value}&nip=${nip.current?.value}`, {
+              method: 'GET',
+            })
+              .then((response) => response.json())
+              .then((dataUsuario) => {
+                // eslint-disable-next-line no-console
+                console.log(dataUsuario);
+                sessionStorage.setItem('usuario', JSON.stringify(dataUsuario || []));
+              })
+              .catch(() => {
+                // eslint-disable-next-line no-console
+                console.log('No se pudo obtener el usuario');
+              });
+
             setRedireccionamiento('/');
             setRetornar(true);
           } else if (data.code) {
