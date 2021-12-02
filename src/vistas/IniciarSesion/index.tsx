@@ -112,7 +112,7 @@ export default function InicioSesion() {
         callback={cerrarModal}
       />
 
-      <div className="title-bar"><span>Reportes Area de la Salud</span></div>
+      <div className="title-bar centrar"><span>Reportes Area de la Salud</span></div>
       <br />
       <br />
 
