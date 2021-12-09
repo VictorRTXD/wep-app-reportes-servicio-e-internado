@@ -12,6 +12,7 @@ import PiePagina from '../componentes/PiePagina';
 import '../../../global.css';
 import './styles.css';
 import Modal, { DatosModal } from '../../../componentes/Modal';
+import obtenerCarrerra from '../../../recursos/obtenerCarrera';
 
 interface ActividadesReporteParcial {
   id: number,
@@ -241,7 +242,7 @@ export default function DocumentoReporteFinal() {
 
                         <tr>
                           <th className="celda-datos-generales celda-campo">Carrera:</th>
-                          <td className="celda-datos-generales celda-valor">{usuario.carrera}</td>
+                          <td className="celda-datos-generales celda-valor">{obtenerCarrerra(usuario.carrera)}</td>
                           <th className="celda-datos-generales celda-campo">Horario:</th>
                           <td className="celda-datos-generales celda-valor">{`${datosGenerales.horarioHoraInicio} - ${datosGenerales.horarioHoraFin}`}</td>
                         </tr>
