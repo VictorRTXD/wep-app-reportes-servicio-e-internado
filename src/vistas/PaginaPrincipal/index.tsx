@@ -136,7 +136,19 @@ export default function PaginaPrincipal() {
         .then((dataTrimestres) => {
           // eslint-disable-next-line no-console
           console.log(dataTrimestres);
+
           sessionStorage.setItem('trimestres', JSON.stringify(dataTrimestres || []));
+
+          if (Array.isArray(dataTrimestres)) {
+            if (dataTrimestres.length <= 0) {
+              setDatosModal({
+                tipo: 'error',
+                texto: 'No se puedieron obtener las fechas de los trimestres. Quizás las fechas que ingresaste son inválidas',
+                visibilidad: true,
+                callback: () => {},
+              });
+            }
+          }
         })
         .catch((error) => {
           // eslint-disable-next-line no-console

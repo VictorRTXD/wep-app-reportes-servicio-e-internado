@@ -90,41 +90,56 @@ export default function ReportesParciales() {
 
   let aunNoSePuedeRealizarReporte: boolean = false;
 
-  switch (numeroReporte) {
-    case 1:
-      if (new Date().getTime() < new Date(trimestres[1].fechaInicio).getTime()) {
-        if (redireccionamiento === '') {
-          setRedireccionamiento('/');
-        }
-        aunNoSePuedeRealizarReporte = true;
+  if (Array.isArray(trimestres) || !trimestres) {
+    if (trimestres.length <= 0 || !trimestres) {
+      if (datosModal.visibilidad === false) {
+        setRedireccionamiento('/servicio/formulario');
+
+        setDatosModal({
+          tipo: 'error',
+          texto: 'No se puedieron obtener las fechas de los trimestres. Quizás las fechas que ingresaste son inválidas. Vuelve a ingresar las fechas',
+          visibilidad: true,
+          callback: () => {},
+        });
       }
-      break;
-    case 2:
-      if (new Date().getTime() < new Date(trimestres[2].fechaInicio).getTime()) {
-        if (redireccionamiento === '') {
-          setRedireccionamiento('/reportes-parciales/1');
+    }
+  } else {
+    switch (numeroReporte) {
+      case 1:
+        if (new Date().getTime() < new Date(trimestres[1].fechaInicio).getTime()) {
+          if (redireccionamiento === '') {
+            setRedireccionamiento('/');
+          }
+          aunNoSePuedeRealizarReporte = true;
         }
-        aunNoSePuedeRealizarReporte = true;
-      }
-      break;
-    case 3:
-      if (new Date().getTime() < new Date(trimestres[3].fechaInicio).getTime()) {
-        if (redireccionamiento === '') {
-          setRedireccionamiento('/reportes-parciales/2');
+        break;
+      case 2:
+        if (new Date().getTime() < new Date(trimestres[2].fechaInicio).getTime()) {
+          if (redireccionamiento === '') {
+            setRedireccionamiento('/reportes-parciales/1');
+          }
+          aunNoSePuedeRealizarReporte = true;
         }
-        aunNoSePuedeRealizarReporte = true;
-      }
-      break;
-    case 4:
-      if (new Date().getTime() < new Date(trimestres[3].fechaFin).getTime()) {
-        if (redireccionamiento === '') {
-          setRedireccionamiento('/reportes-parciales/3');
+        break;
+      case 3:
+        if (new Date().getTime() < new Date(trimestres[3].fechaInicio).getTime()) {
+          if (redireccionamiento === '') {
+            setRedireccionamiento('/reportes-parciales/2');
+          }
+          aunNoSePuedeRealizarReporte = true;
         }
-        aunNoSePuedeRealizarReporte = true;
-      }
-      break;
-    default:
-      break;
+        break;
+      case 4:
+        if (new Date().getTime() < new Date(trimestres[3].fechaFin).getTime()) {
+          if (redireccionamiento === '') {
+            setRedireccionamiento('/reportes-parciales/3');
+          }
+          aunNoSePuedeRealizarReporte = true;
+        }
+        break;
+      default:
+        break;
+    }
   }
 
   if (aunNoSePuedeRealizarReporte && redireccionamiento === '') {
