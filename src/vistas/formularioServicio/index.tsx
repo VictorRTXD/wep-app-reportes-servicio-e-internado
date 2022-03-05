@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Redirect } from 'react-router';
 
-import Navegacion from '../../componentes/BarraNavegacion';
-
 import config from '../../appConfig';
 import '../../global.css';
 import './styles.css';
@@ -196,7 +194,7 @@ export default function CrearServicio() {
         callback={cerrarModal}
       />
 
-      <Navegacion />
+      <div className="title-bar centrar"><span><b>Reportes Area de la Salud</b></span></div>
       <br />
       <br />
 

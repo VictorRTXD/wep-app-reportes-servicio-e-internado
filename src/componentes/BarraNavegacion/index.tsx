@@ -12,6 +12,7 @@ export default function Navegacion() {
         <div className="title-bar centrar"><span><b>Reportes Area de la Salud</b></span></div>
         <br />
         <div className="buttons-container">
+          <Link to="/servicio/formulario" type="button" id="servicio" className="link-redondo link-texto-largo centrar"> Servicio </Link>
           <Link to="/reportes-parciales/1" type="button" className="link-redondo"> 1 </Link>
           <Link to="/reportes-parciales/2" type="button" className="link-redondo"> 2 </Link>
           <Link to="/reportes-parciales/3" type="button" className="link-redondo"> 3 </Link>

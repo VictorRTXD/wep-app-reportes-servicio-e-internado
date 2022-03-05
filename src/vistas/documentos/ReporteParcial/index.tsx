@@ -39,12 +39,15 @@ export default function DocumentoReporteParcial() {
   const [documentStyles, setDocumentStyles] = useState({});
   const [deseaDescargarDocumento, setDeseaDescargarDocumento] = useState(false);
 
-  let fechaInicio = new Date(0);
-  let fechaFin = new Date(0);
+  let fechaInicio: string;
+  let fechaFin: string;
 
   if (trimestres[numeroReporte - 1]) {
-    fechaInicio = new Date(trimestres[numeroReporte - 1].fechaInicio);
-    fechaFin = new Date(trimestres[numeroReporte - 1].fechaFin);
+    let splitAux: string[];
+    splitAux = trimestres[numeroReporte - 1].fechaInicio.split('-');
+    fechaInicio = `${splitAux[2].substring(0, 2)}/${splitAux[1]}/${splitAux[0]}`;
+    splitAux = trimestres[numeroReporte - 1].fechaFin.split('-');
+    fechaFin = `${splitAux[2].substring(0, 2)}/${splitAux[1]}/${splitAux[0]}`;
   }
 
   const [actividadesReporte, setActividadesReporte] = useState<ActividadesReporteParcial[]>([]);
@@ -74,10 +77,6 @@ export default function DocumentoReporteParcial() {
         cantidad: [],
       },
       {
-        descripcion: 'Niñas 0 a 12 años',
-        cantidad: [],
-      },
-      {
         descripcion: 'Hombres',
         cantidad: [],
       },
@@ -86,11 +85,7 @@ export default function DocumentoReporteParcial() {
         cantidad: [],
       },
       {
-        descripcion: 'Geríatrico hombre',
-        cantidad: [],
-      },
-      {
-        descripcion: 'Geríatrico Mujer',
+        descripcion: 'Geríatrico',
         cantidad: [],
       },
     ];
@@ -200,27 +195,30 @@ export default function DocumentoReporteParcial() {
         for (let i = 0; i < paginas.length; i += 1) {
           const htmlElement: any = document.getElementById(`Pagina_${i}`);
           // eslint-disable-next-line no-await-in-loop
-          const canvas = await html2canvas(htmlElement);
-          const divImage = canvas.toDataURL('image/png');
+          const canvas = await html2canvas(htmlElement, { scale: 2 });
+          const divImage = canvas.toDataURL('image/jpeg', 1.0);
           if (i === 0) {
-            pdf.addImage(divImage, 0, 0, width, height);
+            pdf.addImage(divImage, 'JPEG', 0, 0, width, height);
           } else {
-            pdf.addPage().addImage(divImage, 0, 0, width, height);
+            pdf.addPage().addImage(divImage, 'JPEG', 0, 0, width, height);
           }
         }
 
         if (atencionesVanEnUnaNuevaPagina) {
           const htmlElement: any = document.getElementById('atenciones-realizadas');
-          const canvas = await html2canvas(htmlElement);
-          const divImage = canvas.toDataURL('image/png');
-          pdf.addPage().addImage(divImage, 0, 0, width, height);
+          const canvas = await html2canvas(htmlElement, { scale: 2 });
+          const divImage = canvas.toDataURL('image/jpeg', 1.0);
+          pdf.addPage().addImage(divImage, 'JPEG', 0, 0, width, height);
         }
 
         pdf.save(`Reporte Parcial ${numeroReporte} ${usuario.nombre}`);
         setDeseaDescargarDocumento(false);
       })();
     } else {
-      setDocumentStyles({});
+      setDocumentStyles({
+        position: 'relative',
+        height: '280mm',
+      });
     }
   }, [deseaDescargarDocumento]);
 
@@ -228,7 +226,10 @@ export default function DocumentoReporteParcial() {
     setDocumentStyles({
       height: '280mm',
       width: '220mm',
-      padding: '15mm',
+      paddingTop: '15mm',
+      paddingLeft: '15mm',
+      paddingRight: '15mm',
+      position: 'relative',
     });
     setDeseaDescargarDocumento(true);
   };
@@ -354,9 +355,9 @@ export default function DocumentoReporteParcial() {
             <div>
               <div id="encabezado-fechas">
                 <span className="fechas-campo">Fecha de Inicio:</span>
-                <p className="fechas-valor">{`${fechaInicio.getDate()}/${fechaInicio.getMonth() + 1}/${fechaInicio.getUTCFullYear()}`}</p>
+                <p className="fechas-valor">{fechaInicio}</p>
                 <span className="fechas-campo">Fecha de Fin:</span>
-                <p className="fechas-valor">{`${fechaFin.getDate()}/${fechaFin.getMonth() + 1}/${fechaFin.getUTCFullYear()}`}</p>
+                <p className="fechas-valor">{fechaFin}</p>
                 <div className="br" />
                 <div className="br" />
               </div>
@@ -412,7 +413,7 @@ export default function DocumentoReporteParcial() {
             <div className="br" />
 
             {
-              atencionesVanEnUnaNuevaPagina === false
+              !atencionesVanEnUnaNuevaPagina && (paginas.length <= 1 || index > 0)
               && (
                 <table>
                   <thead>
@@ -464,22 +465,24 @@ export default function DocumentoReporteParcial() {
               )
             }
 
-            <div className="ctn-firmas">
-              <div className="ctn-firma">
-                <hr />
-                <span>NOMBRE Y FIRMA DEL PSS</span>
-              </div>
+            { !atencionesVanEnUnaNuevaPagina && (paginas.length <= 1 || index > 0) && (
+              <div className="ctn-firmas">
+                <div className="ctn-firma">
+                  <hr />
+                  <span>{usuario.nombre}</span>
+                </div>
 
-              <div className="ctn-firma">
-                <hr />
-                <span>SELLO DE LA INSTITUCIÓN</span>
-              </div>
+                <div className="ctn-firma">
+                  <hr />
+                  <span>SELLO DE LA INSTITUCIÓN</span>
+                </div>
 
-              <div className="ctn-firma">
-                <hr />
-                <span>JEFE DE ENSEÑANZA O RECEPTOR</span>
+                <div className="ctn-firma">
+                  <hr />
+                  <span>JEFE DE ENSEÑANZA O RECEPTOR</span>
+                </div>
               </div>
-            </div>
+            )}
 
             <div className="numero-de-pagina">
               <p>
@@ -488,7 +491,6 @@ export default function DocumentoReporteParcial() {
             </div>
 
             <PiePagina />
-            <div className="br" />
           </div>
 
           <br />
@@ -561,7 +563,7 @@ export default function DocumentoReporteParcial() {
               <div className="ctn-firmas">
                 <div className="ctn-firma">
                   <hr />
-                  <span>NOMBRE Y FIRMA DEL PSS</span>
+                  <span>{usuario.nombre}</span>
                 </div>
 
                 <div className="ctn-firma">
@@ -582,7 +584,6 @@ export default function DocumentoReporteParcial() {
               </div>
 
               <PiePagina />
-              <div className="br" />
             </div>
           </div>
         )

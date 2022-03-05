@@ -37,7 +37,7 @@ export default function Modal(props: any) {
         <div className="Modal">
           <br />
 
-          <h2>{texto}</h2>
+          <h2 className="modal-txt">{texto}</h2>
           <br />
 
           <img id="img-hecho" className="img" src={Hecho} alt="Hecho" />
@@ -53,11 +53,11 @@ export default function Modal(props: any) {
           <br />
 
           <img className="img" src={OMG} alt="OMG" />
-          <h2>¡Oh Cielos!</h2>
+          <h2>Ha ocurrido un error.</h2>
           <br />
           <br />
 
-          <h2>{texto}</h2>
+          <h2 className="modal-txt">{texto}</h2>
           <br />
 
           <button type="button" onClick={cerrar} id="btn-modal" className="btn-terciario">Cerrar</button>

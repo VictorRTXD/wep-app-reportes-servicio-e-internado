@@ -141,9 +141,10 @@ export default function PaginaPrincipal() {
 
           if (Array.isArray(dataTrimestres)) {
             if (dataTrimestres.length <= 0) {
+              setRedireccionamiento('/servicio/formulario');
               setDatosModal({
                 tipo: 'error',
-                texto: 'No se puedieron obtener las fechas de los trimestres. Quizás las fechas que ingresaste son inválidas',
+                texto: 'No se puedieron obtener las fechas de los trimestres. Quizás las fechas que ingresaste son inválidas. ',
                 visibilidad: true,
                 callback: () => {},
               });
