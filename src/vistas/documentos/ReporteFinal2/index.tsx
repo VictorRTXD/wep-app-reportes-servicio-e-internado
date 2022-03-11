@@ -27,10 +27,6 @@ export default function DocumentoReporteFinal2() {
       cantidad: 0,
     },
     {
-      descripcion: 'Niñas 0 a 12 años',
-      cantidad: 0,
-    },
-    {
       descripcion: 'Hombres',
       cantidad: 0,
     },
@@ -39,11 +35,7 @@ export default function DocumentoReporteFinal2() {
       cantidad: 0,
     },
     {
-      descripcion: 'Geríatrico hombre',
-      cantidad: 0,
-    },
-    {
-      descripcion: 'Geríatrico Mujer',
+      descripcion: 'Geríatrico',
       cantidad: 0,
     },
   ];
@@ -113,8 +105,8 @@ export default function DocumentoReporteFinal2() {
     if (deseaDescargarDocumento) {
       const imagenADocumento: any = document.getElementById('capturaReporteFinal2');
 
-      html2canvas(imagenADocumento).then((canvas: any) => {
-        const divImage = canvas.toDataURL('image/png');
+      html2canvas(imagenADocumento, { scale: 2 }).then((canvas: any) => {
+        const divImage = canvas.toDataURL('image/jpeg', 1.0);
         // eslint-disable-next-line new-cap
         const pdf = new jsPDF('p', 'mm', [280, 220]);
 
@@ -126,7 +118,10 @@ export default function DocumentoReporteFinal2() {
       });
       setDeseaDescargarDocumento(false);
     } else {
-      setDocumentStyles({});
+      setDocumentStyles({
+        position: 'relative',
+        height: '280mm',
+      });
     }
   }, [deseaDescargarDocumento]);
 
@@ -136,6 +131,7 @@ export default function DocumentoReporteFinal2() {
       height: '280mm',
       width: '220mm',
       padding: '15mm',
+      position: 'relative',
     });
   };
 
@@ -233,45 +229,50 @@ export default function DocumentoReporteFinal2() {
         <br />
 
         <table id="reporte-final-2-tabla-atenciones-realizadas">
+          <th colSpan={4}>Atenciones Brindadas</th>
           <tbody>
             <tr>
               <th className="border-unset">Mujeres:</th>
-              <td className="border-unset">{atencionesRealizadas[4].cantidad}</td>
+              <td className="border-unset">{atencionesRealizadas[3].cantidad}</td>
               <th className="border-unset">Niños:</th>
-              <td className="border-unset">{atencionesRealizadas[1].cantidad + atencionesRealizadas[2].cantidad}</td>
+              <td className="border-unset">{atencionesRealizadas[1].cantidad}</td>
             </tr>
 
             <tr>
               <th className="border-unset">Hombres:</th>
-              <td className="border-unset">{atencionesRealizadas[3].cantidad}</td>
+              <td className="border-unset">{atencionesRealizadas[2].cantidad}</td>
               <th className="border-unset">Prenatales:</th>
-              <td className="border-unset">{atencionesRealizadas[0].cantidad + atencionesRealizadas[2].cantidad}</td>
+              <td className="border-unset">{atencionesRealizadas[0].cantidad}</td>
             </tr>
 
             <tr>
               <th className="border-unset">Geríatricos:</th>
-              <td className="border-unset">{atencionesRealizadas[5].cantidad + atencionesRealizadas[6].cantidad}</td>
+              <td className="border-unset">{atencionesRealizadas[4].cantidad}</td>
               <th className="border-unset">Total de Atenciones:</th>
               <td className="border-unset">{totalDeAtenciones}</td>
             </tr>
           </tbody>
         </table>
 
-        <div>
+        <div className="ctn-firmas">
           <div className="ctn-firma">
             <hr />
-            <span>NOMBRE Y FIRMA DEL PSS</span>
+            <span>{usuario.nombre}</span>
+            <br />
+            <span>ㅤ</span>
           </div>
 
           <div className="ctn-firma">
             <hr />
             <span>{appConfig.responsableServicio}</span>
+            <br />
             <span>Jefe de la Unidad de Servicio Social</span>
           </div>
 
           <div className="ctn-firma">
             <hr />
-            <span>Nombre sell y firma</span>
+            <span>Nombre sello y firma</span>
+            <br />
             <span>Jefe de Enseñanza o Receptor</span>
           </div>
         </div>

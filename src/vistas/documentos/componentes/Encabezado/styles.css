@@ -16,13 +16,13 @@ h1 {
 #ctn-escudo {
   display: inline-block;
   height: 100%;
-  width: 15%;
-  margin-right: 5%;
+  margin-right: 1mm;
 }
 
 #ctn-titulos {
   display: inline-block;
-  position: absolute;
+  position: relative;
+  bottom: 2mm;
   width: 80%;
 }
 

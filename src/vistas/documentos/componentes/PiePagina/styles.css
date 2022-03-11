@@ -1,5 +1,9 @@
 #pie-de-pagina {
   height: 10mm;
+  width: 70mm;
   text-align: center;
   font-size: 75%;
+  position: absolute;
+  bottom: 20mm;
+  left: calc((100% - 70mm) / 2);
 }

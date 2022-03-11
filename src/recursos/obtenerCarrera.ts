@@ -1,32 +1,30 @@
 export default function obtenerCarrerra(abreviacion: string): string {
   switch (abreviacion) {
+    case 'NUT':
+      return 'Licenciatura en Nutrición';
+    case 'LNTO':
+      return 'Licenciatura en Nutrición';
     case 'ENFA':
-      return 'LIC EN ENFERMERIA';
+      return 'Licenciatura en enfermería';
     case 'NUTA':
-      return 'LIC EN NUTRICION';
+      return 'Licenciatura en Nutrición';
     case 'DENA':
-      return 'LIC EN CIRUJANO DENTISTA';
+      return 'Licenciatura en Cirujano Dentista';
     case 'MCPA':
-      return 'LIC MEDICO CIRUJANO Y PARTERO';
-    case 'MCPE':
-      return 'MEDICO CIRUJANO Y PARTERO';
+      return 'Licenciatura Médico Cirujano y Partero';
+    case 'MCP':
+      return 'Licenciatura Médico Cirujano y Partero';
     case 'LENF':
-      return 'LICENCIATURA EN ENFERMERIA';
+      return 'Licenciatura en Enfermería';
+    case 'ENF':
+      return 'Licenciatura en enfermería';
     case 'LICD':
-      return 'LIC. EN CIRUJANO DENTISTA';
-    case 'EODP':
-      return 'ESPECIALIDAD EN ODONTOPEDIATRIA';
-    case 'EMFM':
-      return 'ESP. EN MEDICINA FAMILIAR';
-    case 'EMUR':
-      return 'ESP.EN MEDICINA DE URGENCIAS';
-    case 'ENDO':
-      return 'ESP EN ENDODONCIA';
+      return 'Licenciatura en Cirujano Dentista';
+    case 'DEN':
+      return 'Licenciatura en Cirujano Dentista';
     case 'MIDU':
-      return 'MAE EN CS DE LA SAL PUB OR EDU';
-    case 'ESEN':
-      return 'ESP.EN ENDODONCIA';
+      return 'Maestría en Salud Pública';
     default:
-      return '';
+      return abreviacion;
   }
 }

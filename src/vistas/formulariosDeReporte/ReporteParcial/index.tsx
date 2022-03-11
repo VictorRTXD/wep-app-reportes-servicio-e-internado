@@ -40,34 +40,28 @@ export default function ReportesParciales() {
 
   const actividadesReporteAux: ActividadesReporteParcial[] = [];
 
-  const antencionesRealizadasAux: AtencionesRealizadas[] = [{
-    descripcion: 'Prenatales',
-    cantidad: 0,
-  },
-  {
-    descripcion: 'Niños 0 a 12 años',
-    cantidad: 0,
-  },
-  {
-    descripcion: 'Niñas 0 a 12 años',
-    cantidad: 0,
-  },
-  {
-    descripcion: 'Hombres',
-    cantidad: 0,
-  },
-  {
-    descripcion: 'Mujeres',
-    cantidad: 0,
-  },
-  {
-    descripcion: 'Geríatrico hombre',
-    cantidad: 0,
-  },
-  {
-    descripcion: 'Geríatrico Mujer',
-    cantidad: 0,
-  }];
+  const antencionesRealizadasAux: AtencionesRealizadas[] = [
+    {
+      descripcion: 'Prenatales',
+      cantidad: 0,
+    },
+    {
+      descripcion: 'Niños 0 a 12 años',
+      cantidad: 0,
+    },
+    {
+      descripcion: 'Hombres',
+      cantidad: 0,
+    },
+    {
+      descripcion: 'Mujeres',
+      cantidad: 0,
+    },
+    {
+      descripcion: 'Geríatrico',
+      cantidad: 0,
+    },
+  ];
 
   const [datosModal, setDatosModal] = useState<DatosModal>({
     tipo: null,
@@ -165,7 +159,7 @@ export default function ReportesParciales() {
         }
       }
 
-      incializadorTotalActividades += reportesParciales[numeroReporte - 1].actividadesRealizadas[i].cantidad;
+      incializadorTotalActividades += Number(reportesParciales[numeroReporte - 1].actividadesRealizadas[i].cantidad);
 
       actividadesReporteAux.push({
         id: actividadesDeUsuario[indexActividadUsuario].id,
@@ -499,7 +493,7 @@ export default function ReportesParciales() {
 
                   <td>
                     <input
-                      type="text"
+                      type="number"
                       name="cantidad"
                       key="dummy"
                       min="0"
@@ -566,20 +560,6 @@ export default function ReportesParciales() {
             </tr>
 
             <tr>
-              <td>Niñas</td>
-              <td>
-                <input
-                  type="text"
-                  name="ninias"
-                  key="dummy"
-                  min="0"
-                  value={atencionesRealizadas[2].cantidad}
-                  onChange={(e) => manejarCambiosAtenciones(e, 2)}
-                />
-              </td>
-            </tr>
-
-            <tr>
               <td>Hombres</td>
               <td>
                 <input
@@ -587,8 +567,8 @@ export default function ReportesParciales() {
                   name="hombres"
                   key="dummy"
                   min="0"
-                  value={atencionesRealizadas[3].cantidad}
-                  onChange={(e) => manejarCambiosAtenciones(e, 3)}
+                  value={atencionesRealizadas[2].cantidad}
+                  onChange={(e) => manejarCambiosAtenciones(e, 2)}
                 />
               </td>
             </tr>
@@ -601,36 +581,22 @@ export default function ReportesParciales() {
                   name="mujeres"
                   key="dummy"
                   min="0"
-                  value={atencionesRealizadas[4].cantidad}
-                  onChange={(e) => manejarCambiosAtenciones(e, 4)}
+                  value={atencionesRealizadas[3].cantidad}
+                  onChange={(e) => manejarCambiosAtenciones(e, 3)}
                 />
               </td>
             </tr>
 
             <tr>
-              <td>Geriátrico Masculino</td>
+              <td>Geriátrico</td>
               <td>
                 <input
                   type="text"
                   name="geriatricomasculino"
                   key="dummy"
                   min="0"
-                  value={atencionesRealizadas[5].cantidad}
-                  onChange={(e) => manejarCambiosAtenciones(e, 5)}
-                />
-              </td>
-            </tr>
-
-            <tr>
-              <td>Geriátrico Femenino</td>
-              <td>
-                <input
-                  type="text"
-                  name="geriatricofeminino"
-                  key="dummy"
-                  min="0"
-                  value={atencionesRealizadas[6].cantidad}
-                  onChange={(e) => manejarCambiosAtenciones(e, 6)}
+                  value={atencionesRealizadas[4].cantidad}
+                  onChange={(e) => manejarCambiosAtenciones(e, 4)}
                 />
               </td>
             </tr>

@@ -82,7 +82,7 @@ export default function InicioSesion() {
 
           setDatosModal({
             tipo: 'error',
-            texto: 'No se puedo conectar al servidor',
+            texto: 'No se pudo conectar al servidor',
             visibilidad: true,
             callback: () => {},
           });
@@ -112,7 +112,7 @@ export default function InicioSesion() {
         callback={cerrarModal}
       />
 
-      <div className="title-bar centrar"><span>Reportes Area de la Salud</span></div>
+      <div className="title-bar centrar"><span>Reportes Área de la Salud</span></div>
       <br />
       <br />
 
@@ -127,7 +127,7 @@ export default function InicioSesion() {
 
         <label id="nip" htmlFor="nip">
           NIP:
-          <input type="text" name="nip" ref={nip} />
+          <input type="password" name="nip" ref={nip} />
         </label>
         <br />
 

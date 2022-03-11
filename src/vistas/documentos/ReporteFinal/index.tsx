@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-import { Link, Redirect } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 
 import Navegacion from '../../../componentes/BarraNavegacion';
 import Encabezado from '../componentes/Encabezado';
@@ -29,6 +29,7 @@ export default function DocumentoReporteFinal() {
 
   const [documentStyles, setDocumentStyles] = useState({});
   const [deseaDescargarDocumento, setDeseaDescargarDocumento] = useState(false);
+  const [totalHoras, setTotalHoras] = useState(0);
 
   const [datosModal, setDatosModal] = useState<DatosModal>({
     tipo: null,
@@ -41,14 +42,12 @@ export default function DocumentoReporteFinal() {
 
   const [paginas, setPaginas] = useState<any[][]>([]);
 
-  let totalHoras = 0;
-
   const fechaInicio = new Date(datosGenerales.fechaInicio);
   const fechaFin = new Date(datosGenerales.fechaFin);
 
   useEffect(() => {
     const actividadesReporte: ActividadesReporteParcial[] = [];
-
+    let horasAux = 0;
     if (reportesParciales.length === 4) {
       for (let i = 0; i < reportesParciales.length; i += 1) {
         // Mapear actividades
@@ -82,8 +81,9 @@ export default function DocumentoReporteFinal() {
           }
         }
 
-        totalHoras += reportesParciales[i].horasRealizadas;
+        horasAux += Number(reportesParciales[i].horasRealizadas);
       }
+      setTotalHoras(horasAux);
     } else if (redireccionamiento === '') {
       setRedireccionamiento(`/reportes-parciales/${reportesParciales.length + 1}/formulario`);
 
@@ -98,10 +98,10 @@ export default function DocumentoReporteFinal() {
     // Dividir activiadades en paginas
     let i = 0;
 
-    // Primera hoja que es diferente, le caben 18, todo esta maquetado en cm
+    // Primera hoja que es diferente, le caben 22, todo esta maquetado en cm
     const primeraPagina: any[] = [];
 
-    while (i < actividadesReporte.length && i < 18) {
+    while (i < actividadesReporte.length && i < 22) {
       primeraPagina.push({
         id: actividadesReporte[i].id,
         descripcion: actividadesReporte[i].descripcion,
@@ -110,7 +110,7 @@ export default function DocumentoReporteFinal() {
       i += 1;
     }
 
-    i = 18;
+    i = 22;
     const pagingasAux: any[] = [primeraPagina];
 
     while (i < actividadesReporte.length) {
@@ -145,8 +145,8 @@ export default function DocumentoReporteFinal() {
         for (let i = 0; i < paginas.length; i += 1) {
           const htmlElement: any = document.getElementById(`Pagina_${i}`);
           // eslint-disable-next-line no-await-in-loop
-          const canvas = await html2canvas(htmlElement);
-          const divImage = canvas.toDataURL('image/png');
+          const canvas = await html2canvas(htmlElement, { scale: 2 });
+          const divImage = canvas.toDataURL('image/jpeg', 1.0);
           if (i === 0) {
             pdf.addImage(divImage, 0, 0, width, height);
           } else {
@@ -158,7 +158,10 @@ export default function DocumentoReporteFinal() {
         setDeseaDescargarDocumento(false);
       })();
     } else {
-      setDocumentStyles({});
+      setDocumentStyles({
+        position: 'relative',
+        height: '280mm',
+      });
     }
   }, [deseaDescargarDocumento]);
 
@@ -168,6 +171,7 @@ export default function DocumentoReporteFinal() {
       height: '280mm',
       width: '220mm',
       padding: '15mm',
+      position: 'relative',
     });
   };
 
@@ -205,9 +209,6 @@ export default function DocumentoReporteFinal() {
 
       <div className="ctn-btns-descargar-y-modificar">
         <button type="button" onClick={descargarDocumento} className="btn-primario">Descargar</button>
-        <div className="ctn-btn-link">
-          <Link to="/reporte-final/formulario" type="button" className="btn-secundario btn-link"> Modificar </Link>
-        </div>
       </div>
       <div className="br" />
 
@@ -255,16 +256,17 @@ export default function DocumentoReporteFinal() {
                         </tr>
 
                         <tr>
-                          <th className="celda-datos-generales celda-campo">Fecha Inicio:</th>
-                          <td className="celda-datos-generales celda-valor">{`${fechaInicio.getDate()}/${fechaInicio.getMonth() + 1}/${fechaInicio.getUTCFullYear()}`}</td>
-                          <th className="celda-datos-generales celda-campo">Fecha Fin:</th>
-                          <td className="celda-datos-generales celda-valor">{`${fechaFin.getDate()}/${fechaFin.getMonth() + 1}/${fechaFin.getUTCFullYear()}`}</td>
-                        </tr>
-
-                        <tr>
                           <th className="celda-datos-generales celda-campo">Receptor:</th>
                           <td className="celda-datos-generales celda-valor">{datosGenerales.receptor}</td>
                         </tr>
+
+                        <tr>
+                          <th className="celda-datos-generales celda-campo">Fecha de Inicio:</th>
+                          <td className="celda-datos-generales celda-valor">{`${fechaInicio.getDate()}/${fechaInicio.getMonth() + 1}/${fechaInicio.getUTCFullYear()}`}</td>
+                          <th className="celda-datos-generales celda-campo">Fecha de Terminación:</th>
+                          <td className="celda-datos-generales celda-valor">{`${fechaFin.getDate()}/${fechaFin.getMonth() + 1}/${fechaFin.getUTCFullYear()}`}</td>
+                        </tr>
+
                       </tbody>
                     </table>
                     <div className="br" />
@@ -306,23 +308,6 @@ export default function DocumentoReporteFinal() {
                   }
                 </tbody>
               </table>
-
-              <div className="ctn-firmas">
-                <div className="ctn-firma">
-                  <hr />
-                  <span>NOMBRE Y FIRMA DEL PSS</span>
-                </div>
-
-                <div className="ctn-firma">
-                  <hr />
-                  <span>SELLO DE LA INSTITUCIÓN</span>
-                </div>
-
-                <div className="ctn-firma">
-                  <hr />
-                  <span>JEFE DE ENSEÑANZA O RECEPTOR</span>
-                </div>
-              </div>
 
               <div className="numero-de-pagina">
                 <p>

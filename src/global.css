@@ -69,6 +69,8 @@ button {
 
 .ctn-firmas {
   height: 45mm;
+  position: relative;
+  top: 25mm;
 }
 
 .ctn-con-padding {
@@ -82,6 +84,9 @@ button {
 .numero-de-pagina {
   height: 5mm;
   text-align: right;
+  position: absolute;
+  bottom: 20mm;
+  right: 15mm;
 }
 
 .salto-pagina {
@@ -102,4 +107,6 @@ button {
   color: #153547;
 }
 
-
+.modal-txt {
+  overflow-x: auto;
+}
