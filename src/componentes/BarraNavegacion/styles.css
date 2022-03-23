@@ -1,7 +1,9 @@
 .title-bar {
-  height: 2em;
   font-size: 2em;
+  font-weight: bold;
   color: white;
+  padding-top: 15px;
+  padding-bottom: 15px;
   background-color: #CD5700;
   text-align: center;
 }

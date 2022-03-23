@@ -90,6 +90,12 @@ export default function InicioSesion() {
     }
   }
 
+  function enter(e: any) {
+    if (e.key === 'Enter') {
+      inciarSesion();
+    }
+  }
+
   function cerrarModal() {
     setDatosModal({
       tipo: null,
@@ -119,19 +125,19 @@ export default function InicioSesion() {
       <h2 className="texto-encabezado">Iniciar Sesión</h2>
 
       <div className="ctn-con-padding">
-        <label id="codigo" htmlFor="codigo">
-          Código:
-          <input type="text" name="codigo" ref={codigo} />
+        <label id="codigo" className="label-sesion" htmlFor="codigo">
+          Código de alumno:
+          <input type="text" className="input-sesion" name="codigo" ref={codigo} />
         </label>
         <br />
 
-        <label id="nip" htmlFor="nip">
+        <label id="nip" className="label-sesion" htmlFor="nip">
           NIP:
-          <input type="password" name="nip" ref={nip} />
+          <input type="password" onKeyDown={enter} className="input-sesion" name="nip" ref={nip} />
         </label>
         <br />
 
-        <button type="button" className="btn-primario" onClick={inciarSesion}> Iniciar Sesión </button>
+        <button type="button" className="btn-primario iniciar-sesion" onClick={inciarSesion}> Iniciar Sesión </button>
         <br />
       </div>
     </>

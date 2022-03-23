@@ -53,7 +53,7 @@ export default function Modal(props: any) {
           <br />
 
           <img className="img" src={OMG} alt="OMG" />
-          <h2>Ha ocurrido un error.</h2>
+          <h2 className="modal-message">Ha ocurrido un error.</h2>
           <br />
           <br />
 
