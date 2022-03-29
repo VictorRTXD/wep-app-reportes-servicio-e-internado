@@ -27,11 +27,11 @@
   font-size: 1.4rem;
   border: 1px solid #cc0000;
   height: 2.7rem;
+  width: 100px;
   background-color: #cc0000;
   border-radius: 20px;
   position: absolute;
-  left: 50%;
-  margin-left: -2.5em;
+  left: calc(50% - 50px);
   bottom: 5%;
 }
 

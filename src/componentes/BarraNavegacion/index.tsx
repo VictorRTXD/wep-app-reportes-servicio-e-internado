@@ -9,8 +9,7 @@ export default function Navegacion() {
   return (
     <>
       <div id="ctn-barra-navegacion">
-        <div className="title-bar centrar"><span><b>Reportes Area de la Salud</b></span></div>
-        <br />
+        <div className="title-bar centrar"><span><b>Reportes Área de la Salud</b></span></div>
         <div className="buttons-container">
           <Link to="/servicio/formulario" type="button" id="servicio" className="link-redondo link-texto-largo centrar"> Servicio </Link>
           <Link to="/reportes-parciales/1" type="button" className="link-redondo"> 1 </Link>

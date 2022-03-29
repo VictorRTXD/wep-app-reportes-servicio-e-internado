@@ -202,10 +202,10 @@ export default function DocumentoReporteFinal() {
       />
 
       <Navegacion />
-      <div className="br" />
+      <br />
 
       <h2 className="texto-encabezado">Documento Reporte Final</h2>
-      <div className="br" />
+      <br />
 
       <div className="ctn-btns-descargar-y-modificar">
         <button type="button" onClick={descargarDocumento} className="btn-primario">Descargar</button>
@@ -218,7 +218,7 @@ export default function DocumentoReporteFinal() {
             <br />
             <br />
 
-            <div id={`Pagina_${index}`} style={documentStyles}>
+            <div id={`Pagina_${index}`} style={documentStyles} className="pagina">
               <Encabezado />
               <div className="br" />
 

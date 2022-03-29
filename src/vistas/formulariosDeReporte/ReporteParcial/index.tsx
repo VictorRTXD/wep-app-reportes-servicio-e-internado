@@ -221,9 +221,9 @@ export default function ReportesParciales() {
 
   function crearOActualizar() {
     // Validar Campos
-    let faltanDatos = !(actividadesUsuario.length > 0);
+    let faltanDatos = !(actividadesUsuario.length >= 0);
 
-    if (horasRealizadas <= 0) {
+    if (horasRealizadas < 0) {
       faltanDatos = true;
     }
 

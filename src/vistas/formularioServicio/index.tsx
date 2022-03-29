@@ -194,7 +194,7 @@ export default function CrearServicio() {
         callback={cerrarModal}
       />
 
-      <div className="title-bar centrar"><span><b>Reportes Area de la Salud</b></span></div>
+      <div className="title-bar centrar"><span><b>Reportes Área de la Salud</b></span></div>
       <br />
       <br />
 
