@@ -230,7 +230,7 @@ export default function ReportesParciales() {
     let actividadRepetida = false;
 
     for (let i = 0; i < actividadesUsuario.length; i += 1) {
-      if (actividadesUsuario[i].descripcion === '' || actividadesUsuario[i].cantidad <= 0) {
+      if (actividadesUsuario[i].descripcion === '' || actividadesUsuario[i].cantidad < 0) {
         faltanDatos = true;
       }
 
@@ -475,7 +475,7 @@ export default function ReportesParciales() {
                             key={i}
                             value={actividad.descripcion}
                             onChange={(e) => manejarCambiosActividades(e, i)}
-                            className="input"
+                            className="input input-formulario"
                           />
                         )
                         : (
@@ -496,6 +496,7 @@ export default function ReportesParciales() {
                       type="number"
                       name="cantidad"
                       key="dummy"
+                      className="input-formulario"
                       min="0"
                       value={actividad.cantidad}
                       onChange={(e) => manejarCambiosNumericos(e, i)}
@@ -539,6 +540,7 @@ export default function ReportesParciales() {
                   name="prenatales"
                   key="dummy"
                   min="0"
+                  className="input-formulario"
                   value={atencionesRealizadas[0].cantidad}
                   onChange={(e) => manejarCambiosAtenciones(e, 0)}
                 />
@@ -553,6 +555,7 @@ export default function ReportesParciales() {
                   name="ninios"
                   key="dummy"
                   min="0"
+                  className="input-formulario"
                   value={atencionesRealizadas[1].cantidad}
                   onChange={(e) => manejarCambiosAtenciones(e, 1)}
                 />
@@ -567,6 +570,7 @@ export default function ReportesParciales() {
                   name="hombres"
                   key="dummy"
                   min="0"
+                  className="input-formulario"
                   value={atencionesRealizadas[2].cantidad}
                   onChange={(e) => manejarCambiosAtenciones(e, 2)}
                 />
@@ -581,6 +585,7 @@ export default function ReportesParciales() {
                   name="mujeres"
                   key="dummy"
                   min="0"
+                  className="input-formulario"
                   value={atencionesRealizadas[3].cantidad}
                   onChange={(e) => manejarCambiosAtenciones(e, 3)}
                 />
@@ -595,6 +600,7 @@ export default function ReportesParciales() {
                   name="geriatricomasculino"
                   key="dummy"
                   min="0"
+                  className="input-formulario"
                   value={atencionesRealizadas[4].cantidad}
                   onChange={(e) => manejarCambiosAtenciones(e, 4)}
                 />

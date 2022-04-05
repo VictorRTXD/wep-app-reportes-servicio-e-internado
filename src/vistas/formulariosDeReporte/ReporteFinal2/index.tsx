@@ -174,6 +174,7 @@ export default function ReporteFinal2() {
             name="metasAlcanzadas"
             value={formulario.metasAlcanzadas}
             onChange={manejarCambios}
+            className="textarea-final"
           />
         </label>
 
@@ -183,6 +184,7 @@ export default function ReporteFinal2() {
             name="metodologiaUtilizada"
             value={formulario.metodologiaUtilizada}
             onChange={manejarCambios}
+            className="textarea-final"
           />
         </label>
 
@@ -192,6 +194,7 @@ export default function ReporteFinal2() {
             name="innovacionAportada"
             value={formulario.innovacionAportada}
             onChange={manejarCambios}
+            className="textarea-final"
           />
         </label>
 
@@ -201,6 +204,7 @@ export default function ReporteFinal2() {
             name="conclusiones"
             value={formulario.conclusiones}
             onChange={manejarCambios}
+            className="textarea-final"
           />
         </label>
 
@@ -210,6 +214,7 @@ export default function ReporteFinal2() {
             name="propuestas"
             value={formulario.propuestas}
             onChange={manejarCambios}
+            className="textarea-final"
           />
         </label>
 

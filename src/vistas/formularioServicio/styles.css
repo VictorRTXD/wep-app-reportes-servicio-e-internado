@@ -1,20 +1,37 @@
 h1, h2 {
-  font-size: 1.2rem;
+  font-size: 2em;
   text-align: center;
+  margin-top: 10px;
 }
 
 form {
   margin: 1rem;
 }
 
-label, input, textarea {
+label {
+  font-size: 16px;
+  margin-bottom: 3px;
   width: 100%;
   display: block;
 }
 
-input {
-  font-size: 1.3rem;
-  height: 2rem;
+.input-servicio, .textarea-servicio {
+  width: 100%;
+  display: block;
+  padding: 7px 5px 7px 5px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: #70757a;
+  border-radius: 5px;
+  box-shadow: 0px 1px 1px #dadce0;
+  margin-top: 5px;
+  resize: none;
+  font-family: sans-serif;
+}
+
+.input-servicio:focus, .textarea-servicio:focus {
+  outline: none;
+  box-shadow: 0px 0px 0px 3px #dadce0;
 }
 
 textarea {

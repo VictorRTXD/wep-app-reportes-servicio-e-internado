@@ -1,5 +1,19 @@
-textarea {
+.textarea-final {
   width: 100%;
   display: block;
-  margin-bottom: 2rem;
+  padding: 7px 5px 7px 5px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: #70757a;
+  border-radius: 5px;
+  box-shadow: 0px 1px 1px #dadce0;
+  margin-top: 5px;
+  resize: none;
+  font-family: sans-serif;
+  margin-bottom: 10px;
+}
+
+.textarea-final:focus {
+  outline: none;
+  box-shadow: 0px 0px 0px 3px #dadce0;
 }
