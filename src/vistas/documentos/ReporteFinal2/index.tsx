@@ -171,8 +171,8 @@ export default function DocumentoReporteFinal2() {
         </div>
       </div>
       <br />
-
-      <div id="capturaReporteFinal2" style={documentStyles}>
+      <br />
+      <div id="capturaReporteFinal2" style={documentStyles} className="pagina">
         <Encabezado />
         <br />
         <br />
@@ -281,6 +281,7 @@ export default function DocumentoReporteFinal2() {
         <br />
 
       </div>
+      <br />
     </>
   );
 }

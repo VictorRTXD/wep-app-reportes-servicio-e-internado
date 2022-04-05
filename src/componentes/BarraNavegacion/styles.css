@@ -1,7 +1,9 @@
 .title-bar {
-  height: 2em;
   font-size: 2em;
+  font-weight: bold;
   color: white;
+  padding-top: 15px;
+  padding-bottom: 15px;
   background-color: #CD5700;
   text-align: center;
 }
@@ -10,8 +12,11 @@
   display: grid;
   grid-auto-flow: column;
   margin: 0 auto;
-  width: 90%;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  width: 100%;
   overflow: hidden;
+  box-shadow: 0px 3px 10px -2px #dadce0;
 }
 
 .link-redondo {
@@ -20,10 +25,16 @@
   background-color: #FF91ED;
   border-radius: 50%;
   margin: auto;
-  font-size: 2.5rem;
+  font-size: 2rem;
   text-align: center;
-  text-decoration: none;
   color: white;
+  box-shadow: 0px 0px 0px 3px #FF91ED75;
+}
+
+.link-redondo:hover {
+  cursor: pointer;
+  background-color: white;
+  color: #FF91ED;
 }
 
 .link-texto-largo {

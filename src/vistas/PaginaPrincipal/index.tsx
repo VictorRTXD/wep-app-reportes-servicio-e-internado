@@ -107,7 +107,7 @@ export default function PaginaPrincipal() {
           } else {
             setDatosModal({
               tipo: 'error',
-              texto: 'Ocurrio un error al conectar al servidor',
+              texto: 'Ocurrió un error al conectar al servidor',
               visibilidad: true,
               callback: () => {},
             });
@@ -144,7 +144,7 @@ export default function PaginaPrincipal() {
               setRedireccionamiento('/servicio/formulario');
               setDatosModal({
                 tipo: 'error',
-                texto: 'No se puedieron obtener las fechas de los trimestres. Quizás las fechas que ingresaste son inválidas. ',
+                texto: 'No se pudieron obtener las fechas de los trimestres. Quizás las fechas que ingresaste son inválidas. ',
                 visibilidad: true,
                 callback: () => {},
               });
@@ -190,7 +190,7 @@ export default function PaginaPrincipal() {
       <BarraNavegacion />
 
       <h1 id="pagina-principal-titulo">¡Bienvenido!</h1>
-
+      <h2 id="pagina-principal-texto">Para ver o completar un reporte, selecciónalo desde la barra superior.</h2>
     </>
   );
 }

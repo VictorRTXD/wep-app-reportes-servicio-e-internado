@@ -3,7 +3,7 @@ import React from 'react';
 import '../../global.css';
 import './styles.css';
 import OMG from '../../recursos/OMG.png';
-import Hecho from '../../recursos/hecho.jpg';
+import Hecho from '../../recursos/hecho.png';
 
 export interface DatosModal {
   tipo: 'confirmacion' | 'error' | null
@@ -37,7 +37,7 @@ export default function Modal(props: any) {
         <div className="Modal">
           <br />
 
-          <h2 className="modal-txt">{texto}</h2>
+          <h2 className="modal-message">{texto}</h2>
           <br />
 
           <img id="img-hecho" className="img" src={Hecho} alt="Hecho" />
@@ -53,7 +53,7 @@ export default function Modal(props: any) {
           <br />
 
           <img className="img" src={OMG} alt="OMG" />
-          <h2>Ha ocurrido un error.</h2>
+          <h2 className="modal-message">Ha ocurrido un error.</h2>
           <br />
           <br />
 

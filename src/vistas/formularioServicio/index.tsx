@@ -194,7 +194,7 @@ export default function CrearServicio() {
         callback={cerrarModal}
       />
 
-      <div className="title-bar centrar"><span><b>Reportes Area de la Salud</b></span></div>
+      <div className="title-bar centrar"><span><b>Reportes Área de la Salud</b></span></div>
       <br />
       <br />
 
@@ -207,43 +207,43 @@ export default function CrearServicio() {
       <div id="crear-servicio">
         <label id="entidadReceptora" htmlFor="entidadReceptora">
           Entidad Receptora:
-          <input type="text" name="entidadReceptora" ref={entidadReceptora} />
+          <input type="text" name="entidadReceptora" className="input-servicio" ref={entidadReceptora} />
         </label>
         <br />
 
         <label htmlFor="receptor">
           Receptor:
-          <input type="text" name="receptor" ref={receptor} />
+          <input type="text" name="receptor" className="input-servicio" ref={receptor} />
         </label>
         <br />
 
         <label htmlFor="programa">
           Programa:
-          <input type="text" name="programa" ref={programa} />
+          <input type="text" name="programa" className="input-servicio" ref={programa} />
         </label>
         <br />
 
         <label htmlFor="fechaInicio">
           Fecha Inicio:
-          <input type="date" name="fechaInicio" ref={fechaInicio} />
+          <input type="date" name="fechaInicio" className="input-servicio" ref={fechaInicio} />
         </label>
         <br />
 
         <label htmlFor="fechaFin">
           Fecha Fin:
-          <input type="date" name="fechaFin" ref={fechaFin} />
+          <input type="date" name="fechaFin" className="input-servicio" ref={fechaFin} />
         </label>
         <br />
 
         <label htmlFor="horaInicio">
           Hora de Inicio de la Jornada:
-          <input type="time" name="horaInicio" ref={horaInicio} />
+          <input type="time" name="horaInicio" className="input-servicio" ref={horaInicio} />
         </label>
         <br />
 
         <label htmlFor="horaFin">
           Hora de Fin de la Jornada:
-          <input type="time" name="horaFin" ref={horaFin} />
+          <input type="time" name="horaFin" className="input-servicio" ref={horaFin} />
         </label>
         <br />
 
@@ -253,6 +253,7 @@ export default function CrearServicio() {
             name="objetivosDelPrograma"
             value={objetivosDelPrograma}
             onChange={manejarCambios}
+            className="textarea-servicio"
           />
         </label>
         <br />

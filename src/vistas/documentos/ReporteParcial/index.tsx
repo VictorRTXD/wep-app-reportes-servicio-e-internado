@@ -298,7 +298,7 @@ export default function DocumentoReporteParcial() {
           <br />
           <br />
 
-          <div id={`Pagina_${index}`} style={documentStyles}>
+          <div id={`Pagina_${index}`} style={documentStyles} className="pagina">
             <Encabezado />
             <div className="br" />
 
