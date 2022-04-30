@@ -1,70 +1,28 @@
-# Getting Started with Create React App
+# Web APP Reportes Área de la Salud.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Autores: 
+- Ramón Paredes Sánchez.
+- Erik Raul Aguirre Lara.
 
-## Available Scripts
+## Acerca de este proyecto.
+Esta parte del proyecto constituye al *front-end* de la aplicación para generar reportes de Servicio Social para las carreras del área de la salud. Esta app está escrita en **TypeScript** y **React**. La aplicación consiste en una app de página única. La aplicación fue inicializada utilizando [Create React App](https://github.com/facebook/create-react-app).
 
-In the project directory, you can run:
+## Entorno.
+Para la ejecución de la app, es necesario contar con una instalación de **React** y **NodeJS** en el servidor. Estas dependencias ya deberían estar instaladas.
+Nota: Las credenciales de acceso al servidor deben de consultarse con el encargado del proyecto.
 
-### `yarn start`
+## Compilación del código y servicio al cliente.
+Para que el cliente pueda utilizar la app, es necesario *servirla*. Para ello, es necesario contar con un servicio que redirija a los usuarios a la página principal. Para servir la app, se necesitan realizar los siguientes pasos:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-### `yarn test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `yarn build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+1. Ir a la carpeta var para crear la ruta del proyecto ```var/www/```.
+2. Borrar la versión anterior de la app (en caso de que la haya).
+3. Clonar la nueva versión.
+4. Descargar las dependencias del proyecto con el comando ```npm i```.
+5. Instalar pm2 con el comando ```sudo npm install -g pm2```
+6. En el archivo de configuración, cambiar Localhost por la dirección de la página + /api ```(http://rssalud.cualtos.udg.mx:443/api)```.
+7. Agregar ```'react/jsx-no-bind': ['warn']```, en el archivo .eslintrc.js
+8. Compilar con ```sudo npm run build```
+9. Subir una carpeta y correr con ```sudo pm2 serve build 80 --spa```
+10. Una vez que el proceso está corriendo, usa el comando ```pm2 save``` para guardarlo y que se inicie aún cuando el sistema se reinicie.
+11. Para ver el proceso corriendo, se puede usar el comando ```pm2 list```
+12. Puedes ver más información de PM2 [aquí](https://pm2.keymetrics.io/docs/usage/startup/).
