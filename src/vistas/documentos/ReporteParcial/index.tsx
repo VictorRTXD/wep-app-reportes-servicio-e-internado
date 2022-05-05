@@ -177,7 +177,7 @@ export default function DocumentoReporteParcial() {
       i += j;
     }
 
-    if (pagingasAux[pagingasAux.length - 1].length > 16) {
+    if (pagingasAux[pagingasAux.length - 1].length > 14) {
       setAtencionesVanEnUnaNuevaPagina(true);
     }
 
@@ -376,9 +376,10 @@ export default function DocumentoReporteParcial() {
 
                 <tbody>
                   {
+                    // eslint-disable-next-line no-return-assign
                     pagina.map((actividad: any) => (
                       <tr key={actividad.id} className="fila-actividad">
-                        <td>{actividad.descripcion}</td>
+                        <td className={(actividad.descripcion.length < 100 ? '' : 'reduced-size')}>{actividad.descripcion}</td>
                         <td>{actividad.cantidad[0] !== 0 ? actividad.cantidad[0] : ''}</td>
                         <td>{actividad.cantidad[1] !== 0 ? actividad.cantidad[1] : ''}</td>
                         <td>{actividad.cantidad[2] !== 0 ? actividad.cantidad[2] : ''}</td>
@@ -507,7 +508,7 @@ export default function DocumentoReporteParcial() {
             <br />
             <br />
 
-            <div id="atenciones-realizadas" style={documentStyles}>
+            <div id="atenciones-realizadas" style={documentStyles} className="pagina">
               <Encabezado />
               <div className="br" />
 

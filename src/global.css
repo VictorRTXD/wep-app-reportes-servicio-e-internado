@@ -169,6 +169,10 @@ button {
   border-radius: 15px;
 }
 
+.reduced-size {
+  font-size: 0.9rem !important;
+}
+
 @media only screen and (min-width: 768px) {
   .pagina {
     width: 95%;
