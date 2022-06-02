@@ -86,12 +86,6 @@ button {
   gap: 1rem;
 }
 
-.ctn-firmas {
-  height: 45mm;
-  position: relative;
-  top: 25mm;
-}
-
 .ctn-con-padding {
   padding-left: 5%;
   padding-right: 5%;
@@ -121,14 +115,6 @@ button {
 .label-sesion {
   font-size: 16px;
   margin-bottom: 3px;
-}
-
-.numero-de-pagina {
-  height: 5mm;
-  text-align: right;
-  position: absolute;
-  bottom: 20mm;
-  right: 15mm;
 }
 
 .salto-pagina {
@@ -178,4 +164,8 @@ button {
     width: 95%;
     margin-left: 2.5%;
   }
+}
+
+.espacio {
+  height: 80mm;
 }

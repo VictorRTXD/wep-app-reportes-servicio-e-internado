@@ -1,0 +1,14 @@
+.ctn-firmas {
+  height: 45mm;
+  position: absolute;
+  bottom: 25mm;
+  width: 100%;
+}
+
+.ctn-firma {
+    font-size: 75%;
+    display: inline-block;
+    width: 33%;
+    padding: 5%;
+    text-align: center;
+  }
