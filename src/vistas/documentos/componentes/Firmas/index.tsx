@@ -7,7 +7,7 @@ const usuario = JSON.parse(sessionStorage.getItem('usuario')!);
 
 export default function FirmasDocumentos() {
   return (
-    <div className="ctn-firmas">
+    <div className="ctn-firmas" id="ctn-firmas">
       <div className="ctn-firma">
         <hr />
         <span>{usuario.nombre}</span>

@@ -146,32 +146,110 @@ export default function DocumentoReporteParcial() {
     if (deseaDescargarDocumento) {
       (async () => {
       // eslint-disable-next-line new-cap
-        const doc = new jsPDF('p', 'mm', [280, 220]);
-        const width = doc.internal.pageSize.getWidth();
+        const doc = new jsPDF('p', 'mm', [280, 216]);
 
         // Crear imagen para el header
         const header: any = document.getElementById('encabezado');
-        const canvas = await html2canvas(header, { scale: 2 });
-        const hImage = canvas.toDataURL('image/jpeg', 1.0);
+        const canvasH = await html2canvas(header, { scale: 2 });
+        const headerImage = canvasH.toDataURL('image/jpeg', 1.0);
 
+        // Crear imagen para el encabezado de datos
+        const datos: any = document.getElementById('tabla-reporte-trimestral');
+        const canvasD = await html2canvas(datos, { scale: 2 });
+        const datosImage = canvasD.toDataURL('image/jpeg', 1.0);
+
+        // Crear imagen para el encabezado de fechas
+        const fechas: any = document.getElementById('encabezado-fechas');
+        const canvasF = await html2canvas(fechas, { scale: 2 });
+        const fechasImage = canvasF.toDataURL('image/jpeg', 1.0);
+
+        // Crear imagen para el apartado de firmas
+        const firmas: any = document.getElementById('ctn-firmas');
+        const canvasFi = await html2canvas(firmas, { scale: 2 });
+        const firmasImage = canvasFi.toDataURL('image/jpeg', 1.0);
+
+        // Crear imagen para el footer de la página
+        const footer: any = document.getElementById('pie-de-pagina');
+        const canvasFo = await html2canvas(footer, { scale: 2 });
+        const footerImage = canvasFo.toDataURL('image/jpeg', 1.0);
+
+        // Añadir tabla de actividades
         autoTable(doc, {
           html: '#tabla-actividades',
-          theme: 'grid',
-          styles: { font: 'courier' },
-          margin: { top: 80, bottom: 50 },
+          theme: 'plain',
+          styles: {
+            font: 'courier',
+            fontSize: 8,
+            lineColor: 15,
+            lineWidth: 0.3,
+            textColor: 25,
+          },
+          headStyles: {
+            halign: 'center',
+            fillColor: [255, 255, 255],
+            fontStyle: 'bold',
+            lineColor: 15,
+          },
+          footStyles: { halign: 'center', fillColor: [255, 255, 255], fontStyle: 'bold' },
+          showHead: 'firstPage',
+          showFoot: 'lastPage',
+          tableLineWidth: 0.3,
+          tableLineColor: 15,
+          margin: {
+            top: 98, bottom: 40, left: 20, right: 19,
+          },
           didDrawCell: (_data) => {
-            doc.addImage(hImage, 'JPEG', 20, 25, width, 20);
+            doc.addImage(headerImage, 'JPEG', 20, 20, 177, 20); // Todas las posiciones están definidas en mm.
+            doc.addImage(datosImage, 'JPEG', 20, 47, 177, 32);
+            doc.addImage(fechasImage, 'JPEG', 20, 84, 177, 13);
           },
         });
-        doc.save('table.pdf');
+
+        // Añadir tabla de atenciones
+        autoTable(doc, {
+          html: '#tabla-atenciones',
+          theme: 'plain',
+          styles: {
+            font: 'courier',
+            fontSize: 8,
+            lineColor: 15,
+            lineWidth: 0.3,
+            textColor: 25,
+          },
+          headStyles: {
+            halign: 'center',
+            fillColor: [255, 255, 255],
+            fontStyle: 'bold',
+            lineColor: 15,
+          },
+          footStyles: { halign: 'center', fillColor: [255, 255, 255], fontStyle: 'bold' },
+          showHead: 'firstPage',
+          showFoot: 'lastPage',
+          tableLineWidth: 0.3,
+          tableLineColor: 15,
+          margin: {
+            top: 98, bottom: 70, left: 20, right: 19,
+          },
+          didDrawCell: (_data) => {
+            doc.addImage(datosImage, 'JPEG', 20, 47, 177, 32);
+            doc.addImage(headerImage, 'JPEG', 20, 20, 177, 20); // Todas las posiciones están definidas en mm.
+          },
+        });
+
+        // Añadir a todas las páginas el footer y el número de página
+        const pageCount = doc.getNumberOfPages();
+        for (let i = 1; i <= pageCount; i += 1) {
+          doc.setPage(i);
+          if (i === pageCount) { // Poner firmas si es la última página
+            doc.addImage(firmasImage, 'JPEG', 20, 230, 177, 45);
+          }
+          doc.addImage(footerImage, 'JPEG', 68, 255, 80, 10);
+          doc.setFontSize(6);
+          doc.text(`Página ${i}/${pageCount}`, 180, 265);
+        }
+
+        doc.save(`Reporte Parcial ${numeroReporte} ${usuario.nombre}`);
         window.location.reload();
-      //       crear pdf
-      //  -> dibujar tabla de actividades
-      //    -> didDrawPage(data): dibujar header, dibujar tabla de datos, dibujar footer
-      //  -> dibujar tabla de atenciones
-      //    -> didDrawPage(data): dibujar firmas
-      //  -> dibujar numeros de página https://stackoverflow.com/questions/52170355/jspdf-print-current-pagenumber-in-footer-of-all-pages
-      // guardar pdf
       })();
     } else {
       setDocumentStyles({
@@ -304,6 +382,7 @@ export default function DocumentoReporteParcial() {
                   <th className="celda-datos-generales celda-campo">Programa:</th>
                   <td className="celda-datos-generales celda-valor">{datosGenerales.programa}</td>
                 </tr>
+                <div className="br" />
               </tbody>
             </table>
             <div className="br" />
@@ -349,6 +428,8 @@ export default function DocumentoReporteParcial() {
                     </tr>
                   ))
                 }
+              </tbody>
+              <tfoot>
                 <tr className="fila-actividad">
                   <th>Total</th>
                   <td>{calcularTotalPorTrimestre(actividadesReporte, 0) || ''}</td>
@@ -362,8 +443,7 @@ export default function DocumentoReporteParcial() {
                       + calcularTotalPorTrimestre(actividadesReporte, 3)}
                   </td>
                 </tr>
-              </tbody>
-
+              </tfoot>
             </table>
 
             <div className="br" />
@@ -399,6 +479,8 @@ export default function DocumentoReporteParcial() {
                     </tr>
                   ))
                 }
+              </tbody>
+              <tfoot>
                 <tr>
                   <th>Total</th>
                   <td>{calcularTotalPorTrimestre(atencionesRealizadas, 0) || ''}</td>
@@ -414,8 +496,7 @@ export default function DocumentoReporteParcial() {
                     }
                   </td>
                 </tr>
-              </tbody>
-
+              </tfoot>
             </table>
 
           </div>

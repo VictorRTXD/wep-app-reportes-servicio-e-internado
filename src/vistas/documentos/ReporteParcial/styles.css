@@ -38,6 +38,7 @@
   border: 1px solid black;
   align-items: center;
   overflow: hidden;
+  padding-left: 3mm;
 }
 
 #firma {
