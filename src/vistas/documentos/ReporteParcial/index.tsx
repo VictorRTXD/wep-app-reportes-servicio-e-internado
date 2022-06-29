@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable max-len */
 /* eslint-disable react/no-array-index-key */
 import React, { useEffect, useState } from 'react';
@@ -5,9 +6,11 @@ import { Link, Redirect, useParams } from 'react-router-dom';
 
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 import Encabezado from '../componentes/Encabezado';
 import PiePagina from '../componentes/PiePagina';
+import FirmasDocumentos from '../componentes/Firmas';
 
 import '../../../global.css';
 import './styles.css';
@@ -39,8 +42,8 @@ export default function DocumentoReporteParcial() {
   const [documentStyles, setDocumentStyles] = useState({});
   const [deseaDescargarDocumento, setDeseaDescargarDocumento] = useState(false);
 
-  let fechaInicio: string;
-  let fechaFin: string;
+  let fechaInicio!: string;
+  let fechaFin!: string;
 
   if (trimestres[numeroReporte - 1]) {
     let splitAux: string[];
@@ -61,9 +64,6 @@ export default function DocumentoReporteParcial() {
   });
   const [retornar, setRetornar] = useState(false);
   const [redireccionamiento, setRedireccionamiento] = useState('');
-
-  const [paginas, setPaginas] = useState<any[][]>([]);
-  const [atencionesVanEnUnaNuevaPagina, setAtencionesVanEnUnaNuevaPagina] = useState<boolean>(false);
 
   useEffect(() => {
     const actividadesReporteAux: ActividadesReporteParcial[] = [];
@@ -140,84 +140,124 @@ export default function DocumentoReporteParcial() {
         callback: () => {},
       });
     }
-
-    // Dividir activiadades en paginas
-    let i = 0;
-
-    // Primera hoja que es diferente, le caben 18, todo esta maquetado en cm
-    const primeraPagina: any[] = [];
-
-    while (i < actividadesReporteAux.length && i < 18) {
-      primeraPagina.push({
-        id: actividadesReporteAux[i].id,
-        descripcion: actividadesReporteAux[i].descripcion,
-        cantidad: actividadesReporteAux[i].cantidad,
-      });
-      i += 1;
-    }
-
-    i = 18;
-    const pagingasAux: any[] = [primeraPagina];
-
-    while (i < actividadesReporteAux.length) {
-      let j = i;
-      const activiades: any[] = [];
-
-      while (j < i + 24 && j < actividadesReporteAux.length) {
-        activiades.push({
-          id: actividadesReporteAux[j].id,
-          descripcion: actividadesReporteAux[j].descripcion,
-          cantidad: actividadesReporteAux[j].cantidad,
-        });
-
-        j += 1;
-      }
-
-      pagingasAux.push(activiades);
-      i += j;
-    }
-
-    if (pagingasAux[pagingasAux.length - 1].length > 14) {
-      setAtencionesVanEnUnaNuevaPagina(true);
-    }
-
-    setPaginas(pagingasAux);
   }, [numeroReporte]);
 
   useEffect(() => {
     if (deseaDescargarDocumento) {
-      // eslint-disable-next-line new-cap
-      const pdf = new jsPDF('p', 'mm', [280, 220]);
-      const width = pdf.internal.pageSize.getWidth();
-      const height = pdf.internal.pageSize.getHeight();
-
       (async () => {
-        for (let i = 0; i < paginas.length; i += 1) {
-          const htmlElement: any = document.getElementById(`Pagina_${i}`);
-          // eslint-disable-next-line no-await-in-loop
-          const canvas = await html2canvas(htmlElement, { scale: 2 });
-          const divImage = canvas.toDataURL('image/jpeg', 1.0);
-          if (i === 0) {
-            pdf.addImage(divImage, 'JPEG', 0, 0, width, height);
-          } else {
-            pdf.addPage().addImage(divImage, 'JPEG', 0, 0, width, height);
+      // eslint-disable-next-line new-cap
+        const doc = new jsPDF('p', 'mm', [280, 216]);
+
+        // Crear imagen para el header
+        const header: any = document.getElementById('encabezado');
+        const canvasH = await html2canvas(header, { scale: 2 });
+        const headerImage = canvasH.toDataURL('image/jpeg', 1.0);
+
+        // Crear imagen para el encabezado de datos
+        const datos: any = document.getElementById('tabla-reporte-trimestral');
+        const canvasD = await html2canvas(datos, { scale: 2 });
+        const datosImage = canvasD.toDataURL('image/jpeg', 1.0);
+
+        // Crear imagen para el encabezado de fechas
+        const fechas: any = document.getElementById('encabezado-fechas');
+        const canvasF = await html2canvas(fechas, { scale: 2 });
+        const fechasImage = canvasF.toDataURL('image/jpeg', 1.0);
+
+        // Crear imagen para el apartado de firmas
+        const firmas: any = document.getElementById('ctn-firmas');
+        const canvasFi = await html2canvas(firmas, { scale: 2 });
+        const firmasImage = canvasFi.toDataURL('image/jpeg', 1.0);
+
+        // Crear imagen para el footer de la página
+        const footer: any = document.getElementById('pie-de-pagina');
+        const canvasFo = await html2canvas(footer, { scale: 2 });
+        const footerImage = canvasFo.toDataURL('image/jpeg', 1.0);
+
+        // Añadir tabla de actividades
+        autoTable(doc, {
+          html: '#tabla-actividades',
+          theme: 'plain',
+          styles: {
+            font: 'courier',
+            fontSize: 8,
+            lineColor: 15,
+            lineWidth: 0.3,
+            textColor: 25,
+          },
+          headStyles: {
+            halign: 'center',
+            fillColor: [255, 255, 255],
+            fontStyle: 'bold',
+            lineColor: 15,
+          },
+          footStyles: { halign: 'center', fillColor: [255, 255, 255], fontStyle: 'bold' },
+          showHead: 'firstPage',
+          showFoot: 'lastPage',
+          tableLineWidth: 0.3,
+          tableLineColor: 15,
+          startY: 98,
+          margin: {
+            top: 84, bottom: 40, left: 20, right: 19,
+          },
+          didDrawCell: (_data) => {
+            doc.addImage(headerImage, 'JPEG', 18, 18, 177, 25); // Todas las posiciones están definidas en mm.
+            doc.addImage(datosImage, 'JPEG', 20, 47, 177, 32);
+          },
+        });
+
+        // Añadir tabla de atenciones
+        autoTable(doc, {
+          html: '#tabla-atenciones',
+          theme: 'plain',
+          styles: {
+            font: 'courier',
+            fontSize: 8,
+            lineColor: 15,
+            lineWidth: 0.3,
+            textColor: 25,
+          },
+          headStyles: {
+            halign: 'center',
+            fillColor: [255, 255, 255],
+            fontStyle: 'bold',
+            lineColor: 15,
+          },
+          footStyles: { halign: 'center', fillColor: [255, 255, 255], fontStyle: 'bold' },
+          showHead: 'firstPage',
+          showFoot: 'lastPage',
+          tableLineWidth: 0.3,
+          tableLineColor: 15,
+          margin: {
+            top: 98, bottom: 70, left: 20, right: 19,
+          },
+          didDrawCell: (_data) => {
+            doc.addImage(datosImage, 'JPEG', 20, 47, 177, 32);
+            doc.addImage(headerImage, 'JPEG', 18, 18, 177, 25); // Todas las posiciones están definidas en mm.
+          },
+        });
+
+        // Añadir a todas las páginas el footer y el número de página
+        const pageCount = doc.getNumberOfPages();
+        for (let i = 1; i <= pageCount; i += 1) {
+          doc.setPage(i);
+          if (i === pageCount) { // Poner firmas si es la última página
+            doc.addImage(firmasImage, 'JPEG', 20, 230, 177, 45);
           }
+          if (i === 1) { // Poner fechas si es la primera página
+            doc.addImage(fechasImage, 'JPEG', 20, 84, 177, 13);
+          }
+          doc.addImage(footerImage, 'JPEG', 68, 255, 80, 10);
+          doc.setFontSize(6);
+          doc.text(`Página ${i}/${pageCount}`, 180, 265);
         }
 
-        if (atencionesVanEnUnaNuevaPagina) {
-          const htmlElement: any = document.getElementById('atenciones-realizadas');
-          const canvas = await html2canvas(htmlElement, { scale: 2 });
-          const divImage = canvas.toDataURL('image/jpeg', 1.0);
-          pdf.addPage().addImage(divImage, 'JPEG', 0, 0, width, height);
-        }
-
-        pdf.save(`Reporte Parcial ${numeroReporte} ${usuario.nombre}`);
-        setDeseaDescargarDocumento(false);
+        doc.save(`Reporte Parcial ${numeroReporte} ${usuario.nombre}`);
+        window.location.reload();
       })();
     } else {
       setDocumentStyles({
         position: 'relative',
-        height: '280mm',
+        height: 'auto',
       });
     }
   }, [deseaDescargarDocumento]);
@@ -276,12 +316,13 @@ export default function DocumentoReporteParcial() {
         tipo={datosModal.tipo}
         texto={datosModal.texto}
         visibilidad={datosModal.visibilidad}
+        // eslint-disable-next-line react/jsx-no-bind
         callback={cerrarModal}
       />
 
       <Navegacion />
-      <br />
 
+      <br />
       <h2 className="texto-encabezado">{`Documento Reporte Parcial #${numeroReporte}`}</h2>
       <br />
 
@@ -291,304 +332,186 @@ export default function DocumentoReporteParcial() {
           <Link to={`/reportes-parciales/${numeroReporte}/formulario`} id="btn-link" type="button" className="btn-secundario btn-link"> Modificar </Link>
         </div>
       </div>
+
       <br />
 
-      { paginas.map((pagina, index) => (
-        <div key={`Pagina_${index}`}>
-          <br />
-          <br />
+      <div id="documento">
+        <br />
+        <br />
 
-          <div id={`Pagina_${index}`} style={documentStyles} className="pagina">
-            <Encabezado />
+        <div style={documentStyles} className="pagina">
+          <Encabezado />
+          <div className="br" />
+
+          <div>
+            <table id="tabla-reporte-trimestral">
+              <tbody>
+                <tr>
+                  <th colSpan={4} className="celda-datos-generales">
+                    <h2>REPORTE TRIMESTRAL DE ACTIVIDADES</h2>
+                    <div className="br" />
+                  </th>
+                </tr>
+
+                <tr>
+                  <th className="celda-datos-generales celda-campo">Alumno:</th>
+                  <td className="celda-datos-generales celda-valor">{usuario.nombre}</td>
+                  <th className="celda-datos-generales celda-campo">Código:</th>
+                  <td className="celda-datos-generales celda-valor">{usuario.id}</td>
+                </tr>
+
+                <tr>
+                  <th className="celda-datos-generales celda-campo">Carrera:</th>
+                  <td className="celda-datos-generales celda-valor">{obtenerCarrerra(usuario.carrera)}</td>
+                  <th className="celda-datos-generales celda-campo">Horario:</th>
+                  <td className="celda-datos-generales celda-valor">{`${datosGenerales.horarioHoraInicio} - ${datosGenerales.horarioHoraFin}`}</td>
+                </tr>
+
+                <tr>
+                  <th className="celda-datos-generales celda-campo">Entidad Receptora:</th>
+                  <td className="celda-datos-generales celda-valor">{datosGenerales.entidadReceptora}</td>
+                  <th className="celda-datos-generales celda-campo">Horas Realizadas:</th>
+                  <td className="celda-datos-generales celda-valor">{reportesParciales[numeroReporte - 1]?.horasRealizadas || ''}</td>
+                </tr>
+
+                <tr>
+                  <th className="celda-datos-generales celda-campo">Receptor:</th>
+                  <td className="celda-datos-generales celda-valor">{datosGenerales.receptor}</td>
+                  <th className="celda-datos-generales celda-campo">Número de Reporte:</th>
+                  <td className="celda-datos-generales celda-valor">{numeroReporte}</td>
+                </tr>
+
+                <tr>
+                  <th className="celda-datos-generales celda-campo">Programa:</th>
+                  <td className="celda-datos-generales celda-valor">{datosGenerales.programa}</td>
+                </tr>
+                <div className="br" />
+              </tbody>
+            </table>
             <div className="br" />
+          </div>
 
-            {index === 0
-            && (
-            <div>
-              <table id="tabla-reporte-trimestral">
-                <tbody>
-                  <tr>
-                    <th colSpan={4} className="celda-datos-generales">
-                      <h2>REPORTE TRIMESTRAL DE ACTIVIDADES</h2>
-                      <div className="br" />
-                    </th>
-                  </tr>
-
-                  <tr>
-                    <th className="celda-datos-generales celda-campo">Alumno:</th>
-                    <td className="celda-datos-generales celda-valor">{usuario.nombre}</td>
-                    <th className="celda-datos-generales celda-campo">Código:</th>
-                    <td className="celda-datos-generales celda-valor">{usuario.id}</td>
-                  </tr>
-
-                  <tr>
-                    <th className="celda-datos-generales celda-campo">Carrera:</th>
-                    <td className="celda-datos-generales celda-valor">{obtenerCarrerra(usuario.carrera)}</td>
-                    <th className="celda-datos-generales celda-campo">Horario:</th>
-                    <td className="celda-datos-generales celda-valor">{`${datosGenerales.horarioHoraInicio} - ${datosGenerales.horarioHoraFin}`}</td>
-                  </tr>
-
-                  <tr>
-                    <th className="celda-datos-generales celda-campo">Entidad Receptora:</th>
-                    <td className="celda-datos-generales celda-valor">{datosGenerales.entidadReceptora}</td>
-                    <th className="celda-datos-generales celda-campo">Horas Realizadas:</th>
-                    <td className="celda-datos-generales celda-valor">{reportesParciales[numeroReporte - 1]?.horasRealizadas || ''}</td>
-                  </tr>
-
-                  <tr>
-                    <th className="celda-datos-generales celda-campo">Receptor:</th>
-                    <td className="celda-datos-generales celda-valor">{datosGenerales.receptor}</td>
-                    <th className="celda-datos-generales celda-campo">Número de Reporte:</th>
-                    <td className="celda-datos-generales celda-valor">{numeroReporte}</td>
-                  </tr>
-
-                  <tr>
-                    <th className="celda-datos-generales celda-campo">Programa:</th>
-                    <td className="celda-datos-generales celda-valor">{datosGenerales.programa}</td>
-                  </tr>
-                </tbody>
-              </table>
+          <div>
+            <div id="encabezado-fechas">
+              <span className="fechas-campo">Fecha de Inicio:</span>
+              <p className="fechas-valor">{fechaInicio}</p>
+              <span className="fechas-campo">Fecha de Fin:</span>
+              <p className="fechas-valor">{fechaFin}</p>
+              <div className="br" />
               <div className="br" />
             </div>
-            )}
 
-            <div>
-              <div id="encabezado-fechas">
-                <span className="fechas-campo">Fecha de Inicio:</span>
-                <p className="fechas-valor">{fechaInicio}</p>
-                <span className="fechas-campo">Fecha de Fin:</span>
-                <p className="fechas-valor">{fechaFin}</p>
-                <div className="br" />
-                <div className="br" />
-              </div>
+            <table id="tabla-actividades">
+              <thead>
+                <tr className="fila-actividad">
+                  <th>Actividades Realizadas</th>
+                  <th>Trimestre 1</th>
+                  <th>Trimestre 2</th>
+                  <th>Trimestre 3</th>
+                  <th>Trimestre 4</th>
+                  <th>Global</th>
+                </tr>
+              </thead>
 
-              <table>
-                <thead>
-                  <tr className="fila-actividad">
-                    <th>Actividades Realizadas</th>
-                    <th>Trimestre 1</th>
-                    <th>Trimestre 2</th>
-                    <th>Trimestre 3</th>
-                    <th>Trimestre 4</th>
-                    <th>Global</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {
-                    // eslint-disable-next-line no-return-assign
-                    pagina.map((actividad: any) => (
-                      <tr key={actividad.id} className="fila-actividad">
-                        <td className={(actividad.descripcion.length < 100 ? '' : 'reduced-size')}>{actividad.descripcion}</td>
-                        <td>{actividad.cantidad[0] !== 0 ? actividad.cantidad[0] : ''}</td>
-                        <td>{actividad.cantidad[1] !== 0 ? actividad.cantidad[1] : ''}</td>
-                        <td>{actividad.cantidad[2] !== 0 ? actividad.cantidad[2] : ''}</td>
-                        <td>{actividad.cantidad[3] !== 0 ? actividad.cantidad[3] : ''}</td>
-                        <td>
-                          {Number(actividad.cantidad[0])
+              <tbody>
+                {
+                  actividadesReporte.map((actividad: any) => (
+                    <tr key={actividad.id} className="fila-actividad">
+                      <td className={(actividad.descripcion.length < 100 ? '' : 'reduced-size')}>{actividad.descripcion}</td>
+                      <td>{actividad.cantidad[0] !== 0 ? actividad.cantidad[0] : ''}</td>
+                      <td>{actividad.cantidad[1] !== 0 ? actividad.cantidad[1] : ''}</td>
+                      <td>{actividad.cantidad[2] !== 0 ? actividad.cantidad[2] : ''}</td>
+                      <td>{actividad.cantidad[3] !== 0 ? actividad.cantidad[3] : ''}</td>
+                      <td>
+                        {Number(actividad.cantidad[0])
                           + Number(actividad.cantidad[1] || 0)
                           + Number(actividad.cantidad[2] || 0)
                           + Number(actividad.cantidad[3] || 0)}
-                        </td>
-                      </tr>
-                    ))
-                  }
-                  <tr className="fila-actividad">
-                    <th>Total</th>
-                    <td>{calcularTotalPorTrimestre(actividadesReporte, 0) || ''}</td>
-                    <td>{calcularTotalPorTrimestre(actividadesReporte, 1) || ''}</td>
-                    <td>{calcularTotalPorTrimestre(actividadesReporte, 2) || ''}</td>
-                    <td>{calcularTotalPorTrimestre(actividadesReporte, 3) || ''}</td>
-                    <td>
-                      {
-                        calcularTotalPorTrimestre(actividadesReporte, 0)
-                        + calcularTotalPorTrimestre(actividadesReporte, 1)
-                        + calcularTotalPorTrimestre(actividadesReporte, 2)
-                        + calcularTotalPorTrimestre(actividadesReporte, 3)
-                      }
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div className="br" />
-
-            {
-              !atencionesVanEnUnaNuevaPagina && (paginas.length <= 1 || index > 0)
-              && (
-                <table>
-                  <thead>
-                    <tr className="fila-actividad">
-                      <th>Atenciones brindadas a pacientes:</th>
-                      <th>Trimestre 1</th>
-                      <th>Trimestre 2</th>
-                      <th>Trimestre 3</th>
-                      <th>Trimestre 4</th>
-                      <th>Total</th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    {
-                      atencionesRealizadas.map((atencion: any, indexAtencion: number) => (
-                        <tr key={indexAtencion} className="fila-actividad">
-                          <td>{atencion.descripcion}</td>
-                          <td>{atencion.cantidad[0]}</td>
-                          <td>{atencion.cantidad[1]}</td>
-                          <td>{atencion.cantidad[2]}</td>
-                          <td>{atencion.cantidad[3]}</td>
-                          <td>
-                            {Number(atencion.cantidad[0] || 0)
-                            + Number(atencion.cantidad[1] || 0)
-                            + Number(atencion.cantidad[2] || 0)
-                            + Number(atencion.cantidad[3] || 0)}
-                          </td>
-                        </tr>
-                      ))
-                    }
-                    <tr>
-                      <th>Total</th>
-                      <td>{calcularTotalPorTrimestre(atencionesRealizadas, 0) || ''}</td>
-                      <td>{calcularTotalPorTrimestre(atencionesRealizadas, 1) || ''}</td>
-                      <td>{calcularTotalPorTrimestre(atencionesRealizadas, 2) || ''}</td>
-                      <td>{calcularTotalPorTrimestre(atencionesRealizadas, 3) || ''}</td>
-                      <td>
-                        {
-                          calcularTotalPorTrimestre(atencionesRealizadas, 0)
-                          + calcularTotalPorTrimestre(atencionesRealizadas, 1)
-                          + calcularTotalPorTrimestre(atencionesRealizadas, 2)
-                          + calcularTotalPorTrimestre(atencionesRealizadas, 3)
-                        }
                       </td>
                     </tr>
-                  </tbody>
-                </table>
-              )
-            }
+                  ))
+                }
+              </tbody>
+              <tfoot>
+                <tr className="fila-actividad">
+                  <th>Total</th>
+                  <td>{calcularTotalPorTrimestre(actividadesReporte, 0) || ''}</td>
+                  <td>{calcularTotalPorTrimestre(actividadesReporte, 1) || ''}</td>
+                  <td>{calcularTotalPorTrimestre(actividadesReporte, 2) || ''}</td>
+                  <td>{calcularTotalPorTrimestre(actividadesReporte, 3) || ''}</td>
+                  <td>
+                    {calcularTotalPorTrimestre(actividadesReporte, 0)
+                      + calcularTotalPorTrimestre(actividadesReporte, 1)
+                      + calcularTotalPorTrimestre(actividadesReporte, 2)
+                      + calcularTotalPorTrimestre(actividadesReporte, 3)}
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
 
-            { !atencionesVanEnUnaNuevaPagina && (paginas.length <= 1 || index > 0) && (
-              <div className="ctn-firmas">
-                <div className="ctn-firma">
-                  <hr />
-                  <span>{usuario.nombre}</span>
-                </div>
+            <div className="br" />
+            <div className="br" />
 
-                <div className="ctn-firma">
-                  <hr />
-                  <span>SELLO DE LA INSTITUCIÓN</span>
-                </div>
+            <table id="tabla-atenciones">
+              <thead>
+                <tr className="fila-actividad">
+                  <th>Atenciones brindadas a pacientes:</th>
+                  <th>Trimestre 1</th>
+                  <th>Trimestre 2</th>
+                  <th>Trimestre 3</th>
+                  <th>Trimestre 4</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
 
-                <div className="ctn-firma">
-                  <hr />
-                  <span>JEFE DE ENSEÑANZA O RECEPTOR</span>
-                </div>
-              </div>
-            )}
+              <tbody>
+                {
+                  atencionesRealizadas.map((atencion: any, indexAtencion: number) => (
+                    <tr key={indexAtencion} className="fila-actividad">
+                      <td>{atencion.descripcion}</td>
+                      <td>{atencion.cantidad[0]}</td>
+                      <td>{atencion.cantidad[1]}</td>
+                      <td>{atencion.cantidad[2]}</td>
+                      <td>{atencion.cantidad[3]}</td>
+                      <td>
+                        {Number(atencion.cantidad[0] || 0)
+                        + Number(atencion.cantidad[1] || 0)
+                        + Number(atencion.cantidad[2] || 0)
+                        + Number(atencion.cantidad[3] || 0)}
+                      </td>
+                    </tr>
+                  ))
+                }
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Total</th>
+                  <td>{calcularTotalPorTrimestre(atencionesRealizadas, 0) || ''}</td>
+                  <td>{calcularTotalPorTrimestre(atencionesRealizadas, 1) || ''}</td>
+                  <td>{calcularTotalPorTrimestre(atencionesRealizadas, 2) || ''}</td>
+                  <td>{calcularTotalPorTrimestre(atencionesRealizadas, 3) || ''}</td>
+                  <td>
+                    {
+                      calcularTotalPorTrimestre(atencionesRealizadas, 0)
+                      + calcularTotalPorTrimestre(atencionesRealizadas, 1)
+                      + calcularTotalPorTrimestre(atencionesRealizadas, 2)
+                      + calcularTotalPorTrimestre(atencionesRealizadas, 3)
+                    }
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
 
-            <div className="numero-de-pagina">
-              <p>
-                {`Página ${index + 1} de ${paginas.length + (atencionesVanEnUnaNuevaPagina ? 1 : 0)}`}
-              </p>
-            </div>
-
-            <PiePagina />
           </div>
 
-          <br />
-          <br />
-          <hr className="salto-pagina" />
+          <div className="espacio" />
+
+          <FirmasDocumentos />
+          <PiePagina />
+
+          <div className="br" />
         </div>
-      ))}
-
-      {/* Si no caben las atenciones en la ultima hoja */}
-      {
-        atencionesVanEnUnaNuevaPagina
-        && (
-          <div>
-            <br />
-            <br />
-
-            <div id="atenciones-realizadas" style={documentStyles} className="pagina">
-              <Encabezado />
-              <div className="br" />
-
-              <table>
-                <thead>
-                  <tr className="fila-actividad">
-                    <th>Atenciones brindadas a pacientes:</th>
-                    <th>Trimestre 1</th>
-                    <th>Trimestre 2</th>
-                    <th>Trimestre 3</th>
-                    <th>Trimestre 4</th>
-                    <th>Total</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {
-                    atencionesRealizadas.map((atencion: any, indexAtencion: number) => (
-                      <tr key={indexAtencion} className="fila-actividad">
-                        <td>{atencion.descripcion}</td>
-                        <td>{atencion.cantidad[0]}</td>
-                        <td>{atencion.cantidad[1]}</td>
-                        <td>{atencion.cantidad[2]}</td>
-                        <td>{atencion.cantidad[3]}</td>
-                        <td>
-                          {Number(atencion.cantidad[0] || 0)
-                          + Number(atencion.cantidad[1] || 0)
-                          + Number(atencion.cantidad[2] || 0)
-                          + Number(atencion.cantidad[3] || 0)}
-                        </td>
-                      </tr>
-                    ))
-                  }
-                  <tr>
-                    <th>Total</th>
-                    <td>{calcularTotalPorTrimestre(atencionesRealizadas, 0) || ''}</td>
-                    <td>{calcularTotalPorTrimestre(atencionesRealizadas, 1) || ''}</td>
-                    <td>{calcularTotalPorTrimestre(atencionesRealizadas, 2) || ''}</td>
-                    <td>{calcularTotalPorTrimestre(atencionesRealizadas, 3) || ''}</td>
-                    <td>
-                      {
-                        calcularTotalPorTrimestre(atencionesRealizadas, 0)
-                        + calcularTotalPorTrimestre(atencionesRealizadas, 1)
-                        + calcularTotalPorTrimestre(atencionesRealizadas, 2)
-                        + calcularTotalPorTrimestre(atencionesRealizadas, 3)
-                      }
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-              <div className="br" />
-
-              <div className="ctn-firmas">
-                <div className="ctn-firma">
-                  <hr />
-                  <span>{usuario.nombre}</span>
-                </div>
-
-                <div className="ctn-firma">
-                  <hr />
-                  <span>SELLO DE LA INSTITUCIÓN</span>
-                </div>
-
-                <div className="ctn-firma">
-                  <hr />
-                  <span>JEFE DE ENSEÑANZA O RECEPTOR</span>
-                </div>
-              </div>
-
-              <div className="numero-de-pagina">
-                <p>
-                  {`Página ${paginas.length + 1} de ${paginas.length + 1}`}
-                </p>
-              </div>
-
-              <PiePagina />
-            </div>
-          </div>
-        )
-      }
+      </div>
     </>
   );
 }
