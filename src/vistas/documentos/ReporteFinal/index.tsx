@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { Redirect } from 'react-router-dom';
 
 import Navegacion from '../../../componentes/BarraNavegacion';
@@ -40,13 +41,13 @@ export default function DocumentoReporteFinal() {
   const [retornar, setRetornar] = useState(false);
   const [redireccionamiento, setRedireccionamiento] = useState('');
 
-  const [paginas, setPaginas] = useState<any[][]>([]);
+  const [actividadesReporte, setActividadesReporte] = useState<ActividadesReporteParcial[]>([]);
 
   const fechaInicio = new Date(datosGenerales.fechaInicio);
   const fechaFin = new Date(datosGenerales.fechaFin);
 
   useEffect(() => {
-    const actividadesReporte: ActividadesReporteParcial[] = [];
+    const actividadesReporteAux: ActividadesReporteParcial[] = [];
     let horasAux = 0;
     if (reportesParciales.length === 4) {
       for (let i = 0; i < reportesParciales.length; i += 1) {
@@ -56,13 +57,13 @@ export default function DocumentoReporteFinal() {
 
           // Buscar si ya esta lista
           for (let k = 0; k < actividadesReporte.length; k += 1) {
-            if (actividadesReporte[k].id === reportesParciales[i].actividadesRealizadas[j].idActividad) {
+            if (actividadesReporteAux[k].id === reportesParciales[i].actividadesRealizadas[j].idActividad) {
               indexActividadReporte = k;
             }
           }
 
           if (indexActividadReporte >= 0) {
-            actividadesReporte[indexActividadReporte].cantidad += Number(reportesParciales[i].actividadesRealizadas[j].cantidad);
+            actividadesReporteAux[indexActividadReporte].cantidad += Number(reportesParciales[i].actividadesRealizadas[j].cantidad);
           } else {
             let indexActividadUsuario: number = -1;
 
@@ -73,7 +74,7 @@ export default function DocumentoReporteFinal() {
               }
             }
 
-            actividadesReporte.push({
+            actividadesReporteAux.push({
               id: actividadesDeUsuario[indexActividadUsuario].id,
               descripcion: actividadesDeUsuario[indexActividadUsuario].descripcion,
               cantidad: Number(reportesParciales[i].actividadesRealizadas[j].cantidad),
@@ -84,6 +85,7 @@ export default function DocumentoReporteFinal() {
         horasAux += Number(reportesParciales[i].horasRealizadas);
       }
       setTotalHoras(horasAux);
+      setActividadesReporte(actividadesReporteAux);
     } else if (redireccionamiento === '') {
       setRedireccionamiento(`/reportes-parciales/${reportesParciales.length + 1}/formulario`);
 
@@ -94,73 +96,84 @@ export default function DocumentoReporteFinal() {
         callback: () => { },
       });
     }
-
-    // Dividir activiadades en paginas
-    let i = 0;
-
-    // Primera hoja que es diferente, le caben 22, todo esta maquetado en cm
-    const primeraPagina: any[] = [];
-
-    while (i < actividadesReporte.length && i < 22) {
-      primeraPagina.push({
-        id: actividadesReporte[i].id,
-        descripcion: actividadesReporte[i].descripcion,
-        cantidad: actividadesReporte[i].cantidad,
-      });
-      i += 1;
-    }
-
-    i = 22;
-    const pagingasAux: any[] = [primeraPagina];
-
-    while (i < actividadesReporte.length) {
-      let j = i;
-      const activiades: any[] = [];
-
-      while (j < i + 30 && j < actividadesReporte.length) {
-        activiades.push({
-          id: actividadesReporte[j].id,
-          descripcion: actividadesReporte[j].descripcion,
-          cantidad: actividadesReporte[j].cantidad,
-        });
-
-        j += 1;
-      }
-
-      pagingasAux.push(activiades);
-      i += j;
-    }
-
-    setPaginas(pagingasAux);
   }, []);
 
   useEffect(() => {
     if (deseaDescargarDocumento) {
-      // eslint-disable-next-line new-cap
-      const pdf = new jsPDF('p', 'mm', [280, 220]);
-      const width = pdf.internal.pageSize.getWidth();
-      const height = pdf.internal.pageSize.getHeight();
-
       (async () => {
-        for (let i = 0; i < paginas.length; i += 1) {
-          const htmlElement: any = document.getElementById(`Pagina_${i}`);
-          // eslint-disable-next-line no-await-in-loop
-          const canvas = await html2canvas(htmlElement, { scale: 2 });
-          const divImage = canvas.toDataURL('image/jpeg', 1.0);
-          if (i === 0) {
-            pdf.addImage(divImage, 0, 0, width, height);
-          } else {
-            pdf.addPage().addImage(divImage, 0, 0, width, height);
-          }
+        // eslint-disable-next-line new-cap
+        const doc = new jsPDF('p', 'mm', [280, 216]);
+
+        // Crear imagen para el header
+        const header: any = document.getElementById('encabezado');
+        const canvasH = await html2canvas(header, { scale: 2 });
+        const headerImage = canvasH.toDataURL('image/jpeg', 1.0);
+
+        // Crear imagen para el encabezado de datos
+        const datos: any = document.getElementById('tabla-datos-generales');
+        const canvasD = await html2canvas(datos, { scale: 2 });
+        const datosImage = canvasD.toDataURL('image/jpeg', 1.0);
+
+        // Crear imagen para el footer de la página
+        const footer: any = document.getElementById('pie-de-pagina');
+        const canvasFo = await html2canvas(footer, { scale: 2 });
+        const footerImage = canvasFo.toDataURL('image/jpeg', 1.0);
+
+        // Crear imagen para la tabla de objetivos y añadirla al documento
+        const objetivos: any = document.getElementById('tabla-objetivos');
+        const canvasO = await html2canvas(objetivos, { scale: 2 });
+        const objetivosImage = canvasO.toDataURL('image/jpeg', 1.0);
+        doc.addImage(objetivosImage, 'JPEG', 20, 84, 177, 32);
+
+        // Añadir tabla de actividades
+        autoTable(doc, {
+          html: '#tabla-actividades',
+          theme: 'plain',
+          styles: {
+            font: 'courier',
+            fontSize: 8,
+            lineColor: 15,
+            lineWidth: 0.3,
+            textColor: 25,
+          },
+          headStyles: {
+            halign: 'center',
+            fillColor: [255, 255, 255],
+            fontStyle: 'bold',
+            lineColor: 15,
+          },
+          footStyles: { halign: 'center', fillColor: [255, 255, 255], fontStyle: 'bold' },
+          showHead: 'firstPage',
+          showFoot: 'lastPage',
+          tableLineWidth: 0.3,
+          tableLineColor: 15,
+          startY: 120,
+          margin: {
+            top: 84, bottom: 40, left: 20, right: 19,
+          },
+          // eslint-disable-next-line no-unused-vars
+          didDrawCell: (_data) => {
+            doc.addImage(headerImage, 'JPEG', 18, 18, 177, 25); // Todas las posiciones están definidas en mm.
+            doc.addImage(datosImage, 'JPEG', 20, 47, 177, 32);
+          },
+        });
+
+        // Añadir a todas las páginas el footer y el número de página
+        const pageCount = doc.getNumberOfPages();
+        for (let i = 1; i <= pageCount; i += 1) {
+          doc.setPage(i);
+          doc.addImage(footerImage, 'JPEG', 68, 255, 80, 10);
+          doc.setFontSize(6);
+          doc.text(`Página ${i}/${pageCount}`, 180, 265);
         }
 
-        pdf.save(`Reporte Final ${usuario.nombre}`);
-        setDeseaDescargarDocumento(false);
+        doc.save(`Reporte Final 1 ${usuario.nombre}`);
+        window.location.reload();
       })();
     } else {
       setDocumentStyles({
         position: 'relative',
-        height: '280mm',
+        height: 'auto',
       });
     }
   }, [deseaDescargarDocumento]);
@@ -198,137 +211,116 @@ export default function DocumentoReporteFinal() {
         tipo={datosModal.tipo}
         texto={datosModal.texto}
         visibilidad={datosModal.visibilidad}
+        // eslint-disable-next-line react/jsx-no-bind
         callback={cerrarModal}
       />
 
       <Navegacion />
-      <br />
 
+      <br />
       <h2 className="texto-encabezado">Documento Reporte Final</h2>
       <br />
 
       <div className="ctn-btns-descargar-y-modificar">
         <button type="button" onClick={descargarDocumento} className="btn-primario">Descargar</button>
       </div>
-      <div className="br" />
 
-      {
-        paginas.map((pagina, index) => (
-          <div key={`Pagina_${index}`}>
-            <br />
-            <br />
+      <br />
 
-            <div id={`Pagina_${index}`} style={documentStyles} className="pagina">
-              <Encabezado />
-              <div className="br" />
+      <div id="documento">
+        <br />
+        <br />
 
-              {
-                index === 0
-                && (
-                  <div>
-                    <table id="tabla-datos-generales">
-                      <tbody>
-                        <tr>
-                          <th colSpan={4} className="celda-datos-generales">
-                            <h2>INFORME GLOBAL</h2>
-                            <div className="br" />
-                          </th>
-                        </tr>
-                        <tr>
-                          <th className="celda-datos-generales celda-campo">Alumno:</th>
-                          <td className="celda-datos-generales celda-valor">{usuario.nombre}</td>
-                          <th className="celda-datos-generales celda-campo">Código:</th>
-                          <td className="celda-datos-generales celda-valor">{usuario.id}</td>
-                        </tr>
+        <div style={documentStyles} className="pagina">
+          <Encabezado />
+          <div className="br" />
 
-                        <tr>
-                          <th className="celda-datos-generales celda-campo">Carrera:</th>
-                          <td className="celda-datos-generales celda-valor">{obtenerCarrerra(usuario.carrera)}</td>
-                          <th className="celda-datos-generales celda-campo">Horario:</th>
-                          <td className="celda-datos-generales celda-valor">{`${datosGenerales.horarioHoraInicio} - ${datosGenerales.horarioHoraFin}`}</td>
-                        </tr>
-
-                        <tr>
-                          <th className="celda-datos-generales celda-campo">Entidad Receptora:</th>
-                          <td className="celda-datos-generales celda-valor">{datosGenerales.entidadReceptora}</td>
-                          <th className="celda-datos-generales celda-campo">Total de Horas:</th>
-                          <td className="celda-datos-generales celda-valor">{totalHoras}</td>
-                        </tr>
-
-                        <tr>
-                          <th className="celda-datos-generales celda-campo">Receptor:</th>
-                          <td className="celda-datos-generales celda-valor">{datosGenerales.receptor}</td>
-                        </tr>
-
-                        <tr>
-                          <th className="celda-datos-generales celda-campo">Fecha de Inicio:</th>
-                          <td className="celda-datos-generales celda-valor">{`${fechaInicio.getDate()}/${fechaInicio.getMonth() + 1}/${fechaInicio.getUTCFullYear()}`}</td>
-                          <th className="celda-datos-generales celda-campo">Fecha de Terminación:</th>
-                          <td className="celda-datos-generales celda-valor">{`${fechaFin.getDate()}/${fechaFin.getMonth() + 1}/${fechaFin.getUTCFullYear()}`}</td>
-                        </tr>
-
-                      </tbody>
-                    </table>
+          <div>
+            <table id="tabla-datos-generales">
+              <tbody>
+                <tr>
+                  <th colSpan={4} className="celda-datos-generales">
+                    <h2>INFORME GLOBAL</h2>
                     <div className="br" />
-                  </div>
-                )
-              }
+                  </th>
+                </tr>
+                <tr>
+                  <th className="celda-datos-generales celda-campo">Alumno:</th>
+                  <td className="celda-datos-generales celda-valor">{usuario.nombre}</td>
+                  <th className="celda-datos-generales celda-campo">Código:</th>
+                  <td className="celda-datos-generales celda-valor">{usuario.id}</td>
+                </tr>
 
-              {
-                index === 0
-                && (
-                  <>
-                    <table id="tabla-objetivos">
-                      <tbody>
-                        <tr><th id="titulo-objetivos">Objetivos del Programa</th></tr>
-                        <tr><td id="objetivos-del-programa-contenido">{datosGenerales.objetivosDelPrograma}</td></tr>
-                      </tbody>
-                    </table>
-                    <div className="br" />
-                  </>
-                )
-              }
+                <tr>
+                  <th className="celda-datos-generales celda-campo">Carrera:</th>
+                  <td className="celda-datos-generales celda-valor">{obtenerCarrerra(usuario.carrera)}</td>
+                  <th className="celda-datos-generales celda-campo">Horario:</th>
+                  <td className="celda-datos-generales celda-valor">{`${datosGenerales.horarioHoraInicio} - ${datosGenerales.horarioHoraFin}`}</td>
+                </tr>
 
-              <table>
-                <thead>
-                  <tr className="fila-actividad">
-                    <th>Actividades (Servicios) Realizadas</th>
-                    <th>Cantidad</th>
-                  </tr>
-                </thead>
+                <tr>
+                  <th className="celda-datos-generales celda-campo">Entidad Receptora:</th>
+                  <td className="celda-datos-generales celda-valor">{datosGenerales.entidadReceptora}</td>
+                  <th className="celda-datos-generales celda-campo">Total de Horas:</th>
+                  <td className="celda-datos-generales celda-valor">{totalHoras}</td>
+                </tr>
 
-                <tbody>
-                  {
-                    pagina.map((actividad: any) => (
-                      <tr key={actividad.id} className="fila-actividad">
-                        <td>{actividad.descripcion}</td>
-                        <td>{actividad.cantidad}</td>
-                      </tr>
-                    ))
-                  }
-                </tbody>
-              </table>
+                <tr>
+                  <th className="celda-datos-generales celda-campo">Receptor:</th>
+                  <td className="celda-datos-generales celda-valor">{datosGenerales.receptor}</td>
+                </tr>
 
-              <div className="numero-de-pagina">
-                <p>
-                  {`Página ${index + 1} de ${paginas.length}`}
-                </p>
-              </div>
-
-              <PiePagina />
-            </div>
-
-            {/* Esto no sale en el documento */}
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-
-            <hr className="salto-pagina" />
+                <tr>
+                  <th className="celda-datos-generales celda-campo">Fecha de Inicio:</th>
+                  <td className="celda-datos-generales celda-valor">{`${fechaInicio.getDate()}/${fechaInicio.getMonth() + 1}/${fechaInicio.getUTCFullYear()}`}</td>
+                  <th className="celda-datos-generales celda-campo">Fecha de Terminación:</th>
+                  <td className="celda-datos-generales celda-valor">{`${fechaFin.getDate()}/${fechaFin.getMonth() + 1}/${fechaFin.getUTCFullYear()}`}</td>
+                </tr>
+                <div className="br" />
+              </tbody>
+            </table>
+            <div className="br" />
+            <div className="br" />
           </div>
-        ))
-      }
+
+          <>
+            <table id="tabla-objetivos">
+              <tbody>
+                <tr><th id="titulo-objetivos">Objetivos del Programa</th></tr>
+                <tr><td id="objetivos-del-programa-contenido">{datosGenerales.objetivosDelPrograma}</td></tr>
+              </tbody>
+            </table>
+            <div className="br" />
+          </>
+
+          <table id="tabla-actividades">
+            <thead>
+              <tr className="fila-actividad">
+                <th>Actividades (Servicios) Realizadas</th>
+                <th>Cantidad</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {
+                actividadesReporte.map((actividad: any) => (
+                  <tr key={actividad.id} className="fila-actividad">
+                    <td>{actividad.descripcion}</td>
+                    <td>{actividad.cantidad}</td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+
+          <div className="espacio" />
+
+          <PiePagina />
+
+          <div className="br" />
+        </div>
+
+      </div>
     </>
   );
 }

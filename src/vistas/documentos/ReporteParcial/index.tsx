@@ -195,13 +195,13 @@ export default function DocumentoReporteParcial() {
           showFoot: 'lastPage',
           tableLineWidth: 0.3,
           tableLineColor: 15,
+          startY: 98,
           margin: {
-            top: 98, bottom: 40, left: 20, right: 19,
+            top: 84, bottom: 40, left: 20, right: 19,
           },
           didDrawCell: (_data) => {
-            doc.addImage(headerImage, 'JPEG', 20, 20, 177, 20); // Todas las posiciones están definidas en mm.
+            doc.addImage(headerImage, 'JPEG', 18, 18, 177, 25); // Todas las posiciones están definidas en mm.
             doc.addImage(datosImage, 'JPEG', 20, 47, 177, 32);
-            doc.addImage(fechasImage, 'JPEG', 20, 84, 177, 13);
           },
         });
 
@@ -232,7 +232,7 @@ export default function DocumentoReporteParcial() {
           },
           didDrawCell: (_data) => {
             doc.addImage(datosImage, 'JPEG', 20, 47, 177, 32);
-            doc.addImage(headerImage, 'JPEG', 20, 20, 177, 20); // Todas las posiciones están definidas en mm.
+            doc.addImage(headerImage, 'JPEG', 18, 18, 177, 25); // Todas las posiciones están definidas en mm.
           },
         });
 
@@ -242,6 +242,9 @@ export default function DocumentoReporteParcial() {
           doc.setPage(i);
           if (i === pageCount) { // Poner firmas si es la última página
             doc.addImage(firmasImage, 'JPEG', 20, 230, 177, 45);
+          }
+          if (i === 1) { // Poner fechas si es la primera página
+            doc.addImage(fechasImage, 'JPEG', 20, 84, 177, 13);
           }
           doc.addImage(footerImage, 'JPEG', 68, 255, 80, 10);
           doc.setFontSize(6);

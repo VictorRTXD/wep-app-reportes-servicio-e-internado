@@ -8,9 +8,10 @@ h1 {
 }
 
 #encabezado {
-  height: 20mm;
-  font-size: 70%;
+  height: 25mm;
+  font-size: 75%;
   overflow: hidden;
+  width: 177mm;
 }
 
 #ctn-escudo {

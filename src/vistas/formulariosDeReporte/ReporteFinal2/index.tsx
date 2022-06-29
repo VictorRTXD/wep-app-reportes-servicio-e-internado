@@ -99,12 +99,24 @@ export default function ReporteFinal2() {
               callback: () => {},
             });
           } else if (data.code) {
-            setDatosModal({
-              tipo: 'error',
-              texto: data.code,
-              visibilidad: true,
-              callback: () => {},
-            });
+            if (data.code === 'SESION_EXPIRADA') {
+              setDatosModal({
+                tipo: 'error',
+                texto: data.code,
+                visibilidad: true,
+                callback: () => {},
+              });
+              if (redireccionamiento === '') {
+                setRedireccionamiento('/usuario/iniciar-sesion');
+              }
+            } else {
+              setDatosModal({
+                tipo: 'error',
+                texto: data.code,
+                visibilidad: true,
+                callback: () => {},
+              });
+            }
           } else {
             setDatosModal({
               tipo: 'error',
@@ -158,6 +170,7 @@ export default function ReporteFinal2() {
         tipo={datosModal.tipo}
         texto={datosModal.texto}
         visibilidad={datosModal.visibilidad}
+        // eslint-disable-next-line react/jsx-no-bind
         callback={cerrarModal}
       />
 
