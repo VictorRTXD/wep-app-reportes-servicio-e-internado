@@ -44,8 +44,6 @@ module.exports = {
       },
     ],
     'react/jsx-filename-extension': [2, { extensions: ['.js', '.jsx', '.ts', '.tsx'] }],
-    'linebreak-style': ['error', 'windows'],
     'react/jsx-no-bind': ['warn'],
-
   },
 };
