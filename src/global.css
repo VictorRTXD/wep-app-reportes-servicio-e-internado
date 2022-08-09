@@ -147,6 +147,8 @@ button {
 }
 
 .pagina {
+  font-family: 'helvetica', sans-serif;
+  font-size: 90%;
   width: 100%;
   margin-left: 0%;
   border: 1px solid #dadce0;

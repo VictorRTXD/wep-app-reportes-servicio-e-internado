@@ -11,7 +11,7 @@ import './styles.css';
 import PiePagina from '../componentes/PiePagina';
 import Navegacion from '../../../componentes/BarraNavegacion';
 import Modal, { DatosModal } from '../../../componentes/Modal';
-import FirmasDocumentos from '../componentes/Firmas';
+import FirmasDocumentos from '../componentes/FirmasFinal';
 
 export default function DocumentoReporteFinal2() {
   const [documentStyles, setDocumentStyles] = useState({});

@@ -43,8 +43,11 @@ export default function DocumentoReporteFinal() {
 
   const [actividadesReporte, setActividadesReporte] = useState<ActividadesReporteParcial[]>([]);
 
-  const fechaInicio = new Date(datosGenerales.fechaInicio);
-  const fechaFin = new Date(datosGenerales.fechaFin);
+  let splitAux: string[];
+  splitAux = datosGenerales.fechaInicio.split('-');
+  const fechaInicio = `${splitAux[2].substring(0, 2)}/${splitAux[1]}/${splitAux[0]}`;
+  splitAux = datosGenerales.fechaFin.split('-');
+  const fechaFin = `${splitAux[2].substring(0, 2)}/${splitAux[1]}/${splitAux[0]}`;
 
   useEffect(() => {
     const actividadesReporteAux: ActividadesReporteParcial[] = [];
@@ -130,7 +133,7 @@ export default function DocumentoReporteFinal() {
           html: '#tabla-actividades',
           theme: 'plain',
           styles: {
-            font: 'courier',
+            font: 'helvetica',
             fontSize: 8,
             lineColor: 15,
             lineWidth: 0.3,
@@ -272,9 +275,9 @@ export default function DocumentoReporteFinal() {
 
                 <tr>
                   <th className="celda-datos-generales celda-campo">Fecha de Inicio:</th>
-                  <td className="celda-datos-generales celda-valor">{`${fechaInicio.getDate()}/${fechaInicio.getMonth() + 1}/${fechaInicio.getUTCFullYear()}`}</td>
+                  <td className="celda-datos-generales celda-valor">{fechaInicio}</td>
                   <th className="celda-datos-generales celda-campo">Fecha de Terminación:</th>
-                  <td className="celda-datos-generales celda-valor">{`${fechaFin.getDate()}/${fechaFin.getMonth() + 1}/${fechaFin.getUTCFullYear()}`}</td>
+                  <td className="celda-datos-generales celda-valor">{fechaFin}</td>
                 </tr>
                 <div className="br" />
               </tbody>

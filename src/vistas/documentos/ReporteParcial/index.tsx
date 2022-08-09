@@ -178,7 +178,7 @@ export default function DocumentoReporteParcial() {
           html: '#tabla-actividades',
           theme: 'plain',
           styles: {
-            font: 'courier',
+            font: 'helvetica',
             fontSize: 8,
             lineColor: 15,
             lineWidth: 0.3,
@@ -210,7 +210,7 @@ export default function DocumentoReporteParcial() {
           html: '#tabla-atenciones',
           theme: 'plain',
           styles: {
-            font: 'courier',
+            font: 'helvetica',
             fontSize: 8,
             lineColor: 15,
             lineWidth: 0.3,
