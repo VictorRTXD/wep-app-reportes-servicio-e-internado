@@ -3,7 +3,7 @@ import React from 'react';
 import '../../../../global.css';
 import './styles.css';
 
-// const usuario = JSON.parse(sessionStorage.getItem('usuario')!);
+const usuario = JSON.parse(sessionStorage.getItem('usuario')!);
 
 export default function FirmasDocumentos() {
   return (
@@ -11,7 +11,7 @@ export default function FirmasDocumentos() {
       <div className="ctn-firma">
         <hr />
         <br />
-        <span>Ramón ps</span>
+        <span>{usuario.nombre}</span>
         <br />
         <span>ㅤ</span>
       </div>
