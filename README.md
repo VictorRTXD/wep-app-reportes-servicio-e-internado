@@ -22,7 +22,7 @@ Para que el cliente pueda utilizar la app, es necesario *servirla*. Para ello, e
 6. En el archivo de configuración, cambiar Localhost por la dirección de la página + /api ```(http://rssalud.cualtos.udg.mx:443/api)```.
 7. Agregar ```'react/jsx-no-bind': ['warn']```, en el archivo .eslintrc.js
 8. Compilar con ```sudo npm run build```
-9. Subir una carpeta y correr con ```sudo pm2 serve build 80 --spa```
+9. Subir una carpeta y correr con ```sudo pm2 serve build 80 --spa```. ```Nota de Ramón:``` si al intentar levantar el proceso, aparece con status errored, utilizar pm2 resurrect. 
 10. Una vez que el proceso está corriendo, usa el comando ```pm2 save``` para guardarlo y que se inicie aún cuando el sistema se reinicie.
 11. Para ver el proceso corriendo, se puede usar el comando ```pm2 list```
 12. Puedes ver más información de PM2 [aquí](https://pm2.keymetrics.io/docs/usage/startup/).
