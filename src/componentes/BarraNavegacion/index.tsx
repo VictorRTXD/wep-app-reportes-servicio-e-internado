@@ -16,7 +16,7 @@ export default function Navegacion() {
           <Link to="/reportes-parciales/2" type="button" className="link-redondo"> 2 </Link>
           <Link to="/reportes-parciales/3" type="button" className="link-redondo"> 3 </Link>
           <Link to="/reportes-parciales/4" type="button" className="link-redondo"> 4 </Link>
-          <Link to="/reporte-final" type="button" className="link-redondo link-texto-largo centrar"> Final </Link>
+          <Link to="/reporte-final" type="button" className="link-redondo link-texto-largo centrar"> Final</Link>
         </div>
       </div>
     </>
