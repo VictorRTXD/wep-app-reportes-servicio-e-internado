@@ -90,7 +90,7 @@ export default function ReporteFinal2() {
           if (ok) {
             sessionStorage.setItem('reporteFinalDos', JSON.stringify(data));
 
-            setRedireccionamiento('/reporte-final-2');
+            setRedireccionamiento('/reporte-final');
 
             setDatosModal({
               tipo: 'confirmacion',
@@ -177,7 +177,7 @@ export default function ReporteFinal2() {
       <Navegacion />
       <br />
 
-      <h2 className="texto-encabezado">Formulario Reporte Final 2</h2>
+      <h2 className="texto-encabezado">Formulario Reporte Final</h2>
       <br />
 
       <form>

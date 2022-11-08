@@ -10,7 +10,6 @@ import Sesion from './vistas/IniciarSesion';
 // Documentos
 import DocumentoReporteParcial from './vistas/documentos/ReporteParcial';
 import DocumentoReporteFinal from './vistas/documentos/ReporteFinal';
-import DocumentoReporteFinal2 from './vistas/documentos/ReporteFinal2';
 
 function App() {
   return (
@@ -22,7 +21,6 @@ function App() {
       {/* Reportes */}
       <Route exact path="/reportes-parciales/:numero" component={DocumentoReporteParcial} />
       <Route exact path="/reporte-final" component={DocumentoReporteFinal} />
-      <Route exact path="/reporte-final-2" component={DocumentoReporteFinal2} />
 
       {/* Formularios */}
       <Route exact path="/reportes-parciales/:numero/formulario" component={ReportesParciales} />

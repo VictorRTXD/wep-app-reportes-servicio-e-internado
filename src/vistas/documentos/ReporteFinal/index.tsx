@@ -4,11 +4,12 @@ import React, { useEffect, useState } from 'react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { Redirect } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 
 import Navegacion from '../../../componentes/BarraNavegacion';
 import Encabezado from '../componentes/Encabezado';
 import PiePagina from '../componentes/PiePagina';
+import FirmasDocumentos from '../componentes/FirmasFinal';
 
 import '../../../global.css';
 import './styles.css';
@@ -25,8 +26,34 @@ export default function DocumentoReporteFinal() {
   // Obtener datos
   const datosGenerales = JSON.parse(sessionStorage.getItem('servicioDatosGenerales')!);
   const reportesParciales = JSON.parse(sessionStorage.getItem('reportesParciales')!);
+  const reporteFinalDos = JSON.parse(sessionStorage.getItem('reporteFinalDos')!);
   const actividadesDeUsuario = JSON.parse(sessionStorage.getItem('actividadesDeUsuario')!);
   const usuario = JSON.parse(sessionStorage.getItem('usuario')!);
+  const atencionesRealizadas: any[] = [
+    {
+      descripcion: 'Prenatales',
+      cantidad: 0,
+    },
+    {
+      descripcion: 'Niños 0 a 12 años',
+      cantidad: 0,
+    },
+    {
+      descripcion: 'Hombres',
+      cantidad: 0,
+    },
+    {
+      descripcion: 'Mujeres',
+      cantidad: 0,
+    },
+    {
+      descripcion: 'Geríatrico',
+      cantidad: 0,
+    },
+  ];
+
+  let totalActividadesRealizadas: number = 0;
+  let totalDeAtenciones: number = 0;
 
   const [documentStyles, setDocumentStyles] = useState({});
   const [deseaDescargarDocumento, setDeseaDescargarDocumento] = useState(false);
@@ -38,6 +65,7 @@ export default function DocumentoReporteFinal() {
     visibilidad: false,
     callback: () => { },
   });
+
   const [retornar, setRetornar] = useState(false);
   const [redireccionamiento, setRedireccionamiento] = useState('');
 
@@ -48,6 +76,114 @@ export default function DocumentoReporteFinal() {
   const fechaInicio = `${splitAux[2].substring(0, 2)}/${splitAux[1]}/${splitAux[0]}`;
   splitAux = datosGenerales.fechaFin.split('-');
   const fechaFin = `${splitAux[2].substring(0, 2)}/${splitAux[1]}/${splitAux[0]}`;
+
+  if (Object.entries(reporteFinalDos).length <= 0) {
+    if (redireccionamiento === '') {
+      setRedireccionamiento('/reporte-final-2/formulario');
+
+      setDatosModal({
+        tipo: 'error',
+        texto: 'No has completado este reporte',
+        visibilidad: true,
+        callback: () => {},
+      });
+    }
+  }
+
+  if (reportesParciales.length === 4) {
+    try {
+      for (let i = 0; i < reportesParciales.length; i += 1) {
+        // Sumar actividades
+        for (let j = 0; j < reportesParciales[i].actividadesRealizadas.length; j += 1) {
+          totalActividadesRealizadas += Number(reportesParciales[i].actividadesRealizadas[j].cantidad);
+        }
+
+        // Sumar atenciones
+        for (let j = 0; j < reportesParciales[i].atencionesRealizadas.length; j += 1) {
+          atencionesRealizadas[j].cantidad += reportesParciales[i].atencionesRealizadas[j].cantidad;
+          totalDeAtenciones += Number(reportesParciales[i].atencionesRealizadas[j].cantidad);
+        }
+      }
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.log('Error al mapear actividades');
+    }
+  } else if (redireccionamiento === '') {
+    if (redireccionamiento === '') {
+      setRedireccionamiento(`/reportes-parciales/${reportesParciales.length + 1}/formulario`);
+
+      setDatosModal({
+        tipo: 'error',
+        texto: 'No has completado todos los reportes',
+        visibilidad: true,
+        callback: () => {},
+      });
+    }
+  }
+  const Autot = (title: string, headerImage:string, doc: jsPDF, start: number) => {
+    if (start === 0) {
+      autoTable(doc, {
+        html: title,
+        theme: 'plain',
+        styles: {
+          font: 'helvetica',
+          fontSize: 8,
+          lineColor: 15,
+          lineWidth: 0.3,
+          textColor: 25,
+        },
+        headStyles: {
+          halign: 'center',
+          fillColor: [255, 255, 255],
+          fontStyle: 'bold',
+          lineColor: 15,
+        },
+        footStyles: { halign: 'center', fillColor: [255, 255, 255], fontStyle: 'bold' },
+        showHead: 'firstPage',
+        showFoot: 'lastPage',
+        tableLineWidth: 0.3,
+        tableLineColor: 15,
+        horizontalPageBreak: true,
+        margin: {
+          top: 50, bottom: 40, left: 20, right: 19,
+        },
+        didDrawCell: () => {
+          doc.addImage(headerImage, 'JPEG', 18, 18, 177, 25);
+        },
+      });
+    } else {
+      autoTable(doc, {
+        html: title,
+        theme: 'plain',
+        styles: {
+          font: 'helvetica',
+          fontSize: 8,
+          lineColor: 15,
+          lineWidth: 0.3,
+          textColor: 25,
+        },
+        headStyles: {
+          halign: 'center',
+          fillColor: [255, 255, 255],
+          fontStyle: 'bold',
+          lineColor: 15,
+        },
+        footStyles: { halign: 'center', fillColor: [255, 255, 255], fontStyle: 'bold' },
+        showHead: 'firstPage',
+        showFoot: 'lastPage',
+        tableLineWidth: 0.3,
+        tableLineColor: 15,
+        startY: start,
+        horizontalPageBreak: true,
+        margin: {
+          top: 50, bottom: 40, left: 20, right: 19,
+        },
+        didDrawCell: () => {
+          doc.addImage(headerImage, 'JPEG', 18, 18, 177, 25);
+        },
+      });
+    }
+  };
 
   useEffect(() => {
     const actividadesReporteAux: ActividadesReporteParcial[] = [];
@@ -112,6 +248,11 @@ export default function DocumentoReporteFinal() {
         const canvasH = await html2canvas(header, { scale: 2 });
         const headerImage = canvasH.toDataURL('image/jpeg', 1.0);
 
+        // Firmas para el final del documento
+        const firmas: any = document.getElementById('ctn-firmas');
+        const canvasFi = await html2canvas(firmas, { scale: 2 });
+        const firmasImage = canvasFi.toDataURL('image/jpeg', 1.0);
+
         // Crear imagen para el encabezado de datos
         const datos: any = document.getElementById('tabla-datos-generales');
         const canvasD = await html2canvas(datos, { scale: 2 });
@@ -122,45 +263,19 @@ export default function DocumentoReporteFinal() {
         const canvasFo = await html2canvas(footer, { scale: 2 });
         const footerImage = canvasFo.toDataURL('image/jpeg', 1.0);
 
-        // Crear imagen para la tabla de objetivos y añadirla al documento
-        const objetivos: any = document.getElementById('tabla-objetivos');
-        const canvasO = await html2canvas(objetivos, { scale: 2 });
-        const objetivosImage = canvasO.toDataURL('image/jpeg', 1.0);
-        doc.addImage(objetivosImage, 'JPEG', 20, 84, 177, 32);
-
+        doc.addImage(datosImage, 'JPEG', 20, 47, 177, 32);
         // Añadir tabla de actividades
-        autoTable(doc, {
-          html: '#tabla-actividades',
-          theme: 'plain',
-          styles: {
-            font: 'helvetica',
-            fontSize: 8,
-            lineColor: 15,
-            lineWidth: 0.3,
-            textColor: 25,
-          },
-          headStyles: {
-            halign: 'center',
-            fillColor: [255, 255, 255],
-            fontStyle: 'bold',
-            lineColor: 15,
-          },
-          footStyles: { halign: 'center', fillColor: [255, 255, 255], fontStyle: 'bold' },
-          showHead: 'firstPage',
-          showFoot: 'lastPage',
-          tableLineWidth: 0.3,
-          tableLineColor: 15,
-          startY: 120,
-          margin: {
-            top: 84, bottom: 40, left: 20, right: 19,
-          },
-          // eslint-disable-next-line no-unused-vars
-          didDrawCell: (_data) => {
-            doc.addImage(headerImage, 'JPEG', 18, 18, 177, 25); // Todas las posiciones están definidas en mm.
-            doc.addImage(datosImage, 'JPEG', 20, 47, 177, 32);
-          },
-        });
+        Autot('#tabla-objetivos', headerImage, doc, 84);
+        Autot('#tabla-actividades', headerImage, doc, 0);
+        Autot('#Total-Act', headerImage, doc, 0);
+        Autot('#Metas-Alcanzadas', headerImage, doc, 0);
+        Autot('#Metodología-Utilizada', headerImage, doc, 0);
+        Autot('#Inno-Aportada', headerImage, doc, 0);
+        Autot('#Conclusiones', headerImage, doc, 0);
+        Autot('#Propuestas', headerImage, doc, 0);
+        Autot('#tabla-atenciones-realizadas', headerImage, doc, 0);
 
+        doc.addImage(firmasImage, 'JPEG', 20, 230, 177, 45);
         // Añadir a todas las páginas el footer y el número de página
         const pageCount = doc.getNumberOfPages();
         for (let i = 1; i <= pageCount; i += 1) {
@@ -226,6 +341,9 @@ export default function DocumentoReporteFinal() {
 
       <div className="ctn-btns-descargar-y-modificar">
         <button type="button" onClick={descargarDocumento} className="btn-primario">Descargar</button>
+        <div className="ctn-btn-link">
+          <Link to="/reporte-final-2/formulario" id="btn-link" type="button" className="btn-secundario btn-link"> Modificar </Link>
+        </div>
       </div>
 
       <br />
@@ -288,8 +406,13 @@ export default function DocumentoReporteFinal() {
 
           <>
             <table id="tabla-objetivos">
+              <thead>
+                <tr className="fila-actividad">
+                  <th id="titulo-objetivos">Objetivos del Programa</th>
+                </tr>
+              </thead>
               <tbody>
-                <tr><th id="titulo-objetivos">Objetivos del Programa</th></tr>
+
                 <tr><td id="objetivos-del-programa-contenido">{datosGenerales.objetivosDelPrograma}</td></tr>
               </tbody>
             </table>
@@ -313,17 +436,113 @@ export default function DocumentoReporteFinal() {
                   </tr>
                 ))
               }
+              <tr className="fila-actividad">
+                <td>Total de Actividades Realizadas</td>
+                <td>{totalActividadesRealizadas}</td>
+              </tr>
             </tbody>
           </table>
+          <br />
+          <table id="Metas-Alcanzadas">
+            <thead>
+              <tr className="fila-actividad">
+                <th>Metas Alcanzadas</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>{reporteFinalDos.metasAlcanzadas}</td></tr>
+            </tbody>
+          </table>
+          <br />
 
+          <table id="Metodología-Utilizada">
+            <thead>
+              <tr className="fila-actividad">
+                <th>Metodología Utilizada</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>{reporteFinalDos.metodologiaUtilizada}</td></tr>
+            </tbody>
+          </table>
+          <br />
+
+          <table id="Inno-Aportada">
+            <thead>
+              <tr className="fila-actividad">
+                <th>Innovación Aportada</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>{reporteFinalDos.innovacionAportada}</td></tr>
+            </tbody>
+          </table>
+          <br />
+
+          <table id="Conclusiones">
+            <thead>
+              <tr className="fila-actividad">
+                <th>Conclusiones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>{reporteFinalDos.conclusiones}</td></tr>
+            </tbody>
+          </table>
+          <br />
+
+          <table id="Propuestas">
+            <thead>
+              <tr className="fila-actividad">
+                <th>Propuestas</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>{reporteFinalDos.propuestas}</td></tr>
+            </tbody>
+          </table>
+          <br />
+          <br />
+
+          <table id="tabla-atenciones-realizadas">
+            <thead>
+              <tr className="fila-actividad">
+                <th colSpan={4}>Atenciones Brindadas</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th className="border-unset">Mujeres:</th>
+                <td className="border-unset">{atencionesRealizadas[3].cantidad}</td>
+                <th className="border-unset">Niños:</th>
+                <td className="border-unset">{atencionesRealizadas[1].cantidad}</td>
+              </tr>
+
+              <tr>
+                <th className="border-unset">Hombres:</th>
+                <td className="border-unset">{atencionesRealizadas[2].cantidad}</td>
+                <th className="border-unset">Prenatales:</th>
+                <td className="border-unset">{atencionesRealizadas[0].cantidad}</td>
+              </tr>
+
+              <tr>
+                <th className="border-unset">Geríatricos:</th>
+                <td className="border-unset">{atencionesRealizadas[4].cantidad}</td>
+                <th className="border-unset">Total de Atenciones:</th>
+                <td className="border-unset">{totalDeAtenciones}</td>
+              </tr>
+            </tbody>
+          </table>
           <div className="espacio" />
-
+          <FirmasDocumentos />
           <PiePagina />
 
           <div className="br" />
         </div>
 
       </div>
+      <br />
+      <br />
     </>
   );
 }
