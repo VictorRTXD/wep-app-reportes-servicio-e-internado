@@ -3,9 +3,8 @@ import React from 'react';
 import '../../../../global.css';
 import './styles.css';
 
-const usuario = JSON.parse(sessionStorage.getItem('usuario')!);
-
 export default function FirmasDocumentos() {
+  const usuario = JSON.parse(sessionStorage.getItem('usuario')!);
   return (
     <div className="ctn-firmas" id="ctn-firmas">
       <div className="ctn-firma">
