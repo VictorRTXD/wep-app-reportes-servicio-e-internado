@@ -11,6 +11,7 @@ export default function Navegacion() {
       <div id="ctn-barra-navegacion">
         <div className="title-bar centrar"><span><b>Reportes Área de la Salud</b></span></div>
         <div className="buttons-container">
+          <Link to="/usuario/iniciar-sesion" onClick={() => sessionStorage.clear()} type="button" className="link-redondo link-texto-largo centrar"> Cerrar Sesion </Link>
           <Link to="/servicio/formulario" type="button" id="servicio" className="link-redondo link-texto-largo centrar"> Servicio </Link>
           <Link to="/reportes-parciales/1" type="button" className="link-redondo"> 1 </Link>
           <Link to="/reportes-parciales/2" type="button" className="link-redondo"> 2 </Link>
