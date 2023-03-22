@@ -1,6 +1,8 @@
 # Web APP Reportes Área de la Salud.
 
 Autores: 
+- Maria del Carmen Gonzalez Gonzalez
+- Alexis de Jesus Aguirre Lara
 - Ramón Paredes Sánchez.
 - Erik Raul Aguirre Lara.
 
