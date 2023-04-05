@@ -241,7 +241,7 @@ export default function DocumentoReporteParcial() {
         for (let i = 1; i <= pageCount; i += 1) {
           doc.setPage(i);
           if (i === pageCount) { // Poner firmas si es la última página
-            doc.addImage(firmasImage, 'JPEG', 20, 230, 177, 45);
+            doc.addImage(firmasImage, 'JPEG', 50, 230, 177, 45);
           }
           if (i === 1) { // Poner fechas si es la primera página
             doc.addImage(fechasImage, 'JPEG', 20, 84, 177, 13);
@@ -311,7 +311,7 @@ export default function DocumentoReporteParcial() {
   }
 
   return (
-    <>
+    <div id="container">
       <Modal
         tipo={datosModal.tipo}
         texto={datosModal.texto}
@@ -319,199 +319,193 @@ export default function DocumentoReporteParcial() {
         // eslint-disable-next-line react/jsx-no-bind
         callback={cerrarModal}
       />
-
-      <Navegacion />
-
-      <br />
-      <h2 className="texto-encabezado">{`Documento Reporte Parcial #${numeroReporte}`}</h2>
-      <br />
-
-      <div className="ctn-btns-descargar-y-modificar">
-        <button type="button" onClick={descargarDocumento} className="btn-primario">Descargar</button>
-        <div className="ctn-btn-link">
-          <Link to={`/reportes-parciales/${numeroReporte}/formulario`} id="btn-link" type="button" className="btn-secundario btn-link"> Modificar </Link>
-        </div>
-      </div>
-
-      <br />
-
-      <div id="documento">
-        <br />
+      <Navegacion select={numeroReporte} />
+      <div id="crear">
+        <h2 id="titleParcial">{`Documento Reporte Parcial ${numeroReporte}`}</h2>
         <br />
 
-        <div style={documentStyles} className="pagina">
-          <Encabezado />
-          <div className="br" />
+        <div id="documento">
+          <br />
+          <br />
 
-          <div>
-            <table id="tabla-reporte-trimestral">
-              <tbody>
-                <tr>
-                  <th colSpan={4} className="celda-datos-generales">
-                    <h2>REPORTE TRIMESTRAL DE ACTIVIDADES</h2>
-                    <div className="br" />
-                  </th>
-                </tr>
-
-                <tr>
-                  <th className="celda-datos-generales celda-campo">Alumno:</th>
-                  <td className="celda-datos-generales celda-valor">{usuario.nombre}</td>
-                  <th className="celda-datos-generales celda-campo">Código:</th>
-                  <td className="celda-datos-generales celda-valor">{usuario.id}</td>
-                </tr>
-
-                <tr>
-                  <th className="celda-datos-generales celda-campo">Carrera:</th>
-                  <td className="celda-datos-generales celda-valor">{obtenerCarrerra(usuario.carrera)}</td>
-                  <th className="celda-datos-generales celda-campo">Horario:</th>
-                  <td className="celda-datos-generales celda-valor">{`${datosGenerales.horarioHoraInicio} - ${datosGenerales.horarioHoraFin}`}</td>
-                </tr>
-
-                <tr>
-                  <th className="celda-datos-generales celda-campo">Entidad Receptora:</th>
-                  <td className="celda-datos-generales celda-valor">{datosGenerales.entidadReceptora}</td>
-                  <th className="celda-datos-generales celda-campo">Horas Realizadas:</th>
-                  <td className="celda-datos-generales celda-valor">{reportesParciales[numeroReporte - 1]?.horasRealizadas || ''}</td>
-                </tr>
-
-                <tr>
-                  <th className="celda-datos-generales celda-campo">Receptor:</th>
-                  <td className="celda-datos-generales celda-valor">{datosGenerales.receptor}</td>
-                  <th className="celda-datos-generales celda-campo">Número de Reporte:</th>
-                  <td className="celda-datos-generales celda-valor">{numeroReporte}</td>
-                </tr>
-
-                <tr>
-                  <th className="celda-datos-generales celda-campo">Programa:</th>
-                  <td className="celda-datos-generales celda-valor">{datosGenerales.programa}</td>
-                </tr>
-                <div className="br" />
-              </tbody>
-            </table>
+          <div style={documentStyles} className="pagina">
+            <Encabezado />
             <div className="br" />
-          </div>
 
-          <div>
-            <div id="encabezado-fechas">
-              <span className="fechas-campo">Fecha de Inicio:</span>
-              <p className="fechas-valor">{fechaInicio}</p>
-              <span className="fechas-campo">Fecha de Fin:</span>
-              <p className="fechas-valor">{fechaFin}</p>
-              <div className="br" />
+            <div>
+              <table id="tabla-reporte-trimestral">
+                <tbody>
+                  <tr>
+                    <th colSpan={4} className="celda-datos-generales">
+                      <h2>REPORTE TRIMESTRAL DE ACTIVIDADES</h2>
+                      <div className="br" />
+                    </th>
+                  </tr>
+
+                  <tr>
+                    <th className="celda-datos-generales celda-campo">Alumno:</th>
+                    <td className="celda-datos-generales celda-valor">{usuario.nombre}</td>
+                    <th className="celda-datos-generales celda-campo">Código:</th>
+                    <td className="celda-datos-generales celda-valor">{usuario.id}</td>
+                  </tr>
+
+                  <tr>
+                    <th className="celda-datos-generales celda-campo">Carrera:</th>
+                    <td className="celda-datos-generales celda-valor">{obtenerCarrerra(usuario.carrera)}</td>
+                    <th className="celda-datos-generales celda-campo">Horario:</th>
+                    <td className="celda-datos-generales celda-valor">{`${datosGenerales.horarioHoraInicio} - ${datosGenerales.horarioHoraFin}`}</td>
+                  </tr>
+
+                  <tr>
+                    <th className="celda-datos-generales celda-campo">Entidad Receptora:</th>
+                    <td className="celda-datos-generales celda-valor">{datosGenerales.entidadReceptora}</td>
+                    <th className="celda-datos-generales celda-campo">Horas Realizadas:</th>
+                    <td className="celda-datos-generales celda-valor">{reportesParciales[numeroReporte - 1]?.horasRealizadas || ''}</td>
+                  </tr>
+
+                  <tr>
+                    <th className="celda-datos-generales celda-campo">Receptor:</th>
+                    <td className="celda-datos-generales celda-valor">{datosGenerales.receptor}</td>
+                    <th className="celda-datos-generales celda-campo">Número de Reporte:</th>
+                    <td className="celda-datos-generales celda-valor">{numeroReporte}</td>
+                  </tr>
+
+                  <tr>
+                    <th className="celda-datos-generales celda-campo">Programa:</th>
+                    <td className="celda-datos-generales celda-valor">{datosGenerales.programa}</td>
+                  </tr>
+                  <div className="br" />
+                </tbody>
+              </table>
               <div className="br" />
             </div>
 
-            <table id="tabla-actividades">
-              <thead>
-                <tr className="fila-actividad">
-                  <th>Actividades Realizadas</th>
-                  <th>Trimestre 1</th>
-                  <th>Trimestre 2</th>
-                  <th>Trimestre 3</th>
-                  <th>Trimestre 4</th>
-                  <th>Global</th>
-                </tr>
-              </thead>
+            <div>
+              <div id="encabezado-fechas">
+                <span className="fechas-campo">Fecha de Inicio:</span>
+                <p className="fechas-valor">{fechaInicio}</p>
+                <span className="fechas-campo">Fecha de Fin:</span>
+                <p className="fechas-valor">{fechaFin}</p>
+                <div className="br" />
+                <div className="br" />
+              </div>
 
-              <tbody>
-                {
-                  actividadesReporte.map((actividad: any) => (
-                    <tr key={actividad.id} className="fila-actividad">
-                      <td className={(actividad.descripcion.length < 100 ? '' : 'reduced-size')}>{actividad.descripcion}</td>
-                      <td>{actividad.cantidad[0] !== 0 ? actividad.cantidad[0] : ''}</td>
-                      <td>{actividad.cantidad[1] !== 0 ? actividad.cantidad[1] : ''}</td>
-                      <td>{actividad.cantidad[2] !== 0 ? actividad.cantidad[2] : ''}</td>
-                      <td>{actividad.cantidad[3] !== 0 ? actividad.cantidad[3] : ''}</td>
-                      <td>
-                        {Number(actividad.cantidad[0])
-                          + Number(actividad.cantidad[1] || 0)
-                          + Number(actividad.cantidad[2] || 0)
-                          + Number(actividad.cantidad[3] || 0)}
-                      </td>
-                    </tr>
-                  ))
-                }
-              </tbody>
-              <tfoot>
-                <tr className="fila-actividad">
-                  <th>Total</th>
-                  <td>{calcularTotalPorTrimestre(actividadesReporte, 0) || ''}</td>
-                  <td>{calcularTotalPorTrimestre(actividadesReporte, 1) || ''}</td>
-                  <td>{calcularTotalPorTrimestre(actividadesReporte, 2) || ''}</td>
-                  <td>{calcularTotalPorTrimestre(actividadesReporte, 3) || ''}</td>
-                  <td>
-                    {calcularTotalPorTrimestre(actividadesReporte, 0)
-                      + calcularTotalPorTrimestre(actividadesReporte, 1)
-                      + calcularTotalPorTrimestre(actividadesReporte, 2)
-                      + calcularTotalPorTrimestre(actividadesReporte, 3)}
-                  </td>
-                </tr>
-              </tfoot>
-            </table>
+              <table id="tabla-actividades">
+                <thead>
+                  <tr className="fila-actividad">
+                    <th>Actividades Realizadas</th>
+                    <th>Trimestre 1</th>
+                    <th>Trimestre 2</th>
+                    <th>Trimestre 3</th>
+                    <th>Trimestre 4</th>
+                    <th>Global</th>
+                  </tr>
+                </thead>
 
+                <tbody>
+                  {
+                    actividadesReporte.map((actividad: any) => (
+                      <tr key={actividad.id} className="fila-actividad">
+                        <td className={(actividad.descripcion.length < 100 ? '' : 'reduced-size')}>{actividad.descripcion}</td>
+                        <td>{actividad.cantidad[0] !== 0 ? actividad.cantidad[0] : ''}</td>
+                        <td>{actividad.cantidad[1] !== 0 ? actividad.cantidad[1] : ''}</td>
+                        <td>{actividad.cantidad[2] !== 0 ? actividad.cantidad[2] : ''}</td>
+                        <td>{actividad.cantidad[3] !== 0 ? actividad.cantidad[3] : ''}</td>
+                        <td>
+                          {Number(actividad.cantidad[0])
+                            + Number(actividad.cantidad[1] || 0)
+                            + Number(actividad.cantidad[2] || 0)
+                            + Number(actividad.cantidad[3] || 0)}
+                        </td>
+                      </tr>
+                    ))
+                  }
+                </tbody>
+                <tfoot>
+                  <tr className="fila-actividad">
+                    <th>Total</th>
+                    <td>{calcularTotalPorTrimestre(actividadesReporte, 0) || ''}</td>
+                    <td>{calcularTotalPorTrimestre(actividadesReporte, 1) || ''}</td>
+                    <td>{calcularTotalPorTrimestre(actividadesReporte, 2) || ''}</td>
+                    <td>{calcularTotalPorTrimestre(actividadesReporte, 3) || ''}</td>
+                    <td>
+                      {calcularTotalPorTrimestre(actividadesReporte, 0)
+                        + calcularTotalPorTrimestre(actividadesReporte, 1)
+                        + calcularTotalPorTrimestre(actividadesReporte, 2)
+                        + calcularTotalPorTrimestre(actividadesReporte, 3)}
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+
+              <div className="br" />
+              <div className="br" />
+
+              <table id="tabla-atenciones">
+                <thead>
+                  <tr className="fila-actividad">
+                    <th>Atenciones brindadas a pacientes:</th>
+                    <th>Trimestre 1</th>
+                    <th>Trimestre 2</th>
+                    <th>Trimestre 3</th>
+                    <th>Trimestre 4</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {
+                    atencionesRealizadas.map((atencion: any, indexAtencion: number) => (
+                      <tr key={indexAtencion} className="fila-actividad">
+                        <td>{atencion.descripcion}</td>
+                        <td>{atencion.cantidad[0]}</td>
+                        <td>{atencion.cantidad[1]}</td>
+                        <td>{atencion.cantidad[2]}</td>
+                        <td>{atencion.cantidad[3]}</td>
+                        <td>
+                          {Number(atencion.cantidad[0] || 0)
+                          + Number(atencion.cantidad[1] || 0)
+                          + Number(atencion.cantidad[2] || 0)
+                          + Number(atencion.cantidad[3] || 0)}
+                        </td>
+                      </tr>
+                    ))
+                  }
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <th>Total</th>
+                    <td>{calcularTotalPorTrimestre(atencionesRealizadas, 0) || ''}</td>
+                    <td>{calcularTotalPorTrimestre(atencionesRealizadas, 1) || ''}</td>
+                    <td>{calcularTotalPorTrimestre(atencionesRealizadas, 2) || ''}</td>
+                    <td>{calcularTotalPorTrimestre(atencionesRealizadas, 3) || ''}</td>
+                    <td>
+                      {
+                        calcularTotalPorTrimestre(atencionesRealizadas, 0)
+                        + calcularTotalPorTrimestre(atencionesRealizadas, 1)
+                        + calcularTotalPorTrimestre(atencionesRealizadas, 2)
+                        + calcularTotalPorTrimestre(atencionesRealizadas, 3)
+                      }
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+
+            </div>
+
+            <div className="espacio" />
+            <FirmasDocumentos />
+            <PiePagina />
             <div className="br" />
-            <div className="br" />
-
-            <table id="tabla-atenciones">
-              <thead>
-                <tr className="fila-actividad">
-                  <th>Atenciones brindadas a pacientes:</th>
-                  <th>Trimestre 1</th>
-                  <th>Trimestre 2</th>
-                  <th>Trimestre 3</th>
-                  <th>Trimestre 4</th>
-                  <th>Total</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {
-                  atencionesRealizadas.map((atencion: any, indexAtencion: number) => (
-                    <tr key={indexAtencion} className="fila-actividad">
-                      <td>{atencion.descripcion}</td>
-                      <td>{atencion.cantidad[0]}</td>
-                      <td>{atencion.cantidad[1]}</td>
-                      <td>{atencion.cantidad[2]}</td>
-                      <td>{atencion.cantidad[3]}</td>
-                      <td>
-                        {Number(atencion.cantidad[0] || 0)
-                        + Number(atencion.cantidad[1] || 0)
-                        + Number(atencion.cantidad[2] || 0)
-                        + Number(atencion.cantidad[3] || 0)}
-                      </td>
-                    </tr>
-                  ))
-                }
-              </tbody>
-              <tfoot>
-                <tr>
-                  <th>Total</th>
-                  <td>{calcularTotalPorTrimestre(atencionesRealizadas, 0) || ''}</td>
-                  <td>{calcularTotalPorTrimestre(atencionesRealizadas, 1) || ''}</td>
-                  <td>{calcularTotalPorTrimestre(atencionesRealizadas, 2) || ''}</td>
-                  <td>{calcularTotalPorTrimestre(atencionesRealizadas, 3) || ''}</td>
-                  <td>
-                    {
-                      calcularTotalPorTrimestre(atencionesRealizadas, 0)
-                      + calcularTotalPorTrimestre(atencionesRealizadas, 1)
-                      + calcularTotalPorTrimestre(atencionesRealizadas, 2)
-                      + calcularTotalPorTrimestre(atencionesRealizadas, 3)
-                    }
-                  </td>
-                </tr>
-              </tfoot>
-            </table>
-
           </div>
-
-          <div className="espacio" />
-
-          <FirmasDocumentos />
-          <PiePagina />
-
-          <div className="br" />
+          <div className="ctn-btns-descargar-y-modificar" style={{ alignSelf: 'center', alignItems: 'center' }}>
+            <button type="button" onClick={descargarDocumento} className="btn-primario" style={{ height: 50, width: '40%', marginLeft: '5%' }}>Descargar</button>
+            <Link to={`/reportes-parciales/${numeroReporte}/formulario`} id="btn-link" type="button" className="btn-secundario btn-link" style={{ height: 50, width: '40%', paddingTop: 12 }}>
+              Modificar
+            </Link>
+          </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

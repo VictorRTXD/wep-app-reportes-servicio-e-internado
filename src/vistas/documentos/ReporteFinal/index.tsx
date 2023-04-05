@@ -324,7 +324,7 @@ export default function DocumentoReporteFinal() {
   }
 
   return (
-    <>
+    <div id="container">
       <Modal
         tipo={datosModal.tipo}
         texto={datosModal.texto}
@@ -333,216 +333,214 @@ export default function DocumentoReporteFinal() {
         callback={cerrarModal}
       />
 
-      <Navegacion />
-
+      <Navegacion select={5} />
       <br />
-      <h2 className="texto-encabezado">Documento Reporte Final</h2>
       <br />
 
-      <div className="ctn-btns-descargar-y-modificar">
-        <button type="button" onClick={descargarDocumento} className="btn-primario">Descargar</button>
-        <div className="ctn-btn-link">
-          <Link to="/reporte-final-2/formulario" id="btn-link" type="button" className="btn-secundario btn-link"> Modificar </Link>
-        </div>
-      </div>
-
-      <br />
-
-      <div id="documento">
+      <div id="crear">
+        <h2 id="titleParcial">Documento Reporte Final</h2>
         <br />
         <br />
+        <div id="documento">
+          <br />
+          <br />
 
-        <div style={documentStyles} className="pagina">
-          <Encabezado />
-          <div className="br" />
-
-          <div>
-            <table id="tabla-datos-generales">
-              <tbody>
-                <tr>
-                  <th colSpan={4} className="celda-datos-generales">
-                    <h2>INFORME GLOBAL</h2>
-                    <div className="br" />
-                  </th>
-                </tr>
-                <tr>
-                  <th className="celda-datos-generales celda-campo">Alumno:</th>
-                  <td className="celda-datos-generales celda-valor">{usuario.nombre}</td>
-                  <th className="celda-datos-generales celda-campo">Código:</th>
-                  <td className="celda-datos-generales celda-valor">{usuario.id}</td>
-                </tr>
-
-                <tr>
-                  <th className="celda-datos-generales celda-campo">Carrera:</th>
-                  <td className="celda-datos-generales celda-valor">{obtenerCarrerra(usuario.carrera)}</td>
-                  <th className="celda-datos-generales celda-campo">Horario:</th>
-                  <td className="celda-datos-generales celda-valor">{`${datosGenerales.horarioHoraInicio} - ${datosGenerales.horarioHoraFin}`}</td>
-                </tr>
-
-                <tr>
-                  <th className="celda-datos-generales celda-campo">Entidad Receptora:</th>
-                  <td className="celda-datos-generales celda-valor">{datosGenerales.entidadReceptora}</td>
-                  <th className="celda-datos-generales celda-campo">Total de Horas:</th>
-                  <td className="celda-datos-generales celda-valor">{totalHoras}</td>
-                </tr>
-
-                <tr>
-                  <th className="celda-datos-generales celda-campo">Receptor:</th>
-                  <td className="celda-datos-generales celda-valor">{datosGenerales.receptor}</td>
-                </tr>
-
-                <tr>
-                  <th className="celda-datos-generales celda-campo">Fecha de Inicio:</th>
-                  <td className="celda-datos-generales celda-valor">{fechaInicio}</td>
-                  <th className="celda-datos-generales celda-campo">Fecha de Terminación:</th>
-                  <td className="celda-datos-generales celda-valor">{fechaFin}</td>
-                </tr>
-                <div className="br" />
-              </tbody>
-            </table>
+          <div style={documentStyles} className="pagina">
+            <Encabezado />
             <div className="br" />
-            <div className="br" />
-          </div>
 
-          <>
-            <table id="tabla-objetivos">
+            <div>
+              <table id="tabla-datos-generales">
+                <tbody>
+                  <tr>
+                    <th colSpan={4} className="celda-datos-generales">
+                      <h2>INFORME GLOBAL</h2>
+                      <div className="br" />
+                    </th>
+                  </tr>
+                  <tr>
+                    <th className="celda-datos-generales celda-campo">Alumno:</th>
+                    <td className="celda-datos-generales celda-valor">{usuario.nombre}</td>
+                    <th className="celda-datos-generales celda-campo">Código:</th>
+                    <td className="celda-datos-generales celda-valor">{usuario.id}</td>
+                  </tr>
+
+                  <tr>
+                    <th className="celda-datos-generales celda-campo">Carrera:</th>
+                    <td className="celda-datos-generales celda-valor">{obtenerCarrerra(usuario.carrera)}</td>
+                    <th className="celda-datos-generales celda-campo">Horario:</th>
+                    <td className="celda-datos-generales celda-valor">{`${datosGenerales.horarioHoraInicio} - ${datosGenerales.horarioHoraFin}`}</td>
+                  </tr>
+
+                  <tr>
+                    <th className="celda-datos-generales celda-campo">Entidad Receptora:</th>
+                    <td className="celda-datos-generales celda-valor">{datosGenerales.entidadReceptora}</td>
+                    <th className="celda-datos-generales celda-campo">Total de Horas:</th>
+                    <td className="celda-datos-generales celda-valor">{totalHoras}</td>
+                  </tr>
+
+                  <tr>
+                    <th className="celda-datos-generales celda-campo">Receptor:</th>
+                    <td className="celda-datos-generales celda-valor">{datosGenerales.receptor}</td>
+                  </tr>
+
+                  <tr>
+                    <th className="celda-datos-generales celda-campo">Fecha de Inicio:</th>
+                    <td className="celda-datos-generales celda-valor">{fechaInicio}</td>
+                    <th className="celda-datos-generales celda-campo">Fecha de Terminación:</th>
+                    <td className="celda-datos-generales celda-valor">{fechaFin}</td>
+                  </tr>
+                  <div className="br" />
+                </tbody>
+              </table>
+              <div className="br" />
+              <div className="br" />
+            </div>
+
+            <>
+              <table id="tabla-objetivos">
+                <thead>
+                  <tr className="fila-actividad">
+                    <th id="titulo-objetivos">Objetivos del Programa</th>
+                  </tr>
+                </thead>
+                <tbody>
+
+                  <tr><td id="objetivos-del-programa-contenido">{datosGenerales.objetivosDelPrograma}</td></tr>
+                </tbody>
+              </table>
+              <div className="br" />
+            </>
+
+            <table id="tabla-actividades">
               <thead>
                 <tr className="fila-actividad">
-                  <th id="titulo-objetivos">Objetivos del Programa</th>
+                  <th>Actividades (Servicios) Realizadas</th>
+                  <th>Cantidad</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {
+                  actividadesReporte.map((actividad: any) => (
+                    <tr key={actividad.id} className="fila-actividad">
+                      <td>{actividad.descripcion}</td>
+                      <td>{actividad.cantidad}</td>
+                    </tr>
+                  ))
+                }
+                <tr className="fila-actividad">
+                  <td>Total de Actividades Realizadas</td>
+                  <td>{totalActividadesRealizadas}</td>
+                </tr>
+              </tbody>
+            </table>
+            <br />
+            <table id="Metas-Alcanzadas">
+              <thead>
+                <tr className="fila-actividad">
+                  <th>Metas Alcanzadas</th>
                 </tr>
               </thead>
               <tbody>
-
-                <tr><td id="objetivos-del-programa-contenido">{datosGenerales.objetivosDelPrograma}</td></tr>
+                <tr><td>{reporteFinalDos.metasAlcanzadas}</td></tr>
               </tbody>
             </table>
+            <br />
+
+            <table id="Metodología-Utilizada">
+              <thead>
+                <tr className="fila-actividad">
+                  <th>Metodología Utilizada</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>{reporteFinalDos.metodologiaUtilizada}</td></tr>
+              </tbody>
+            </table>
+            <br />
+
+            <table id="Inno-Aportada">
+              <thead>
+                <tr className="fila-actividad">
+                  <th>Innovación Aportada</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>{reporteFinalDos.innovacionAportada}</td></tr>
+              </tbody>
+            </table>
+            <br />
+
+            <table id="Conclusiones">
+              <thead>
+                <tr className="fila-actividad">
+                  <th>Conclusiones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>{reporteFinalDos.conclusiones}</td></tr>
+              </tbody>
+            </table>
+            <br />
+
+            <table id="Propuestas">
+              <thead>
+                <tr className="fila-actividad">
+                  <th>Propuestas</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>{reporteFinalDos.propuestas}</td></tr>
+              </tbody>
+            </table>
+            <br />
+            <br />
+
+            <table id="tabla-atenciones-realizadas">
+              <thead>
+                <tr className="fila-actividad">
+                  <th colSpan={4}>Atenciones Brindadas</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th className="border-unset">Mujeres:</th>
+                  <td className="border-unset">{atencionesRealizadas[3].cantidad}</td>
+                  <th className="border-unset">Niños:</th>
+                  <td className="border-unset">{atencionesRealizadas[1].cantidad}</td>
+                </tr>
+
+                <tr>
+                  <th className="border-unset">Hombres:</th>
+                  <td className="border-unset">{atencionesRealizadas[2].cantidad}</td>
+                  <th className="border-unset">Prenatales:</th>
+                  <td className="border-unset">{atencionesRealizadas[0].cantidad}</td>
+                </tr>
+
+                <tr>
+                  <th className="border-unset">Geríatricos:</th>
+                  <td className="border-unset">{atencionesRealizadas[4].cantidad}</td>
+                  <th className="border-unset">Total de Atenciones:</th>
+                  <td className="border-unset">{totalDeAtenciones}</td>
+                </tr>
+              </tbody>
+            </table>
+            <div className="espacio" />
+            <FirmasDocumentos />
+            <PiePagina />
+
             <div className="br" />
-          </>
-
-          <table id="tabla-actividades">
-            <thead>
-              <tr className="fila-actividad">
-                <th>Actividades (Servicios) Realizadas</th>
-                <th>Cantidad</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {
-                actividadesReporte.map((actividad: any) => (
-                  <tr key={actividad.id} className="fila-actividad">
-                    <td>{actividad.descripcion}</td>
-                    <td>{actividad.cantidad}</td>
-                  </tr>
-                ))
-              }
-              <tr className="fila-actividad">
-                <td>Total de Actividades Realizadas</td>
-                <td>{totalActividadesRealizadas}</td>
-              </tr>
-            </tbody>
-          </table>
-          <br />
-          <table id="Metas-Alcanzadas">
-            <thead>
-              <tr className="fila-actividad">
-                <th>Metas Alcanzadas</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td>{reporteFinalDos.metasAlcanzadas}</td></tr>
-            </tbody>
-          </table>
-          <br />
-
-          <table id="Metodología-Utilizada">
-            <thead>
-              <tr className="fila-actividad">
-                <th>Metodología Utilizada</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td>{reporteFinalDos.metodologiaUtilizada}</td></tr>
-            </tbody>
-          </table>
-          <br />
-
-          <table id="Inno-Aportada">
-            <thead>
-              <tr className="fila-actividad">
-                <th>Innovación Aportada</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td>{reporteFinalDos.innovacionAportada}</td></tr>
-            </tbody>
-          </table>
-          <br />
-
-          <table id="Conclusiones">
-            <thead>
-              <tr className="fila-actividad">
-                <th>Conclusiones</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td>{reporteFinalDos.conclusiones}</td></tr>
-            </tbody>
-          </table>
-          <br />
-
-          <table id="Propuestas">
-            <thead>
-              <tr className="fila-actividad">
-                <th>Propuestas</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td>{reporteFinalDos.propuestas}</td></tr>
-            </tbody>
-          </table>
-          <br />
-          <br />
-
-          <table id="tabla-atenciones-realizadas">
-            <thead>
-              <tr className="fila-actividad">
-                <th colSpan={4}>Atenciones Brindadas</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <th className="border-unset">Mujeres:</th>
-                <td className="border-unset">{atencionesRealizadas[3].cantidad}</td>
-                <th className="border-unset">Niños:</th>
-                <td className="border-unset">{atencionesRealizadas[1].cantidad}</td>
-              </tr>
-
-              <tr>
-                <th className="border-unset">Hombres:</th>
-                <td className="border-unset">{atencionesRealizadas[2].cantidad}</td>
-                <th className="border-unset">Prenatales:</th>
-                <td className="border-unset">{atencionesRealizadas[0].cantidad}</td>
-              </tr>
-
-              <tr>
-                <th className="border-unset">Geríatricos:</th>
-                <td className="border-unset">{atencionesRealizadas[4].cantidad}</td>
-                <th className="border-unset">Total de Atenciones:</th>
-                <td className="border-unset">{totalDeAtenciones}</td>
-              </tr>
-            </tbody>
-          </table>
-          <div className="espacio" />
-          <FirmasDocumentos />
-          <PiePagina />
-
-          <div className="br" />
+          </div>
+          <div className="ctn-btns-descargar-y-modificar">
+            <button type="button" onClick={descargarDocumento} className="btn-primario" style={{ height: 50, width: '40%', marginLeft: '5%' }}>Descargar</button>
+            <Link to="/reporte-final-2/formulario" id="btn-link" type="button" className="btn-secundario btn-link" style={{ height: 50, width: '40%', paddingTop: 12 }}> Modificar </Link>
+          </div>
         </div>
-
       </div>
+
       <br />
       <br />
-    </>
+    </div>
   );
 }

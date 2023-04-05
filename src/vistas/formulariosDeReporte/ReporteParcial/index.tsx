@@ -311,7 +311,7 @@ export default function ReportesParciales() {
             if (data.code === 'SESION_EXPIRADA') {
               setDatosModal({
                 tipo: 'error',
-                texto: data.code,
+                texto: 'SESIÓN EXPIRADA',
                 visibilidad: true,
                 callback: () => {},
               });
@@ -321,7 +321,7 @@ export default function ReportesParciales() {
             } else {
               setDatosModal({
                 tipo: 'error',
-                texto: data.code,
+                texto: 'El trimestre correspondiente no existe: Revisa las fechas',
                 visibilidad: true,
                 callback: () => {},
               });
@@ -449,7 +449,7 @@ export default function ReportesParciales() {
   }
 
   return (
-    <div>
+    <div id="container">
       <Modal
         tipo={datosModal.tipo}
         texto={datosModal.texto}
@@ -458,14 +458,13 @@ export default function ReportesParciales() {
         callback={cerrarModal}
       />
 
-      <Navegacion />
+      <Navegacion select={numeroReporte} />
       <br />
       <br />
 
-      <h2 className="texto-encabezado">{`Formulario Reporte Parcial #${numeroReporte}`}</h2>
-      <br />
-
-      <form>
+      <form id="crear">
+        <h1 id="titleParcial">{`Reporte Parcial ${numeroReporte}`}</h1>
+        <br />
         <table>
           <thead>
             <tr>
@@ -530,8 +529,8 @@ export default function ReportesParciales() {
         <br />
 
         <div id="ctn-btn-cantidad">
+          <button type="button" className="btn-redondo btn-cantidad" onClick={eliminarActividad} id="menos"> - </button>
           <button type="button" className="btn-redondo btn-cantidad" onClick={agregarActividad}> + </button>
-          <button type="button" className="btn-redondo btn-cantidad" onClick={eliminarActividad}> - </button>
         </div>
         <br />
         <br />
@@ -644,7 +643,7 @@ export default function ReportesParciales() {
         <br />
         <br />
 
-        <button type="button" id="btn-guardar" className="btn-primario" onClick={crearOActualizar}> Guardar </button>
+        <button type="button" id="btn-guardar" className="btn-primario" onClick={crearOActualizar} style={{ width: '50%', marginRight: '25%', fontWeight: 'bold' }}> Guardar </button>
         <br />
         <br />
 

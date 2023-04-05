@@ -4,6 +4,17 @@ import Modal, { DatosModal } from '../../componentes/Modal';
 import config from '../../appConfig';
 
 import '../../global.css';
+import {
+  DIV,
+  CL,
+  ContainerInput,
+  ContainerLogin,
+  ContainerName,
+  ContainerTitle,
+  Title,
+} from './LoginStyle';
+import udgblanco from '../../recursos/udgblanco.png';
+import caduceo from '../../recursos/caduceo.png';
 
 export default function InicioSesion() {
   const codigo = useRef<HTMLInputElement>(null);
@@ -63,7 +74,7 @@ export default function InicioSesion() {
           } else if (data.code) {
             setDatosModal({
               tipo: 'error',
-              texto: data.code,
+              texto: 'ERROR DE LA BASE DE DATOS',
               visibilidad: true,
               callback: () => {},
             });
@@ -110,7 +121,7 @@ export default function InicioSesion() {
   }
 
   return (
-    <>
+    <div>
       <Modal
         tipo={datosModal.tipo}
         texto={datosModal.texto}
@@ -118,28 +129,44 @@ export default function InicioSesion() {
         callback={cerrarModal}
       />
 
-      <div className="title-bar centrar"><span>Reportes Área de la Salud</span></div>
-      <br />
-      <br />
+      <DIV>
+        <ContainerLogin>
 
-      <h2 className="texto-encabezado">Iniciar Sesión</h2>
+          <ContainerInput>
+            <CL>
+              <Title color="#E07C43" size="350%">Iniciar Sesión</Title>
+              <br />
+              <br />
+              <br />
+              <br />
+              <label id="codigo" className="label-sesion" htmlFor="codigo">
+                Código de alumno:
+                <input type="text" className="input-sesion" name="codigo" ref={codigo} placeholder="Ingrese su código" />
+              </label>
+              <br />
+              <br />
 
-      <div className="ctn-con-padding">
-        <label id="codigo" className="label-sesion" htmlFor="codigo">
-          Código de alumno:
-          <input type="text" className="input-sesion" name="codigo" ref={codigo} />
-        </label>
-        <br />
+              <label id="nip" className="label-sesion" htmlFor="nip">
+                NIP:
+                <input type="password" onKeyDown={enter} className="input-sesion" name="nip" ref={nip} placeholder="Ingrese su NIP" />
+              </label>
+              <br />
+              <br />
 
-        <label id="nip" className="label-sesion" htmlFor="nip">
-          NIP:
-          <input type="password" onKeyDown={enter} className="input-sesion" name="nip" ref={nip} />
-        </label>
-        <br />
+              <button type="button" className="btn-primario iniciar-sesion" onClick={inciarSesion}> Iniciar Sesión </button>
+              <br />
+            </CL>
+          </ContainerInput>
 
-        <button type="button" className="btn-primario iniciar-sesion" onClick={inciarSesion}> Iniciar Sesión </button>
-        <br />
-      </div>
-    </>
+          <ContainerName>
+            <ContainerTitle>
+              <img src={udgblanco} alt="udg logo" style={{ width: '33%', margin: '0 auto' }} />
+              <Title color="white" size="250%">Reportes Área de la Salud</Title>
+              <img src={caduceo} alt="cauduceo logo" style={{ width: '10%', margin: '0 auto' }} />
+            </ContainerTitle>
+          </ContainerName>
+        </ContainerLogin>
+      </DIV>
+    </div>
   );
 }

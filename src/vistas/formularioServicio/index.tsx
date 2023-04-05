@@ -5,6 +5,7 @@ import config from '../../appConfig';
 import '../../global.css';
 import './styles.css';
 import Modal, { DatosModal } from '../../componentes/Modal';
+import caduceo from '../../recursos/caduceo.png';
 
 export default function CrearServicio() {
   const entidadReceptora = useRef<HTMLInputElement>(null);
@@ -20,7 +21,7 @@ export default function CrearServicio() {
     tipo: null,
     texto: '',
     visibilidad: false,
-    callback: () => {},
+    callback: () => { },
   });
 
   const [retornar, setRetornar] = useState<boolean>(false);
@@ -82,7 +83,7 @@ export default function CrearServicio() {
         tipo: 'error',
         texto: 'Uno o más de los datos enviados no son válidos',
         visibilidad: true,
-        callback: () => {},
+        callback: () => { },
       });
     } else {
       // Si todos los campos estan bien, mandar solicitud
@@ -132,23 +133,23 @@ export default function CrearServicio() {
               tipo: 'confirmacion',
               texto: 'Datos Guardados. Deberas iniciar sesión de nuevo',
               visibilidad: true,
-              callback: () => {},
+              callback: () => { },
             });
           } else if (data.code) {
             if (data.code === 'SESION_EXPIRADA') {
               setDatosModal({
                 tipo: 'error',
-                texto: data.code,
+                texto: 'SESIÓN EXPIRADA',
                 visibilidad: true,
-                callback: () => {},
+                callback: () => { },
               });
               setRedireccionamiento('/usuario/iniciar-sesion');
             } else {
               setDatosModal({
                 tipo: 'error',
-                texto: data.code,
+                texto: 'El trimestre correspondiente no existe: Revisa las fechas',
                 visibilidad: true,
-                callback: () => {},
+                callback: () => { },
               });
             }
           } else {
@@ -156,7 +157,7 @@ export default function CrearServicio() {
               tipo: 'error',
               texto: 'Ocurrió un error',
               visibilidad: true,
-              callback: () => {},
+              callback: () => { },
             });
           }
         })
@@ -168,7 +169,7 @@ export default function CrearServicio() {
             tipo: 'error',
             texto: 'Ocurrió un error',
             visibilidad: true,
-            callback: () => {},
+            callback: () => { },
           });
         });
     }
@@ -183,7 +184,7 @@ export default function CrearServicio() {
       tipo: null,
       texto: '',
       visibilidad: false,
-      callback: () => {},
+      callback: () => { },
     });
 
     if (redireccionamiento) {
@@ -196,7 +197,7 @@ export default function CrearServicio() {
   }
 
   return (
-    <div>
+    <div id="container">
       <Modal
         tipo={datosModal.tipo}
         texto={datosModal.texto}
@@ -205,32 +206,42 @@ export default function CrearServicio() {
         callback={cerrarModal}
       />
 
-      <div className="title-bar centrar"><span><b>Reportes Área de la Salud</b></span></div>
-      <br />
-      <br />
+      <div className="title-bar">
+        <span style={{ marginTop: '3%', marginBottom: '3%' }}>
+          <b>
+            Reportes Área
 
-      <h2>
-        {metodo === 'POST' ? 'Crear ' : 'Actualizar '}
-        Servicio
-      </h2>
+            <br />
+            de la Salud
+          </b>
+        </span>
+        <br />
+        <img src={caduceo} alt="cauduceo logo" style={{ width: '20%', margin: '0 auto' }} />
+      </div>
+      <br />
       <br />
 
       <div id="crear-servicio">
+        <h2 id="title">
+          {metodo === 'POST' ? 'Crear ' : 'Actualizar '}
+          Servicio
+        </h2>
+        <br />
         <label id="entidadReceptora" htmlFor="entidadReceptora">
           Entidad Receptora:
-          <input type="text" name="entidadReceptora" className="input-servicio" ref={entidadReceptora} />
+          <input type="text" name="entidadReceptora" className="input-servicio" ref={entidadReceptora} placeholder="Ingrese entidad receptora" />
         </label>
         <br />
 
         <label htmlFor="receptor">
           Receptor:
-          <input type="text" name="receptor" className="input-servicio" ref={receptor} />
+          <input type="text" name="receptor" className="input-servicio" ref={receptor} placeholder="Ingrese receptor" />
         </label>
         <br />
 
         <label htmlFor="programa">
           Programa:
-          <input type="text" name="programa" className="input-servicio" ref={programa} />
+          <input type="text" name="programa" className="input-servicio" ref={programa} placeholder="Ingrese entidad programa" />
         </label>
         <br />
 
@@ -267,9 +278,8 @@ export default function CrearServicio() {
             className="textarea-servicio"
           />
         </label>
-        <br />
 
-        <button type="button" id="btn-guardar" className="btn-primario" onClick={crearOActualizarServicio}> Guardar </button>
+        <button type="button" id="btn-guardar" className="btn-primario" onClick={crearOActualizarServicio} style={{ width: '50%', marginRight: '25%', fontWeight: 'bold' }}> Guardar </button>
         <br />
         <br />
 

@@ -1,3 +1,4 @@
+/* @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300&family=Roboto+Flex:opsz,wght@8..144,300&display=swap'); */
 h1, h2 {
   font-size: 2em;
   text-align: center;
@@ -11,22 +12,26 @@ form {
 label {
   font-size: 16px;
   margin-bottom: 3px;
-  width: 100%;
-  display: block;
+  color: black;
+  margin-top: 3%;
+  margin-left: 2.5%;
+  font-weight: bold;
 }
 
 .input-servicio, .textarea-servicio {
-  width: 100%;
-  display: block;
+  width: 95%;
   padding: 7px 5px 7px 5px;
   border-style: solid;
-  border-width: 1px;
-  border-color: #70757a;
+  border-width: 2px;
+  border-color: #E07C43;
   border-radius: 5px;
   box-shadow: 0px 1px 1px #dadce0;
   margin-top: 5px;
-  resize: none;
-  font-family: sans-serif;
+  background-color: #ffff;
+  color: black;
+  margin-bottom: 3%;
+  margin-left: 2.5%;
+  background-color: #F3F3F3;
 }
 
 .input-servicio:focus, .textarea-servicio:focus {
@@ -39,5 +44,12 @@ textarea {
 }
 
 #crear-servicio {
+  width: 80%;
   padding: 1em;
+  justify-content: center;
+}
+#container{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
 }

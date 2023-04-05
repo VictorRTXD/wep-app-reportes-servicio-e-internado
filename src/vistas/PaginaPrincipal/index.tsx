@@ -3,9 +3,10 @@ import React, { useEffect, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 
 import config from '../../appConfig';
-import BarraNavegacion from '../../componentes/BarraNavegacion';
+import Navegacion from '../../componentes/BarraNavegacion';
 import Modal, { DatosModal } from '../../componentes/Modal';
 import '../../global.css';
+import caduceo from '../../recursos/caduceo.png';
 
 export default function PaginaPrincipal() {
   const [datosModal, setDatosModal] = useState<DatosModal>({
@@ -179,18 +180,33 @@ export default function PaginaPrincipal() {
   }
 
   return (
-    <>
+    <div id="container">
       <Modal
         tipo={datosModal.tipo}
         texto={datosModal.texto}
         visibilidad={datosModal.visibilidad}
         callback={cerrarModal}
       />
-
-      <BarraNavegacion />
-
-      <h1 id="pagina-principal-titulo">¡Bienvenido!</h1>
-      <h2 id="pagina-principal-texto">Para ver o completar un reporte, selecciónalo desde la barra superior.</h2>
-    </>
+      <Navegacion select={0} />
+      <div
+        id="crear"
+      >
+        <div style={{
+          background: `url(${caduceo}) no-repeat center center fixed`,
+          backgroundSize: '50%',
+          filter: 'drop-shadow(5px 5px 5px rgba(0,0,0,0.5))',
+          backgroundPosition: 'center',
+          // backgroundPositionY: 150,
+          // backgroundPositionX: '68%',
+        }}
+        />
+        <div>
+          <h1 id="pagina-principal-titulo" style={{ position: 'relative', marginLeft: 10 }}>¡Bienvenido!</h1>
+        </div>
+        <div>
+          <p id="pagina-principal-texto" style={{ fontWeight: 500, alignSelf: 'center' }}>Para ver o completar un reporte, selecciónalo desde la barra izquierda.</p>
+        </div>
+      </div>
+    </div>
   );
 }

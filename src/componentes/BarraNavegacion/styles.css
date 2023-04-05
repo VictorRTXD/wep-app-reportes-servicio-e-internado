@@ -1,52 +1,129 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300&family=Roboto+Flex:opsz,wght@8..144,300&display=swap');
 .title-bar {
-  font-size: 2em;
-  font-weight: bold;
+  font-size: 2.8em;
   color: white;
   padding-top: 15px;
   padding-bottom: 15px;
-  background-color: #CD5700;
+  background-color: #E07C43;
   text-align: center;
+  font-family: 'Lato', sans-serif;
+  width: 20%;
+  height: auto;
+  align-items: center;
 }
 
-.buttons-container {
-  display: grid;
-  grid-auto-flow: column;
-  margin: 0 auto;
+.title-bar1 {
+  font-size: 2.8em;
+  color: white;
   padding-top: 15px;
   padding-bottom: 15px;
-  width: 100%;
-  overflow: hidden;
-  box-shadow: 0px 3px 10px -2px #dadce0;
+  background-color: #E07C43;
+  text-align: center;
+  font-family: 'Lato', sans-serif;
+  width: 20%;
+  height: 200vh;
+  align-items: center;
 }
 
 .link-redondo {
-  width: 3rem;
-  height: 3rem;
-  background-color: #FF91ED;
-  border-radius: 50%;
-  margin: auto;
-  font-size: 2rem;
+  width: 90%;
+  height: 5rem;
+  background-color: #E07C43;
+  border-radius: 5%;
+  font-size: 1.5rem;
   text-align: center;
   color: white;
-  box-shadow: 0px 0px 0px 3px #FF91ED75;
+  border: solid 2px white ;
+  margin-top: 5%;
+  align-self: center;
+  margin-left: 5%;
 }
 
 .link-redondo:hover {
   cursor: pointer;
   background-color: white;
-  color: #FF91ED;
+  color: #E07C43;
 }
 
 .link-texto-largo {
   font-weight: bold;
-  font-size: 0.8rem;
+  font-size: 1.5rem;
+  border-radius: 5%;
+  text-decoration: none;
 }
 
 #ctn-barra-navegacion {
   width: 100%;
-  z-index: 99;
 }
 
 #reporte-final-2 {
   font-size: 0.7rem;
+}
+
+.link-seleccionado {
+  width: 96%;
+  height: 5rem;
+  background-color: white;
+  font-size: 1.5rem;
+  text-align: center;
+  color: #E07C43;
+  border: solid 2px white ;
+  margin-top: 5%;
+  align-self: center;
+  margin-left: 5%;
+}
+
+.menu-icon {
+  display: none;
+}
+
+.menu-container {
+  display: none;
+  flex-direction: column;
+}
+
+
+
+
+
+@media (max-width: 768px) {
+  .title-bar {
+    display: none;
+  }
+  
+  .title-bar1 {
+    font-size: 2.8em;
+    z-index: 9999;
+    color: white;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    background-color: #E07C43;
+    text-align: center;
+    font-family: 'Lato', sans-serif;
+    width: 50%;
+    height: 200vh;
+    align-items: center;
+    position: absolute;
+  }
+  
+  .title-bar1 img {
+    display: block;
+  }
+  #img-icon {
+    width: 20px;
+    height: 20px;
+  }
+  .menu-icon {
+    display: block;
+    justify-content: space-between;
+    height: 20;
+    cursor: pointer;
+    margin-right: 1em;
+    width: 20;
+    position: absolute;
+    background-color: white;
+    border-radius: 10;
+  }
+
+   
 }

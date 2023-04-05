@@ -102,7 +102,7 @@ export default function ReporteFinal2() {
             if (data.code === 'SESION_EXPIRADA') {
               setDatosModal({
                 tipo: 'error',
-                texto: data.code,
+                texto: 'SESIÓN EXPIRADA',
                 visibilidad: true,
                 callback: () => {},
               });
@@ -112,7 +112,7 @@ export default function ReporteFinal2() {
             } else {
               setDatosModal({
                 tipo: 'error',
-                texto: data.code,
+                texto: 'El trimestre correspondiente no existe: Revisa las fechas',
                 visibilidad: true,
                 callback: () => {},
               });
@@ -165,7 +165,7 @@ export default function ReporteFinal2() {
   }
 
   return (
-    <div>
+    <div id="container">
       <Modal
         tipo={datosModal.tipo}
         texto={datosModal.texto}
@@ -174,13 +174,12 @@ export default function ReporteFinal2() {
         callback={cerrarModal}
       />
 
-      <Navegacion />
+      <Navegacion select={5} />
       <br />
 
-      <h2 className="texto-encabezado">Formulario Reporte Final</h2>
-      <br />
-
-      <form>
+      <form id="crear">
+        <h2 id="titleParcial">Formulario Reporte Final</h2>
+        <br />
         <label htmlFor="metasAlcanzadas">
           Metas Alcanzadas:
           <textarea

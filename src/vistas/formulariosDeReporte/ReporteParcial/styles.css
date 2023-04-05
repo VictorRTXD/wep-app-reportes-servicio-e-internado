@@ -1,7 +1,8 @@
 table {
-  width: 100%;
+  width: 95%;
   border: 1px solid black;
   border-collapse: collapse;
+  margin-left: 2.5%;
 }
 
 th, td {
@@ -14,14 +15,30 @@ th, td {
   font-size: 0.9rem;
 }
 
+#menos {
+  margin-right: 85% 
+}
+@media (max-width: 768px) {
+  #menos {
+    margin-right: 55% 
+  }
+}
+
 .input-formulario {
-  margin: 1px;
-  padding: 2px;
+  width: 95%;
+  padding: 7px 5px 7px 5px;
   border-style: solid;
-  border-width: 1px;
-  border-color: #70757a;
-  border-radius: 2px;
+  border-width: 2px;
+  border-color: #E07C43;
+  border-radius: 5px;
   box-shadow: 0px 1px 1px #dadce0;
+  margin-top: 5px;
+  background-color: #ffff;
+  color: black;
+  font-family: 'Lato', sans-serif;
+  margin-bottom: 3%;
+  margin-left: 2.5%;
+
 }
 
 select {
@@ -46,31 +63,30 @@ select {
 }
 
 .btn-redondo {
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
+  width: 3.5rem;
+  height: 3rem;
+  border-radius: 5px;
   font-size: 2rem;
   text-align: center;
-  background-color: #FF91ED;
-  border-radius: 50%;
-  margin: auto;
+  background-color: #E07C43;
   color: white;
-  box-shadow: 0px 0px 0px 3px #FF91ED75;
+  box-shadow: 0px 0px 0px 3px #E07C43;
+  align-self: center;
+
 }
 
 .btn-redondo:hover {
   cursor: pointer;
   background-color: white;
-  color: #FF91ED;
+  color: #E07C43;
 }
 
 .btn-cantidad {
   display: inline-block;
-  margin-right: 0.5rem;
 }
 
 #ctn-btn-cantidad {
-  text-align: right;
+  text-align: center;
 }
 
 #columna-descripcion {
@@ -93,18 +109,19 @@ select {
 }
 
 #inputHorasRealizadas {
-  font-size: 1.5rem;
-  width: 100%;
-  display: block;
+  width: 95%;
   padding: 7px 5px 7px 5px;
   border-style: solid;
-  border-width: 1px;
-  border-color: #70757a;
+  border-width: 2px;
+  border-color: #E07C43;
   border-radius: 5px;
   box-shadow: 0px 1px 1px #dadce0;
   margin-top: 5px;
-  resize: none;
-  font-family: sans-serif;
+  background-color: #ffff;
+  color: black;
+  font-family: 'Lato', sans-serif;
+  margin-bottom: 3%;
+  margin-left: 2.5%;
 }
 
 #inputHorasRealizadas:focus {
@@ -113,5 +130,5 @@ select {
 }
 
 #btn-guardar {
-  float: right;
+float: right;
 }
